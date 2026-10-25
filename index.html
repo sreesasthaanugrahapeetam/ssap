@@ -1,3 +1,8 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>try{var _t=localStorage.getItem('ssap-theme');if(_t==='light')document.documentElement.dataset.theme='light';}catch(e){}</script>
 <title>Sree Sastha Anugraha Peetam</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1621,9 +1626,10 @@ document.addEventListener('click', () => {
   const btn = document.getElementById('back-top');
   window.addEventListener('scroll', () => {
     const s = document.documentElement;
-    const pct = s.scrollTop / (s.scrollHeight - s.clientHeight) * 100;
-    bar.style.width = pct + '%';
-    btn.classList.toggle('show', s.scrollTop > 400);
+    const y = window.scrollY || window.pageYOffset || s.scrollTop || 0;
+    const max = (s.scrollHeight - window.innerHeight) || 1;
+    bar.style.width = Math.min(100, y / max * 100) + '%';
+    btn.classList.toggle('show', y > 400);
   }, { passive: true });
   btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 })();
@@ -1635,23 +1641,27 @@ document.addEventListener('click', () => {
 
   if (!SHEET_ID || SHEET_ID === 'YOUR_GOOGLE_SHEET_ID_HERE') return;
 
-  const BASE = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=';
+  const BASE = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&headers=1&sheet=';
 
   function parseCSV(text) {
     const rows = [];
-    const lines = text.split(/\r?\n/);
-    for (const line of lines) {
-      if (!line.trim()) continue;
-      const cols = []; let cur = '', inQ = false;
-      for (let i = 0; i < line.length; i++) {
-        const c = line[i];
-        if (c === '"') { inQ = !inQ; }
-        else if (c === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
-        else { cur += c; }
-      }
-      cols.push(cur.trim());
-      rows.push(cols);
+    let row = [], cur = '', inQ = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (inQ) {
+        if (c === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else inQ = false; }
+        else cur += c;
+      } else if (c === '"') inQ = true;
+      else if (c === ',') { row.push(cur.trim()); cur = ''; }
+      else if (c === '\n' || c === '\r') {
+        if (c === '\r' && text[i + 1] === '\n') i++;
+        row.push(cur.trim()); cur = '';
+        if (row.some(Boolean)) rows.push(row);
+        row = [];
+      } else cur += c;
     }
+    row.push(cur.trim());
+    if (row.some(Boolean)) rows.push(row);
     return rows;
   }
 
