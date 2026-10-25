@@ -1,6 +1,8 @@
 <script>try{var _t=localStorage.getItem('ssap-theme');if(_t==='light')document.documentElement.dataset.theme='light';}catch(e){}</script>
 <title>Sree Sastha Anugraha Peetam</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/logo.png">
+<link rel="apple-touch-icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700&family=Noto+Serif+Telugu:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
@@ -583,6 +585,26 @@ section[id] { scroll-margin-top: 68px; }
 .donate-msg { text-align:center; max-width:640px; margin:2.5rem auto 0; color:var(--cream-2); font-size:1rem; line-height:1.7; }
 .donate-gateway { margin-top:1rem; font-size:.85rem; color:var(--cream-3); }
 
+/* ─── ANNADANAM ─── */
+.anna-slogan { font-family:var(--f-display); color:var(--gold-hi); font-size:1.55rem; text-align:center; margin:1.5rem 0 .5rem; letter-spacing:.05em; text-shadow:0 0 20px rgba(201,162,39,.5); }
+.anna-desc { text-align:center; color:var(--cream-2); font-size:1rem; line-height:1.75; max-width:620px; margin:0 auto 1.5rem; }
+.anna-grid { max-width:720px; margin:1.8rem auto; }
+.anna-item { border-radius:10px; overflow:hidden; border:1px solid rgba(201,162,39,.2); background:rgba(0,0,0,.4); aspect-ratio:16/9; position:relative; }
+.anna-item video,.anna-item img { width:100%; height:100%; object-fit:cover; display:block; }
+.anna-item.empty { display:flex; align-items:center; justify-content:center; flex-direction:column; gap:.4rem; color:rgba(201,162,39,.2); font-family:var(--f-head); font-size:.72rem; letter-spacing:.07em; }
+.anna-cta { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin-top:2rem; }
+.anna-note { text-align:center; color:var(--cream-3); font-size:.85rem; margin-top:.8rem; font-style:italic; }
+
+/* ─── SOCIAL ICONS ─── */
+.social-icons { display:flex; gap:.75rem; flex-wrap:wrap; justify-content:center; margin-top:1.2rem; }
+.si { display:inline-flex; align-items:center; justify-content:center; width:46px; height:46px; border-radius:50%; text-decoration:none; transition:transform .2s, box-shadow .2s; border:2px solid rgba(255,255,255,.15); flex-shrink:0; }
+.si:hover { transform:scale(1.13); box-shadow:0 4px 18px rgba(0,0,0,.45); }
+.si.yt { background:#c00; }
+.si.fb { background:#1877f2; }
+.si.tw { background:#111; }
+.si.ig { background:linear-gradient(135deg,#f09433,#dc2743,#bc1888); }
+.si.li { background:#0077b5; }
+
 /* ─── CONTACT ─── */
 .contact-grid {
   display: grid;
@@ -627,6 +649,14 @@ footer {
 .foot-mantra { font-family: var(--f-head); color: var(--saff-hi); font-size: .88rem; letter-spacing: .12em; font-style: italic; margin-bottom: 1.8rem; }
 .foot-rule { width: 50%; height: 1px; background: linear-gradient(to right, transparent, rgba(201,162,39,.3), transparent); margin: 0 auto 1.4rem; }
 .foot-copy { color: var(--cream-3); font-size: .82rem; line-height: 1.7; }
+
+/* ─── SCROLL PROGRESS BAR ─── */
+#scroll-bar { position:fixed; top:0; left:0; width:0%; height:3px; background:linear-gradient(to right,var(--saffron),var(--gold),var(--gold-hi)); z-index:500; transition:width .1s linear; }
+
+/* ─── SCROLL TO TOP ─── */
+#back-top { position:fixed; bottom:calc(5.5rem + env(safe-area-inset-bottom,0px)); right:calc(1.8rem + env(safe-area-inset-right,0px)); z-index:90; width:44px; height:44px; border-radius:50%; background:rgba(30,11,0,.85); border:1px solid rgba(201,162,39,.45); color:var(--gold); font-size:1.2rem; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .3s, transform .3s; }
+#back-top.show { opacity:1; pointer-events:auto; }
+#back-top:hover { background:rgba(201,162,39,.18); transform:translateY(-3px); }
 
 /* ─── MUSIC BUTTON ─── */
 #music-btn {
@@ -804,6 +834,7 @@ footer {
     <li><a href="#gallery">Gallery</a></li>
     <li><a href="#timings">Timings</a></li>
     <li><a href="#services">Poojas</a></li>
+    <li><a href="#annadanam">Annadanam</a></li>
     <li><a href="#donate" style="color:var(--gold-hi);">Donate</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
@@ -817,6 +848,7 @@ footer {
   <li><a href="#gallery"       onclick="closeNav()">Gallery</a></li>
   <li><a href="#timings"       onclick="closeNav()">Darshan Timings</a></li>
   <li><a href="#services"      onclick="closeNav()">Poojas & Sevas</a></li>
+  <li><a href="#annadanam"     onclick="closeNav()">Annadanam</a></li>
   <li><a href="#donate"        onclick="closeNav()" style="color:var(--gold-hi);">Donate</a></li>
   <li><a href="#contact"       onclick="closeNav()">Contact</a></li>
 </ul>
@@ -905,9 +937,8 @@ footer {
         </blockquote>
 
         <div class="social-row">
-          <a href="https://www.youtube.com/@chinmudratv4828" target="_blank" rel="noopener" class="yt-btn">
-            ▶ Subscribe on YouTube
-          </a>
+          <a href="https://www.youtube.com/@chinmudratv4828" target="_blank" rel="noopener" class="yt-btn">▶ Chinmudra TV</a>
+          <a href="https://www.youtube.com/@devotionalculture4687" target="_blank" rel="noopener" class="yt-btn">▶ Devotional Culture</a>
         </div>
       </div>
     </div>
@@ -1036,23 +1067,24 @@ footer {
       <div class="sec-rule"></div>
     </header>
 
+    <div class="timing-location-note reveal" style="background:rgba(201,162,39,.07);border:1px solid rgba(201,162,39,.2);border-radius:8px;padding:1rem 1.4rem;margin-bottom:1.8rem;text-align:center;">
+      <span style="font-family:var(--f-head);color:var(--gold);font-size:.82rem;letter-spacing:.05em;">📍 PEETAM LOCATION</span>
+      <p style="color:var(--cream-2);font-size:.93rem;margin:.5rem 0 0;line-height:1.6;">
+        <strong style="color:var(--gold-hi);">During Mandala Kalam:</strong> <span class="mandala-location">Sri Srinivas Nagar Park Shed</span> &nbsp;·&nbsp;
+        <strong style="color:var(--gold-hi);">Other Times:</strong> <span class="normal-location">Sreehomes Apartment Terrace</span>
+      </p>
+    </div>
     <div class="timings-grid">
-      <div class="timing-card reveal">
-        <div class="t-icon">🌅</div>
-        <h3>Nirmalya Darshan</h3>
-        <div class="t-time">6:00 – 7:00 AM</div>
-        <p>The nada (sanctum door) opens with Nirmalya darshan — beholding the Lord adorned from the night before</p>
-      </div>
       <div class="timing-card reveal">
         <div class="t-icon">☀️</div>
         <h3>Morning Poojas</h3>
-        <div class="t-time">7:00 AM – 12:00 PM</div>
-        <p>Usha Pooja, Ethiretti Pooja and Pankalapuja; Archana and Abhishekam for devotees</p>
+        <div class="t-time">5:00 AM – 10:00 AM</div>
+        <p>Morning rituals, Archana and Abhishekam for devotees. All are welcome to participate with devotion</p>
       </div>
       <div class="timing-card reveal">
         <div class="t-icon">🌆</div>
         <h3>Evening Sevas</h3>
-        <div class="t-time">5:00 – 8:00 PM</div>
+        <div class="t-time">6:00 PM – 9:00 PM</div>
         <p>Deeparadhana, Athazhapuja, and Bhajans. Devotees may offer flower garlands and participate in arti</p>
       </div>
       <div class="timing-card reveal">
@@ -1136,6 +1168,35 @@ footer {
   </div>
 </section>
 
+<!-- ──────────────────────────────────── ANNADANAM ─── -->
+<section class="section section--alt2" id="annadanam">
+  <div class="container">
+    <header class="sec-head reveal">
+      <span class="sec-icon" aria-hidden="true">🍛</span>
+      <h2 class="sec-en">Annadanam</h2>
+      <div class="sec-te">అన్నదానం</div>
+      <div class="sec-rule"></div>
+    </header>
+
+    <p class="anna-slogan">అన్నదాన ప్రభువే — The Lord of Sacred Feeding</p>
+    <p class="anna-desc">
+      Annadanam — the gift of food — is the highest form of seva. At Sree Sastha Anugraha Peetam, feeding devotees is an act of worshipping the Lord himself, for Ayyappa Swamy dwells in every soul that receives prasadam with gratitude.
+    </p>
+
+    <div class="anna-grid reveal">
+      <div class="anna-item">
+        <video src="assets/annadanam.mp4" controls preload="none" poster=""></video>
+      </div>
+    </div>
+
+    <div class="anna-cta reveal">
+      <a href="#contact" class="btn-primary">📞 Book an Annadanam Slot</a>
+      <a href="#donate" class="btn-primary" style="background:linear-gradient(135deg,var(--maroon),var(--saffron));">🙏 Sponsor Annadanam</a>
+    </div>
+    <p class="anna-note">To sponsor Annadanam on auspicious days, birthdays, anniversaries or any special occasion — contact us to reserve your slot. Every meal offered is a divine blessing.</p>
+  </div>
+</section>
+
 <!-- ──────────────────────────────────── DONATIONS ─── -->
 <section class="section section--alt" id="donate">
   <div class="container">
@@ -1149,47 +1210,20 @@ footer {
       </p>
     </header>
 
-    <div class="donate-grid reveal">
-      <div class="donate-card">
+    <div style="max-width:380px;margin:2.5rem auto 0;">
+      <div class="donate-card" style="text-align:center;">
         <div class="donate-icon">📱</div>
-        <h3>UPI / QR Payment</h3>
-        <div class="qr-area">
-          <span style="font-size:3.5rem;opacity:.5;">🔲</span>
-          <p class="qr-label">UPI QR Code</p>
-          <p class="qr-sub">Will be updated shortly</p>
-        </div>
-        <p class="donate-note">Scan with any UPI app — GPay, PhonePe, Paytm &amp; more</p>
-      </div>
-
-      <div class="donate-card">
-        <div class="donate-icon">🏦</div>
-        <h3>Bank Transfer</h3>
-        <div class="bank-details">
-          <div class="bank-row">
-            <span class="bank-label">Account Name</span>
-            <span class="bank-val">Sree Sastha Anugraha Peetam</span>
-          </div>
-          <div class="bank-row">
-            <span class="bank-label">Account No.</span>
-            <span class="bank-val bank-pending">To be updated</span>
-          </div>
-          <div class="bank-row">
-            <span class="bank-label">IFSC Code</span>
-            <span class="bank-val bank-pending">To be updated</span>
-          </div>
-          <div class="bank-row">
-            <span class="bank-label">Bank &amp; Branch</span>
-            <span class="bank-val bank-pending">To be updated</span>
-          </div>
-        </div>
-        <p class="donate-note">Please share your donation receipt with us for acknowledgement</p>
+        <h3 style="text-align:center;">UPI / QR Payment</h3>
+        <img src="assets/upi-qr.png" alt="UPI QR Code" style="display:block;width:210px;height:210px;object-fit:contain;border-radius:10px;background:#fff;padding:10px;margin:1rem auto;">
+        <p style="font-family:var(--f-head);color:var(--gold);font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;margin:.6rem 0 .25rem;">UPI ID</p>
+        <p class="upi-id-display" style="color:var(--cream);font-size:1rem;margin-bottom:1.2rem;letter-spacing:.02em;font-weight:600;">9985554047.1@hdfc</p>
+        <p class="donate-note">Scan the QR with PhonePe, GPay, Paytm or any UPI app</p>
       </div>
     </div>
 
     <div class="donate-msg reveal">
       <p>🌸 Every offering, however small, is received with divine grace. Donations support Annadanam, Vedic rituals and community spiritual programmes.</p>
       <p style="font-family:var(--f-te);font-size:.92rem;color:var(--cream-2);margin-top:.5rem;">మీ ప్రతి సహకారం భగవంతుడి ఆశీర్వాదంతో వందనీయంగా స్వీకరించబడుతుంది</p>
-      <p class="donate-gateway">💳 Online payment gateway — coming soon</p>
     </div>
   </div>
 </section>
@@ -1212,7 +1246,7 @@ footer {
           <span class="c-icon" aria-hidden="true">📍</span>
           <div>
             <h4>Address</h4>
-            <p>Sree Sastha Anugraha Peetam<br>
+            <p class="contact-address">Sree Sastha Anugraha Peetam<br>
             Sri Srinivas Nagar Park (Shed)<br>
             <span style="font-family:var(--f-te);font-size:.9rem;">శ్రీ శ్రీనివాస్ నగర్ పార్క్ నందు ఉన్న షెడ్ వద్ద</span><br>
             Andhra Pradesh / Telangana, India</p>
@@ -1223,7 +1257,7 @@ footer {
           <span class="c-icon" aria-hidden="true">📞</span>
           <div>
             <h4>Phone</h4>
-            <p>80084 93089<br>99892 57444</p>
+            <p class="contact-phones"><a href="tel:+918008493089">80084 93089</a><br><a href="tel:+919989257444">99892 57444</a></p>
           </div>
         </div>
 
@@ -1231,7 +1265,7 @@ footer {
           <span class="c-icon" aria-hidden="true">📧</span>
           <div>
             <h4>Email</h4>
-            <p>contact@sreesasthapeetam.org</p>
+            <p class="contact-email">contact@sreesasthapeetam.org</p>
           </div>
         </div>
 
@@ -1239,28 +1273,35 @@ footer {
           <span class="c-icon" aria-hidden="true">⏰</span>
           <div>
             <h4>Peetam Hours</h4>
-            <p>Daily: 6:00 AM – 9:00 PM<br>
-            Open all seven days</p>
+            <p class="contact-hours">Daily: 6:00 AM – 9:00 PM<br>Open all seven days</p>
           </div>
         </div>
       </div>
 
       <div class="contact-box reveal">
         <h3>Find the Peetam</h3>
-        <div class="map-ph" aria-label="Temple on Google Maps">
-          <span aria-hidden="true">📍</span>
-          <p>SREE SASTHA ANUGRAHA PEETAM</p>
-        </div>
-        <a href="https://maps.app.goo.gl/Xwtto6qcNGQ3YYC57" target="_blank" rel="noopener" class="btn-primary" style="display:inline-flex;align-items:center;gap:.5rem;margin-top:1.1rem;text-decoration:none;">
+        <a href="https://maps.app.goo.gl/Xwtto6qcNGQ3YYC57" target="_blank" rel="noopener" class="btn-primary maps-btn" style="display:inline-flex;align-items:center;gap:.5rem;text-decoration:none;">
           📍 Get Directions on Google Maps
         </a>
         <p class="map-note">Opens in Google Maps · Works on all devices</p>
 
         <div style="margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid rgba(201,162,39,.15);">
-          <h4 style="font-family:var(--f-head);color:var(--gold);font-size:.85rem;letter-spacing:.05em;margin-bottom:.8rem;">Follow Us</h4>
-          <a href="https://www.youtube.com/@chinmudratv4828" target="_blank" rel="noopener" class="yt-btn">
-            ▶ Chinmudra TV on YouTube
-          </a>
+          <h4 style="font-family:var(--f-head);color:var(--gold);font-size:.85rem;letter-spacing:.05em;margin-bottom:.8rem;">Follow Us on YouTube</h4>
+          <div style="display:flex;flex-direction:column;gap:.6rem;">
+            <a href="https://www.youtube.com/@chinmudratv4828" target="_blank" rel="noopener" class="yt-btn">▶ Chinmudra TV</a>
+            <a href="https://www.youtube.com/@devotionalculture4687" target="_blank" rel="noopener" class="yt-btn">▶ Devotional Culture</a>
+          </div>
+        </div>
+
+        <div style="margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid rgba(201,162,39,.15);">
+          <h4 style="font-family:var(--f-head);color:var(--gold);font-size:.85rem;letter-spacing:.05em;margin-bottom:.8rem;">Follow Us on Social Media</h4>
+          <div class="social-icons" style="justify-content:flex-start;">
+            <a href="https://facebook.com/Devotional-Culture-273913603091696" target="_blank" rel="noopener" class="si fb" title="Facebook"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+            <a href="https://twitter.com/devotional_1" target="_blank" rel="noopener" class="si tw" title="Twitter / X"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+            <a href="https://instagram.com/devotionalculture" target="_blank" rel="noopener" class="si ig" title="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none"/></svg></a>
+            <a href="https://linkedin.com/in/devotional-culture-17b053140/detail/recent-activity" target="_blank" rel="noopener" class="si li" title="LinkedIn"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+            <a href="https://www.youtube.com/@chinmudratv4828" target="_blank" rel="noopener" class="si yt" title="YouTube"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#c00"/></svg></a>
+          </div>
         </div>
       </div>
     </div>
@@ -1273,15 +1314,30 @@ footer {
   <div class="foot-en">Sree Sastha Anugraha Peetam</div>
   <div class="foot-te">శ్రీ శాస్త్ర అనుగ్రహ పీఠం</div>
   <div class="foot-mantra">✦ Swamiye Saranam Ayyappa · స్వామియే శరణం అయ్యప్ప ✦</div>
-  <div style="display:flex;justify-content:center;margin-bottom:1.5rem;">
-    <a href="https://www.youtube.com/@chinmudratv4828" target="_blank" rel="noopener" class="yt-btn">▶ Chinmudra TV · YouTube</a>
+  <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-bottom:1rem;">
+    <a href="https://www.youtube.com/@chinmudratv4828" target="_blank" rel="noopener" class="yt-btn">▶ Chinmudra TV</a>
+    <a href="https://www.youtube.com/@devotionalculture4687" target="_blank" rel="noopener" class="yt-btn">▶ Devotional Culture</a>
+  </div>
+  <div class="social-icons" style="margin-bottom:1.5rem;">
+    <a href="https://facebook.com/Devotional-Culture-273913603091696" target="_blank" rel="noopener" class="si fb" title="Facebook"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+    <a href="https://twitter.com/devotional_1" target="_blank" rel="noopener" class="si tw" title="Twitter / X"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+    <a href="https://instagram.com/devotionalculture" target="_blank" rel="noopener" class="si ig" title="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none"/></svg></a>
+    <a href="https://linkedin.com/in/devotional-culture-17b053140/detail/recent-activity" target="_blank" rel="noopener" class="si li" title="LinkedIn"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+    <a href="https://www.youtube.com/@chinmudratv4828" target="_blank" rel="noopener" class="si yt" title="YouTube"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#c00"/></svg></a>
   </div>
   <div class="foot-rule"></div>
   <p class="foot-copy">
-    © 2026 Sree Sastha Anugraha Peetam · All Rights Reserved<br>
-    <span style="font-size:.78rem;opacity:.5;">Crafted with devotion 🙏 · Powered by GitHub Pages</span>
+    © 2026 Sree Sastha Anugraha Peetam · All Rights Reserved
   </p>
+  <div style="display:flex;align-items:center;justify-content:center;gap:.4rem;opacity:.12;margin-top:.6rem;pointer-events:none;user-select:none;" title="Giridhar">
+    <img src="assets/giridhar.jpg" alt="" aria-hidden="true" style="width:18px;height:18px;border-radius:50%;object-fit:cover;filter:grayscale(1);">
+    <span style="font-size:.6rem;font-family:var(--f-head);letter-spacing:.06em;color:var(--cream);">Giridhar</span>
+  </div>
 </footer>
+
+<!-- ──────────────────────────────────── SCROLL UTILS ─── -->
+<div id="scroll-bar" aria-hidden="true"></div>
+<button id="back-top" aria-label="Back to top" title="Back to top">↑</button>
 
 <!-- ──────────────────────────────────── LIGHTBOX ─── -->
 <div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" hidden tabindex="-1">
@@ -1557,5 +1613,219 @@ document.addEventListener('click', () => {
   }, { passive: true });
 
   window.addEventListener('load', buildItems);
+})();
+
+/* ── Scroll Progress + Back to Top ── */
+(function() {
+  const bar = document.getElementById('scroll-bar');
+  const btn = document.getElementById('back-top');
+  window.addEventListener('scroll', () => {
+    const s = document.documentElement;
+    const pct = s.scrollTop / (s.scrollHeight - s.clientHeight) * 100;
+    bar.style.width = pct + '%';
+    btn.classList.toggle('show', s.scrollTop > 400);
+  }, { passive: true });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+})();
+
+/* ── Google Sheets CMS ── */
+(function() {
+  // STEP 1: Replace with your Google Sheet ID (from the sheet URL)
+  const SHEET_ID = '1mxb4kGg-ejyya9PrxxOnTXqN7LkUMUV6CA5wJ6ecClA';
+
+  if (!SHEET_ID || SHEET_ID === 'YOUR_GOOGLE_SHEET_ID_HERE') return;
+
+  const BASE = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=';
+
+  function parseCSV(text) {
+    const rows = [];
+    const lines = text.split(/\r?\n/);
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      const cols = []; let cur = '', inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (c === '"') { inQ = !inQ; }
+        else if (c === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+        else { cur += c; }
+      }
+      cols.push(cur.trim());
+      rows.push(cols);
+    }
+    return rows;
+  }
+
+  async function fetchSheet(name) {
+    try {
+      const r = await fetch(BASE + encodeURIComponent(name));
+      if (!r.ok) return null;
+      return parseCSV(await r.text());
+    } catch(e) { return null; }
+  }
+
+  function reObserve(container) {
+    container.querySelectorAll('.reveal:not(.in)').forEach(el => ro.observe(el));
+  }
+
+  async function getKV(name) {
+    const rows = await fetchSheet(name);
+    if (!rows || rows.length < 2) return {};
+    const map = {};
+    rows.slice(1).forEach(r => { if (r[0]) map[r[0].trim()] = r[1] !== undefined ? r[1] : ''; });
+    return map;
+  }
+
+  function set(sel, val) {
+    if (!val) return;
+    const el = document.querySelector(sel);
+    if (el) el.innerHTML = val;
+  }
+
+  async function loadAll() {
+    // ── Ticker ──
+    const ticker = await fetchSheet('ticker');
+    if (ticker && ticker.length > 1) {
+      const text = ticker.slice(1).map(r => r[0]).filter(Boolean).join(' &nbsp;·&nbsp; ');
+      document.querySelectorAll('.ticker-text').forEach(el => { el.innerHTML = '✦ ' + text + ' &nbsp;✦&nbsp;'; });
+    }
+
+    // ── Hero ──
+    const hero = await getKV('hero');
+    set('.hero-name-en', hero.name_en);
+    set('.hero-name-te', hero.name_te);
+    set('.hero-mantra-en', hero.mantra_en);
+    set('.hero-mantra-te', hero.mantra_te);
+
+    // ── Peetadhipati ──
+    const swami = await getKV('peetadhipati');
+    if (Object.keys(swami).length) {
+      set('.pth-content h3', swami.name_en);
+      set('.pth-content .p-sub', swami.name_te);
+      set('.pth-label .p-name', swami.name_en);
+      const paras = document.querySelectorAll('.pth-content > p');
+      if (swami.bio_1 && paras[0]) paras[0].innerHTML = swami.bio_1;
+      if (swami.bio_2 && paras[1]) paras[1].innerHTML = swami.bio_2;
+      const quote = document.querySelector('.pth-quote');
+      if (swami.quote && quote) quote.innerHTML = '“' + swami.quote + '”';
+      const ytBtns = document.querySelectorAll('.social-row .yt-btn');
+      if (swami.yt1_url && ytBtns[0]) { ytBtns[0].href = swami.yt1_url; if (swami.yt1_label) ytBtns[0].textContent = '▶ ' + swami.yt1_label; }
+      if (swami.yt2_url && ytBtns[1]) { ytBtns[1].href = swami.yt2_url; if (swami.yt2_label) ytBtns[1].textContent = '▶ ' + swami.yt2_label; }
+    }
+
+    // ── About ──
+    const about = await getKV('about');
+    if (Object.keys(about).length) {
+      const aboutParas = document.querySelectorAll('.about-body > p');
+      if (about.para_1 && aboutParas[0]) aboutParas[0].innerHTML = about.para_1;
+      if (about.para_2 && aboutParas[1]) aboutParas[1].innerHTML = about.para_2;
+      const listItems = document.querySelectorAll('.about-list li');
+      for (let i = 1; i <= 5; i++) { if (about['list_' + i] && listItems[i-1]) listItems[i-1].textContent = about['list_' + i]; }
+      const cards = document.querySelectorAll('.info-card');
+      for (let i = 1; i <= 3; i++) {
+        if (cards[i-1]) {
+          if (about['card'+i+'_title']) { const h = cards[i-1].querySelector('h4'); if (h) h.innerHTML = about['card'+i+'_title']; }
+          if (about['card'+i+'_text'])  { const p = cards[i-1].querySelector('p');  if (p) p.innerHTML = about['card'+i+'_text']; }
+        }
+      }
+    }
+
+    // ── Events ──
+    const events = await fetchSheet('events');
+    if (events && events.length > 1) {
+      const [badge, titleTe, titleEn, organiser] = events[1];
+      const inner = document.querySelector('.event-inner');
+      if (inner) {
+        if (badge)     { const el = inner.querySelector('.event-badge');     if(el) el.innerHTML = badge; }
+        if (titleTe)   { const el = inner.querySelector('.event-te-title');  if(el) el.innerHTML = titleTe; }
+        if (titleEn)   { const el = inner.querySelector('.event-en-title');  if(el) el.innerHTML = titleEn; }
+        if (organiser) { const el = inner.querySelector('.event-organiser'); if(el) el.innerHTML = organiser; }
+      }
+    }
+
+    // ── Timings ──
+    const timings = await fetchSheet('timings');
+    if (timings && timings.length > 1) {
+      const grid = document.querySelector('.timings-grid');
+      if (grid) {
+        grid.innerHTML = timings.slice(1).map(([icon, title, time, desc]) =>
+          `<div class="timing-card reveal"><div class="t-icon">${icon||'🪔'}</div><h3>${title||''}</h3><div class="t-time">${time||''}</div><p>${desc||''}</p></div>`
+        ).join('');
+        reObserve(grid);
+      }
+    }
+
+    // ── Poojas ──
+    const poojas = await fetchSheet('poojas');
+    if (poojas && poojas.length > 1) {
+      const grid = document.querySelector('.services-grid');
+      if (grid) {
+        grid.innerHTML = poojas.slice(1).map(([icon, nameEn, nameTe, desc]) =>
+          `<div class="svc-card reveal"><div class="svc-icon">${icon||'🌸'}</div><h3>${nameEn||''}</h3><div class="svc-te">${nameTe||''}</div><p>${desc||''}</p></div>`
+        ).join('');
+        reObserve(grid);
+      }
+    }
+
+    // ── Annadanam ──
+    const anna = await getKV('annadanam');
+    set('.anna-slogan', anna.slogan);
+    set('.anna-desc', anna.description);
+
+    // ── Donations ──
+    const don = await getKV('donations');
+    if (don.upi_id) {
+      const uid = document.querySelector('.upi-id-display');
+      if (uid) uid.textContent = don.upi_id;
+    }
+
+    // ── Contact ──
+    const contact = await getKV('contact');
+    if (Object.keys(contact).length) {
+      const addr = document.querySelector('.contact-address');
+      if (addr && contact.address_1) addr.innerHTML =
+        (contact.address_1||'') + '<br>' + (contact.address_2||'') + '<br>' +
+        (contact.address_te ? `<span style="font-family:var(--f-te);font-size:.9rem;">${contact.address_te}</span><br>` : '') +
+        (contact.address_3||'');
+      const ph = document.querySelector('.contact-phones');
+      if (ph) {
+        const nums = [contact.phone_1, contact.phone_2].filter(Boolean);
+        if (nums.length) ph.innerHTML = nums.map(n => {
+          const d = n.replace(/\D/g, '').replace(/^(91)?(\d{10})$/, '$2');
+          return '<a href="tel:+91' + d + '">' + n + '</a>';
+        }).join('<br>');
+      }
+      const em = document.querySelector('.contact-email');
+      if (em && contact.email) em.textContent = contact.email;
+      const hr = document.querySelector('.contact-hours');
+      if (hr && contact.hours) hr.innerHTML = contact.hours + (contact.hours_2 ? '<br>' + contact.hours_2 : '');
+      const mb = document.querySelector('.maps-btn');
+      if (mb && contact.maps_url) mb.href = contact.maps_url;
+      const ml = document.querySelector('.mandala-location');
+      if (ml && contact.mandala_location) ml.textContent = contact.mandala_location;
+      const nl = document.querySelector('.normal-location');
+      if (nl && contact.normal_location) nl.textContent = contact.normal_location;
+      const tn = document.querySelector('.timing-note');
+      if (tn && contact.timing_note) tn.textContent = contact.timing_note;
+    }
+
+    // ── Social ──
+    const social = await fetchSheet('social');
+    if (social && social.length > 1) {
+      const rows = social.slice(1).filter(r => r[0] && r[1]);
+      const ytRows = rows.filter(r => r[0].toLowerCase() === 'youtube');
+      document.querySelectorAll('.yt-btn').forEach((btn, i) => {
+        if (ytRows[i % ytRows.length]) { btn.href = ytRows[i % ytRows.length][1]; btn.textContent = '▶ ' + (ytRows[i % ytRows.length][2] || 'YouTube'); }
+      });
+      const find = (p) => rows.find(r => r[0].toLowerCase() === p);
+      const fbR = find('facebook'), twR = find('twitter'), igR = find('instagram'), liR = find('linkedin'), ytR = ytRows[0];
+      document.querySelectorAll('.si.fb').forEach(el => { if (fbR) el.href = fbR[1]; });
+      document.querySelectorAll('.si.tw').forEach(el => { if (twR) el.href = twR[1]; });
+      document.querySelectorAll('.si.ig').forEach(el => { if (igR) el.href = igR[1]; });
+      document.querySelectorAll('.si.li').forEach(el => { if (liR) el.href = liR[1]; });
+      document.querySelectorAll('.si.yt').forEach(el => { if (ytR) el.href = ytR[1]; });
+    }
+  }
+
+  loadAll();
 })();
 </script>
