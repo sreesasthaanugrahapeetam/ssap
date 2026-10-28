@@ -129,6 +129,9 @@ nav {
   white-space: nowrap;
   animation: tickerScroll 60s linear infinite;
 }
+.ticker:hover .ticker-inner { animation-play-state: paused; }
+.ticker-text a.tk-link { color: inherit; text-decoration: underline dotted; text-underline-offset: 4px; cursor: pointer; }
+.ticker-text a.tk-link:hover { color: #fff; text-decoration: underline; }
 .ticker-text {
   font-family: var(--f-head);
   font-size: .8rem;
@@ -884,7 +887,7 @@ footer {
 
 <!-- ──────────────────────────────────── TICKER ─── -->
 <div class="ticker" aria-label="Devotional mantra">
-  <div class="ticker-inner" aria-hidden="true">
+  <div class="ticker-inner">
     <span class="ticker-text">✦ OM SRI Bhoothanatha Sadananda Sarva Bhootha Daya Para Raksha Raksha Maha Baho Sasthre Thubhyam Namo Namaha &nbsp;·&nbsp; SWAMIYE SARANAM AYYAPPA &nbsp;✦&nbsp;</span>
     <span class="ticker-text" aria-hidden="true">✦ OM SRI Bhoothanatha Sadananda Sarva Bhootha Daya Para Raksha Raksha Maha Baho Sasthre Thubhyam Namo Namaha &nbsp;·&nbsp; SWAMIYE SARANAM AYYAPPA &nbsp;✦&nbsp;</span>
   </div>
@@ -1771,6 +1774,26 @@ document.addEventListener('click', () => {
     });
   }
 
+  const MAX_GALLERY = 60;
+
+  async function listFolder(id, cfg) {
+    try {
+      if (cfg.apps_script_url) {
+        const r = await fetch(cfg.apps_script_url + (cfg.apps_script_url.includes('?') ? '&' : '?') + 'folder=' + encodeURIComponent(id));
+        const j = await r.json();
+        return (j.files || []).map(f => ({ id: f.id, name: f.name || '' }));
+      }
+      if (cfg.api_key) {
+        const q = "'" + id + "' in parents and mimeType contains 'image/' and trashed=false";
+        const url = 'https://www.googleapis.com/drive/v3/files?pageSize=100&orderBy=name&fields=files(id,name)&q=' + encodeURIComponent(q) + '&key=' + encodeURIComponent(cfg.api_key);
+        const r = await fetch(url);
+        const j = await r.json();
+        return (j.files || []).map(f => ({ id: f.id, name: f.name || '' }));
+      }
+    } catch (e) {}
+    return [];
+  }
+
   async function applyGallery() {
     const rows = await fetchSheet('gallery');
     if (!rows || rows.length < 2) return;
@@ -1779,13 +1802,40 @@ document.addEventListener('click', () => {
     if (li < 0) return;
     const grid = document.querySelector('.gallery-grid');
     if (!grid) return;
-    const entries = rows.slice(1).map(r => ({ img: driveImage(r[li]), caption: ci >= 0 ? (r[ci] || '') : '' })).filter(e => e.img);
+    const cfg = await getKV('gallery_settings');
+
+    let hadFolder = false;
+    const parts = await Promise.all(rows.slice(1).map(async r => {
+      const v = (r[li] || '').trim();
+      const caption = ci >= 0 ? (r[ci] || '') : '';
+      const fm = v.match(/drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\/([\w-]{20,})/i) || (/drive\.google\.com\/.*folders/i.test(v) && v.match(/[?&]id=([\w-]{20,})/));
+      if (fm) {
+        hadFolder = true;
+        const files = await listFolder(fm[1], cfg);
+        return files.map(f => {
+          const b = 'https://drive.google.com/thumbnail?id=' + f.id + '&sz=w';
+          return { img: { thumb: b + '800', full: b + '2000' }, caption: f.name.replace(/\.[a-z0-9]+$/i, '').replace(/[_-]+/g, ' '), folder: true };
+        });
+      }
+      const img = driveImage(v);
+      return img ? [{ img, caption }] : [];
+    }));
+
+    let entries = [].concat.apply([], parts).slice(0, MAX_GALLERY);
     if (!entries.length) return;
-    const ok = await Promise.all(entries.map(e => canLoad(e.img.thumb)));
-    const good = entries.filter((e, i) => ok[i]);
-    if (!good.length) return;
+
+    const singles = entries.filter(e => !e.folder);
+    const firstFolder = entries.find(e => e.folder);
+    const [okSingles, okFolder] = await Promise.all([
+      Promise.all(singles.map(e => canLoad(e.img.thumb))),
+      firstFolder ? canLoad(firstFolder.img.thumb) : Promise.resolve(false)
+    ]);
+    const good = new Set(singles.filter((e, i) => okSingles[i]));
+    entries = entries.filter(e => e.folder ? okFolder : good.has(e));
+    if (!entries.length || (hadFolder && !entries.some(e => e.folder))) return;
+
     grid.textContent = '';
-    good.forEach(e => {
+    entries.forEach(e => {
       const d = document.createElement('div'); d.className = 'gal-item';
       const im = document.createElement('img');
       im.src = e.img.thumb; im.dataset.full = e.img.full; im.alt = e.caption || 'Divine gallery photo';
@@ -1795,12 +1845,29 @@ document.addEventListener('click', () => {
     if (window.rebuildGallery) window.rebuildGallery();
   }
 
+  function tickerHTML(s) {
+    const esc = x => x.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const re = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s<>"]+)/g;
+    let out = '', last = 0, m, href = null;
+    while ((m = re.exec(s))) {
+      out += esc(s.slice(last, m.index));
+      let label = m[1], url = m[2], tail = '';
+      if (!url) { url = m[3].replace(/[.,;:!?)]+$/, ''); tail = m[3].slice(url.length); label = url; }
+      if (!href) href = url;
+      out += esc(label) + esc(tail);
+      last = m.index + m[0].length;
+    }
+    out += esc(s.slice(last));
+    return href ? '<a class="tk-link" href="' + esc(href) + '" target="_blank" rel="noopener">' + out + '</a>' : out;
+  }
+
   async function loadAll() {
     // ── Ticker ──
     const ticker = await fetchSheet('ticker');
     if (ticker && ticker.length > 1) {
-      const text = ticker.slice(1).map(r => r[0]).filter(Boolean).join(' &nbsp;·&nbsp; ');
+      const text = ticker.slice(1).map(r => r[0]).filter(Boolean).map(tickerHTML).join(' &nbsp;·&nbsp; ');
       document.querySelectorAll('.ticker-text').forEach(el => { el.innerHTML = '✦ ' + text + ' &nbsp;✦&nbsp;'; });
+      document.querySelectorAll('.ticker-text[aria-hidden] a').forEach(a => { a.tabIndex = -1; });
     }
 
     // ── Hero ──
