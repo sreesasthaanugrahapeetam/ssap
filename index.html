@@ -4,7 +4,49 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>try{var _t=localStorage.getItem('ssap-theme');if(_t==='light')document.documentElement.dataset.theme='light';}catch(e){}</script>
-<title>Sree Sastha Anugraha Peetam</title>
+<title>Sree Sastha Anugraha Peetam | Ayyappa Deeksha, Annadanam &amp; Poojas</title>
+<meta name="description" content="Sree Sastha Anugraha Peetam (శ్రీ శాస్త్ర అనుగ్రహ పీఠం) – a Lord Ayyappa Swamy spiritual centre offering Ayyappa Deeksha guidance, daily Annadanam, Mandala Kala Deeksha Poojas and darshan.">
+<meta name="keywords" content="Sree Sastha Anugraha Peetam, Ayyappa Swamy, Ayyappa Deeksha, Annadanam, Mandala Pooja, Sabarimala, Guru Swamy, శ్రీ శాస్త్ర అనుగ్రహ పీఠం, అయ్యప్ప స్వామి">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#0C0400">
+<link rel="canonical" href="https://www.sreesasthaanugrahapeetam.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sree Sastha Anugraha Peetam">
+<meta property="og:title" content="Sree Sastha Anugraha Peetam | Ayyappa Deeksha, Annadanam &amp; Poojas">
+<meta property="og:description" content="Sree Sastha Anugraha Peetam (శ్రీ శాస్త్ర అనుగ్రహ పీఠం) – a Lord Ayyappa Swamy spiritual centre offering Ayyappa Deeksha guidance, daily Annadanam, Mandala Kala Deeksha Poojas and darshan.">
+<meta property="og:url" content="https://www.sreesasthaanugrahapeetam.com/">
+<meta property="og:image" content="https://www.sreesasthaanugrahapeetam.com/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Sree Sastha Anugraha Peetam logo">
+<meta property="og:locale" content="en_IN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sree Sastha Anugraha Peetam | Ayyappa Deeksha, Annadanam &amp; Poojas">
+<meta name="twitter:description" content="Sree Sastha Anugraha Peetam (శ్రీ శాస్త్ర అనుగ్రహ పీఠం) – a Lord Ayyappa Swamy spiritual centre offering Ayyappa Deeksha guidance, daily Annadanam, Mandala Kala Deeksha Poojas and darshan.">
+<meta name="twitter:image" content="https://www.sreesasthaanugrahapeetam.com/assets/og-image.jpg">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "PlaceOfWorship",
+  "name": "Sree Sastha Anugraha Peetam",
+  "alternateName": "శ్రీ శాస్త్ర అనుగ్రహ పీఠం",
+  "description": "Lord Ayyappa Swamy spiritual centre offering Ayyappa Deeksha guidance, Annadanam and Mandala Kala Deeksha Poojas.",
+  "url": "https://www.sreesasthaanugrahapeetam.com/",
+  "logo": "https://www.sreesasthaanugrahapeetam.com/assets/logo.webp",
+  "image": "https://www.sreesasthaanugrahapeetam.com/assets/og-image.jpg",
+  "telephone": ["+918008493089", "+919989257444"],
+  "email": "contact@sreesasthapeetam.org",
+  "address": { "@type": "PostalAddress", "streetAddress": "Sri Srinivas Nagar Park (Shed)", "addressCountry": "IN" },
+  "openingHoursSpecification": { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], "opens": "06:00", "closes": "21:00" },
+  "hasMap": "https://maps.app.goo.gl/Xwtto6qcNGQ3YYC57",
+  "sameAs": [
+    "https://www.youtube.com/@chinmudratv4828",
+    "https://www.youtube.com/@devotionalculture4687",
+    "https://facebook.com/Devotional-Culture-273913603091696",
+    "https://instagram.com/devotionalculture"
+  ]
+}
+</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/favicon.png">
@@ -144,6 +186,34 @@ nav {
 @keyframes tickerScroll {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
+}
+
+/* ─── ROTATING BANNER (YouTube + Google Drive, fed from the "banner" sheet tab) ─── */
+#banner { background: var(--bg-1); padding: 1.1rem max(16px, env(safe-area-inset-left, 0px)) 1rem; border-bottom: 1px solid rgba(201,162,39,.2); }
+.bn-wrap { position: relative; width: min(100%, 1100px); aspect-ratio: 16/9; margin: 0 auto; background: #000; border: 1px solid rgba(201,162,39,.45); box-shadow: 0 0 30px rgba(201,162,39,.14); overflow: hidden; }
+.bn-slide { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity .7s ease, visibility .7s; }
+.bn-slide.on { opacity: 1; visibility: visible; }
+.bn-slide > a, .bn-slide > img, .bn-slide iframe { display: block; width: 100%; height: 100%; border: 0; }
+.bn-slide img { width: 100%; height: 100%; object-fit: contain; background: #000; }
+.bn-slide img.cover { object-fit: cover; }
+.bn-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 2.2rem 1.2rem .9rem; background: linear-gradient(to top, rgba(6,2,0,.88), rgba(6,2,0,0)); color: var(--cream); font-family: var(--f-head); font-size: .95rem; letter-spacing: .06em; text-align: center; pointer-events: none; }
+.bn-play { position: absolute; top: 50%; left: 50%; width: 76px; height: 76px; margin: -38px 0 0 -38px; border-radius: 50%; background: rgba(6,2,0,.7); border: 2px solid var(--gold); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform .2s, background .2s; }
+.bn-play:hover { transform: scale(1.08); background: rgba(90,0,0,.85); }
+.bn-play svg { width: 30px; height: 30px; fill: var(--gold-hi); margin-left: 4px; }
+.bn-arrow { position: absolute; top: 50%; width: 46px; height: 46px; margin-top: -23px; border-radius: 50%; background: rgba(6,2,0,.62); border: 1.5px solid rgba(201,162,39,.7); color: var(--gold-hi); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 3; transition: background .2s; }
+.bn-arrow:hover { background: rgba(90,0,0,.9); }
+.bn-arrow svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.bn-prev { left: 12px; } .bn-next { right: 12px; }
+.bn-dots { display: flex; justify-content: center; gap: 9px; margin-top: .8rem; }
+.bn-dots button { width: 10px; height: 10px; padding: 0; border-radius: 50%; border: 1px solid var(--gold); background: transparent; cursor: pointer; transition: background .25s, transform .25s; }
+.bn-dots button.on { background: var(--gold); transform: scale(1.25); }
+.bn-single .bn-arrow, .bn-single + .bn-dots { display: none; }
+@media (max-width: 640px) {
+  #banner { padding-top: .7rem; padding-bottom: .7rem; }
+  .bn-arrow { width: 36px; height: 36px; margin-top: -18px; } .bn-arrow svg { width: 16px; height: 16px; }
+  .bn-prev { left: 6px; } .bn-next { right: 6px; }
+  .bn-play { width: 56px; height: 56px; margin: -28px 0 0 -28px; } .bn-play svg { width: 22px; height: 22px; }
+  .bn-cap { font-size: .75rem; padding: 1.6rem .8rem .6rem; }
 }
 
 /* ─── HERO ─── */
@@ -892,6 +962,15 @@ footer {
     <span class="ticker-text" aria-hidden="true">✦ OM SRI Bhoothanatha Sadananda Sarva Bhootha Daya Para Raksha Raksha Maha Baho Sasthre Thubhyam Namo Namaha &nbsp;·&nbsp; SWAMIYE SARANAM AYYAPPA &nbsp;✦&nbsp;</span>
   </div>
 </div>
+
+<!-- ──────────────────────────────────── ROTATING BANNER ─── -->
+<section id="banner" aria-roledescription="carousel" aria-label="Featured videos and photos" hidden>
+  <div class="bn-wrap" id="bn-wrap">
+    <button class="bn-arrow bn-prev" type="button" aria-label="Previous slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4l-8 8 8 8"/></svg></button>
+    <button class="bn-arrow bn-next" type="button" aria-label="Next slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8"/></svg></button>
+  </div>
+  <div class="bn-dots" id="bn-dots"></div>
+</section>
 
 <!-- ──────────────────────────────────── HERO ─── -->
 <section id="hero" aria-label="Temple hero">
@@ -1855,6 +1934,149 @@ document.addEventListener('click', () => {
     if (window.rebuildGallery) window.rebuildGallery();
   }
 
+  // ── Rotating banner: YouTube links + Google Drive images/videos from the "banner" tab ──
+  function ytId(v) {
+    const m = v.match(/^https?:\/\/(?:www\.|m\.|music\.)?(?:youtube\.com\/(?:watch\?(?:[^#]*&)?v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([\w-]{11})/i);
+    return m ? m[1] : null;
+  }
+  function driveId(v) {
+    const m = v.match(/drive\.google\.com\/.*?\/d\/([\w-]{20,})/i) || v.match(/(?:drive|docs)\.google\.com\/.*[?&]id=([\w-]{20,})/i);
+    return m ? m[1] : (/^[\w-]{25,}$/.test(v) ? v : null);
+  }
+
+  async function applyBanner() {
+    const rows = await fetchSheet('banner');
+    if (!rows || rows.length < 2) return;
+    const head = rows[0].map(h => h.trim().toLowerCase());
+    const li = head.indexOf('link'), ci = head.indexOf('caption'), ui = head.indexOf('url'), ti = head.indexOf('type');
+    if (li < 0) return;
+
+    const defs = [];
+    rows.slice(1).forEach(r => {
+      const v = (r[li] || '').trim();
+      if (!v) return;
+      const caption = ci >= 0 ? (r[ci] || '').trim() : '';
+      const click = ui >= 0 ? (r[ui] || '').trim() : '';
+      const type = ti >= 0 ? (r[ti] || '').trim().toLowerCase() : '';
+      const y = ytId(v);
+      if (y) { defs.push({ kind: 'video', caption, poster: 'https://i.ytimg.com/vi/' + y + '/maxresdefault.jpg', posterAlt: 'https://i.ytimg.com/vi/' + y + '/hqdefault.jpg', cover: true, embed: 'https://www.youtube-nocookie.com/embed/' + y + '?autoplay=1&rel=0&playsinline=1' }); return; }
+      const d = driveId(v);
+      if (d && type === 'video') { defs.push({ kind: 'video', caption, poster: 'https://drive.google.com/thumbnail?id=' + d + '&sz=w1280', embed: 'https://drive.google.com/file/d/' + d + '/preview' }); return; }
+      const img = driveImage(v);
+      if (img) defs.push({ kind: 'image', caption, src: img.thumb.replace(/(sz=w|=w)800$/, '$11280'), click: /^https?:\/\//i.test(click) ? click : '' });
+    });
+    const MAX_BANNER = 12;
+    defs.length = Math.min(defs.length, MAX_BANNER);
+    if (!defs.length) return;
+
+    const sec = document.getElementById('banner'), wrap = document.getElementById('bn-wrap'), dotsEl = document.getElementById('bn-dots');
+    const prevBtn = wrap.querySelector('.bn-prev'), nextBtn = wrap.querySelector('.bn-next');
+    let slides = [], cur = 0, timer = null, hover = false, inView = true;
+    const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function mk(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; return e; }
+
+    function build(def) {
+      const el = mk('div', 'bn-slide'), s = { def, el, frame: null };
+      const im = mk('img', def.cover ? 'cover' : '');
+      s.img = im;
+      im.alt = def.caption || (def.kind === 'video' ? 'Video' : 'Banner'); im.referrerPolicy = 'no-referrer'; im.decoding = 'async';
+      im.onerror = () => {
+        if (def.posterAlt && im.getAttribute('src') !== def.posterAlt) { im.src = def.posterAlt; return; }
+        drop(s);
+      };
+      s.load = () => { if (!im.getAttribute('src')) im.src = def.kind === 'video' ? def.poster : def.src; };
+      if (def.kind === 'image' && def.click) {
+        const a = mk('a'); a.href = def.click; a.target = '_blank'; a.rel = 'noopener'; a.appendChild(im); el.appendChild(a);
+      } else el.appendChild(im);
+      if (def.kind === 'video') {
+        const b = mk('button', 'bn-play'); b.type = 'button';
+        b.setAttribute('aria-label', 'Play video' + (def.caption ? ': ' + def.caption : ''));
+        b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5v17l14-8.5z"/></svg>';
+        b.addEventListener('click', () => play(s));
+        el.appendChild(b); s.btn = b; s.img = im;
+      }
+      if (def.caption) { const c = mk('div', 'bn-cap'); c.textContent = def.caption; el.appendChild(c); }
+      return s;
+    }
+
+    function play(s) {
+      if (s.frame) return;
+      const f = mk('iframe');
+      f.src = s.def.embed; f.title = s.def.caption || 'Video';
+      f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen'; f.allowFullscreen = true;
+      f.referrerPolicy = 'strict-origin-when-cross-origin';
+      s.el.insertBefore(f, s.el.firstChild);
+      s.frame = f; s.img.style.display = 'none'; s.btn.style.display = 'none';
+      clearTimeout(timer);
+    }
+    function stop(s) {
+      if (!s.frame) return;
+      s.frame.remove(); s.frame = null; s.img.style.display = ''; s.btn.style.display = '';
+    }
+
+    function schedule() {
+      clearTimeout(timer);
+      if (reduce || slides.length < 2) return;
+      const s = slides[cur];
+      timer = setTimeout(() => {
+        if (hover || !inView || document.hidden || (s && s.frame)) return schedule();
+        show(cur + 1);
+      }, s && s.def.kind === 'video' ? 10000 : 6000);
+    }
+
+    function show(i) {
+      if (!slides.length) return;
+      cur = (i + slides.length) % slides.length;
+      slides[cur].load(); slides[(cur + 1) % slides.length].load();
+      slides.forEach((s, k) => {
+        s.el.classList.toggle('on', k === cur);
+        s.el.setAttribute('aria-hidden', k === cur ? 'false' : 'true');
+        if (k !== cur) stop(s);
+      });
+      [].forEach.call(dotsEl.children, (d, k) => d.classList.toggle('on', k === cur));
+      schedule();
+    }
+
+    function layout() {
+      dotsEl.textContent = '';
+      slides.forEach((s, k) => {
+        const d = mk('button'); d.type = 'button'; d.setAttribute('aria-label', 'Go to slide ' + (k + 1));
+        d.addEventListener('click', () => show(k));
+        dotsEl.appendChild(d);
+      });
+      wrap.classList.toggle('bn-single', slides.length < 2);
+    }
+
+    function drop(s) {
+      const k = slides.indexOf(s);
+      if (k < 0) return;
+      s.el.remove(); slides.splice(k, 1);
+      if (!slides.length) { sec.hidden = true; clearTimeout(timer); return; }
+      layout(); show(k <= cur ? cur - 1 : cur);
+    }
+
+    slides = defs.map(build);
+    if (slides[0].img) slides[0].img.fetchPriority = 'high';
+    slides.forEach(s => wrap.appendChild(s.el));
+    layout();
+    prevBtn.addEventListener('click', () => show(cur - 1));
+    nextBtn.addEventListener('click', () => show(cur + 1));
+    wrap.addEventListener('mouseenter', () => { hover = true; });
+    wrap.addEventListener('mouseleave', () => { hover = false; });
+    let tx = null;
+    wrap.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+    wrap.addEventListener('touchend', e => {
+      if (tx === null) return;
+      const dx = e.changedTouches[0].clientX - tx; tx = null;
+      if (Math.abs(dx) > 50) show(dx < 0 ? cur + 1 : cur - 1);
+    }, { passive: true });
+    document.addEventListener('visibilitychange', schedule);
+    if ('IntersectionObserver' in window) new IntersectionObserver(es => { inView = es[0].isIntersecting; }, { threshold: 0.2 }).observe(sec);
+    sec.hidden = false;
+    show(0);
+  }
+
   function tickerHTML(s) {
     const esc = x => x.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     const re = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s<>"]+)/g;
@@ -1872,7 +2094,8 @@ document.addEventListener('click', () => {
   }
 
   async function loadAll() {
-    ['ticker','hero','peetadhipati','about','events','timings','poojas','annadanam','donations','contact','gallery','gallery_settings','social'].forEach(fetchSheet);
+    ['banner','ticker','hero','peetadhipati','about','events','timings','poojas','annadanam','donations','contact','gallery','gallery_settings','social'].forEach(fetchSheet);
+    applyBanner().catch(function () {});
     // ── Ticker ──
     const ticker = await fetchSheet('ticker');
     if (ticker && ticker.length > 1) {
