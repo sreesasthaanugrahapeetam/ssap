@@ -190,9 +190,12 @@ nav {
 
 /* ─── ROTATING BANNER (YouTube + Google Drive, fed from the "banner" sheet tab) ─── */
 #banner { background: var(--bg-1); padding: 1.1rem max(16px, env(safe-area-inset-left, 0px)) 1rem; border-bottom: 1px solid rgba(201,162,39,.2); }
-.bn-wrap { position: relative; width: min(100%, 1100px); aspect-ratio: 16/9; margin: 0 auto; background: #000; border: 1px solid rgba(201,162,39,.45); box-shadow: 0 0 30px rgba(201,162,39,.14); overflow: hidden; }
-.bn-slide { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity .7s ease, visibility .7s; }
-.bn-slide.on { opacity: 1; visibility: visible; }
+.bn-wrap { touch-action: pan-y; position: relative; width: min(100%, 960px, calc((100svh - 190px) * 16 / 9)); aspect-ratio: 16/9; margin: 0 auto; background: #000; border: 1px solid rgba(201,162,39,.45); box-shadow: 0 0 30px rgba(201,162,39,.14); overflow: hidden; }
+.bn-slide { position: absolute; inset: 0; visibility: hidden; transform: translateX(100%); transition: transform .5s ease, visibility .5s; }
+.bn-slide.on { visibility: visible; transform: none; }
+.bn-slide.prev { transform: translateX(-100%); }
+.bn-slide.noanim { transition: none; }
+@media (prefers-reduced-motion: reduce) { .bn-slide { transition: none; } }
 .bn-slide > a, .bn-slide > img, .bn-slide iframe { display: block; width: 100%; height: 100%; border: 0; }
 .bn-slide img { width: 100%; height: 100%; object-fit: contain; background: #000; }
 .bn-slide img.cover { object-fit: cover; }
@@ -200,18 +203,18 @@ nav {
 .bn-play { position: absolute; top: 50%; left: 50%; width: 76px; height: 76px; margin: -38px 0 0 -38px; border-radius: 50%; background: rgba(6,2,0,.7); border: 2px solid var(--gold); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform .2s, background .2s; }
 .bn-play:hover { transform: scale(1.08); background: rgba(90,0,0,.85); }
 .bn-play svg { width: 30px; height: 30px; fill: var(--gold-hi); margin-left: 4px; }
-.bn-arrow { position: absolute; top: 50%; width: 46px; height: 46px; margin-top: -23px; border-radius: 50%; background: rgba(6,2,0,.62); border: 1.5px solid rgba(201,162,39,.7); color: var(--gold-hi); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 3; transition: background .2s; }
-.bn-arrow:hover { background: rgba(90,0,0,.9); }
-.bn-arrow svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
-.bn-prev { left: 12px; } .bn-next { right: 12px; }
+.bn-arrow { position: absolute; top: 50%; width: 48px; height: 48px; margin-top: -24px; border-radius: 50%; background: rgba(0,0,0,.42); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,.4); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 3; opacity: .8; transition: background .2s, color .2s, opacity .2s, transform .2s; }
+.bn-wrap:hover .bn-arrow, .bn-arrow:focus-visible { opacity: 1; }
+.bn-arrow:hover { background: var(--gold); border-color: var(--gold); color: #1a0800; transform: scale(1.08); }
+.bn-arrow svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.bn-prev { left: 14px; } .bn-next { right: 14px; }
 .bn-dots { display: flex; justify-content: center; gap: 9px; margin-top: .8rem; }
-.bn-dots button { width: 10px; height: 10px; padding: 0; border-radius: 50%; border: 1px solid var(--gold); background: transparent; cursor: pointer; transition: background .25s, transform .25s; }
-.bn-dots button.on { background: var(--gold); transform: scale(1.25); }
+.bn-dots button { width: 10px; height: 10px; padding: 0; border-radius: 999px; border: 1px solid var(--gold); background: transparent; cursor: pointer; transition: background .25s, width .25s; }
+.bn-dots button.on { background: var(--gold); width: 26px; }
 .bn-single .bn-arrow, .bn-single + .bn-dots { display: none; }
+@media (max-width: 640px), (pointer: coarse) { .bn-arrow { display: none; } }
 @media (max-width: 640px) {
   #banner { padding-top: .7rem; padding-bottom: .7rem; }
-  .bn-arrow { width: 36px; height: 36px; margin-top: -18px; } .bn-arrow svg { width: 16px; height: 16px; }
-  .bn-prev { left: 6px; } .bn-next { right: 6px; }
   .bn-play { width: 56px; height: 56px; margin: -28px 0 0 -28px; } .bn-play svg { width: 22px; height: 22px; }
   .bn-cap { font-size: .75rem; padding: 1.6rem .8rem .6rem; }
 }
@@ -755,45 +758,50 @@ footer {
 /* ─── SCROLL PROGRESS BAR ─── */
 #scroll-bar { position:fixed; top:0; left:0; width:0%; height:3px; background:linear-gradient(to right,var(--saffron),var(--gold),var(--gold-hi)); z-index:500; transition:width .1s linear; }
 
-/* ─── SCROLL TO TOP ─── */
-#back-top { position:fixed; bottom:calc(1.8rem + 64px + env(safe-area-inset-bottom,0px)); right:calc(1.8rem + env(safe-area-inset-right,0px)); z-index:90; width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg, var(--maroon), var(--saffron)); border:2px solid rgba(201,162,39,.5); color:var(--cream); font-size:1.4rem; line-height:1; padding:0; cursor:pointer; box-shadow:0 4px 18px rgba(217,94,10,.45); display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .3s, transform .25s, box-shadow .25s; }
-#back-top.show { opacity:1; pointer-events:auto; }
-#back-top:hover { transform:scale(1.1); box-shadow:0 6px 28px rgba(217,94,10,.65); }
-
-/* ─── MUSIC BUTTON ─── */
-#music-btn {
-  position: fixed;
-  bottom: calc(1.8rem + env(safe-area-inset-bottom, 0px));
-  right: calc(1.8rem + env(safe-area-inset-right, 0px));
-  z-index: 90;
-  width: 52px; height: 52px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--maroon), var(--saffron));
-  border: 2px solid rgba(201,162,39,.5);
+/* ─── FLOATING BUTTONS (music + back to top) ─── */
+#back-top, #music-btn {
+  position: fixed; right: calc(18px + env(safe-area-inset-right, 0px)); z-index: 90;
+  width: 48px; height: 48px; padding: 0; border-radius: 50%; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.2rem;
-  box-shadow: 0 4px 18px rgba(217,94,10,.45);
-  transition: transform .25s, box-shadow .25s;
+  background: rgba(12,4,0,.78); color: var(--gold-hi);
+  border: 1.5px solid rgba(201,162,39,.65);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0,0,0,.45);
+  transition: opacity .3s, transform .25s, background .25s, color .25s, box-shadow .25s;
 }
-#music-btn:hover { transform: scale(1.1); box-shadow: 0 6px 28px rgba(217,94,10,.65); }
-#music-btn.playing { animation: musicGlow 1.4s ease-in-out infinite; }
-@keyframes musicGlow {
-  0%,100% { box-shadow: 0 4px 18px rgba(201,162,39,.4); }
-  50%      { box-shadow: 0 4px 40px rgba(201,162,39,.85); }
-}
+#music-btn { bottom: calc(18px + env(safe-area-inset-bottom, 0px)); }
+#back-top  { bottom: calc(78px + env(safe-area-inset-bottom, 0px)); opacity: 0; pointer-events: none; transform: translateY(10px); }
+#back-top.show { opacity: 1; pointer-events: auto; transform: none; }
+#back-top:hover, #music-btn:hover, #back-top:focus-visible, #music-btn:focus-visible { background: var(--gold); color: #1a0800; box-shadow: 0 6px 22px rgba(201,162,39,.5); }
+#back-top.show:hover, #music-btn:hover { transform: translateY(-2px); }
+#back-top svg, #music-btn svg { width: 22px; height: 22px; display: block; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+#back-top .bt-ring { position: absolute; inset: -1.5px; width: calc(100% + 3px); height: calc(100% + 3px); transform: rotate(-90deg); pointer-events: none; }
+#back-top .bt-ring circle { fill: none; stroke: var(--gold-hi); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 144.5; stroke-dashoffset: 144.5; transition: stroke-dashoffset .12s linear; }
+#back-top:hover .bt-ring circle { stroke: #1a0800; }
+#music-btn .mu-eq { display: none; }
+#music-btn.playing .mu-note { display: none; }
+#music-btn.playing .mu-eq { display: block; }
+#music-btn .mu-eq rect { fill: currentColor; stroke: none; transform-box: fill-box; transform-origin: 50% 100%; animation: muEq 1s ease-in-out infinite; }
+#music-btn .mu-eq rect:nth-child(2) { animation-delay: -.35s; }
+#music-btn .mu-eq rect:nth-child(3) { animation-delay: -.7s; }
+@keyframes muEq { 0%,100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }
+#music-btn.playing { box-shadow: 0 0 0 0 rgba(201,162,39,.55); animation: musicGlow 1.8s ease-out infinite; }
+@keyframes musicGlow { 0% { box-shadow: 0 0 0 0 rgba(201,162,39,.55); } 100% { box-shadow: 0 0 0 14px rgba(201,162,39,0); } }
 .music-tooltip {
   position: fixed;
-  bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
-  right: calc(1.2rem + env(safe-area-inset-right, 0px));
+  bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+  right: calc(76px + env(safe-area-inset-right, 0px));
   background: rgba(6,2,0,.95);
-  border: 1px solid rgba(201,162,39,.3);
+  border: 1px solid rgba(201,162,39,.35); border-radius: 999px;
   color: var(--cream); font-family: var(--f-head); font-size: .72rem;
-  letter-spacing: .07em; padding: .4rem .8rem;
-  pointer-events: none; opacity: 0;
-  transition: opacity .3s; z-index: 91;
+  letter-spacing: .07em; padding: .4rem .9rem;
+  pointer-events: none; opacity: 0; transform: translateX(6px);
+  transition: opacity .25s, transform .25s; z-index: 91;
   white-space: nowrap;
 }
-#music-btn:hover + .music-tooltip { opacity: 1; }
+#music-btn:hover + .music-tooltip, #music-btn:focus-visible + .music-tooltip { opacity: 1; transform: none; }
+@media (hover: none) { .music-tooltip { display: none; } }
+@media (prefers-reduced-motion: reduce) { #music-btn .mu-eq rect, #music-btn.playing { animation: none; } }
 
 /* ─── TOUCH ACTIVE STATES ─── */
 @media (hover: none) {
@@ -881,6 +889,8 @@ footer {
 [data-theme="light"] .map-ph { border-color: rgba(122,92,10,.2); }
 [data-theme="light"] .qr-area { background: rgba(0,0,0,.03); border-color: rgba(122,92,10,.25); }
 [data-theme="light"] .bank-row { border-bottom-color: rgba(122,92,10,.1); }
+[data-theme="light"] #back-top, [data-theme="light"] #music-btn { background: rgba(255,247,238,.9); color: #7A5C0A; border-color: rgba(122,92,10,.55); box-shadow: 0 4px 16px rgba(90,40,0,.2); }
+[data-theme="light"] #back-top .bt-ring circle { stroke: #B8860B; }
 [data-theme="light"] .music-tooltip { background: rgba(255,247,238,.96); border-color: rgba(122,92,10,.3); }
 [data-theme="light"] .ticker { background: linear-gradient(to right, #7A1A00, #5A0000, #7A1A00); }
 [data-theme="light"] .svc-card:hover { box-shadow: 0 8px 30px rgba(184,64,0,.12); }
@@ -1464,7 +1474,7 @@ footer {
 
 <!-- ──────────────────────────────────── SCROLL UTILS ─── -->
 <div id="scroll-bar" aria-hidden="true"></div>
-<button id="back-top" aria-label="Back to top" title="Back to top">↑</button>
+<button id="back-top" type="button" aria-label="Back to top" title="Back to top"><svg class="bt-ring" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="23" pathLength="144.5"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 
 <!-- ──────────────────────────────────── LIGHTBOX ─── -->
 <div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" hidden tabindex="-1">
@@ -1480,7 +1490,7 @@ footer {
 </div>
 
 <!-- ──────────────────────────────────── MUSIC BUTTON ─── -->
-<button id="music-btn" aria-label="Toggle ambient Om music" title="Toggle ambient music">🎵</button>
+<button id="music-btn" type="button" aria-label="Play ambient Om music" title="Ambient Om music"><svg class="mu-note" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg><svg class="mu-eq" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="4" height="16" rx="1.5"/><rect x="10" y="4" width="4" height="16" rx="1.5"/><rect x="16" y="4" width="4" height="16" rx="1.5"/></svg></button>
 <div class="music-tooltip" aria-hidden="true">Ambient Om · Click to play</div>
 
 <!-- ──────────────────────────────────── SCRIPTS ─── -->
@@ -1644,13 +1654,11 @@ function stopAudio() {
 musicBtn.addEventListener('click', () => {
   if (!playing) {
     try { startAudio(); } catch(e) { return; }
-    musicBtn.textContent = '⏸';
     musicBtn.classList.add('playing');
     musicBtn.setAttribute('aria-label','Stop ambient Om music');
     document.querySelector('.music-tooltip').textContent = 'Ambient Om · Playing ♪';
   } else {
     stopAudio();
-    musicBtn.textContent = '🎵';
     musicBtn.classList.remove('playing');
     musicBtn.setAttribute('aria-label','Play ambient Om music');
     document.querySelector('.music-tooltip').textContent = 'Ambient Om · Click to play';
@@ -1758,12 +1766,15 @@ document.addEventListener('click', () => {
 (function() {
   const bar = document.getElementById('scroll-bar');
   const btn = document.getElementById('back-top');
+  const ring = btn.querySelector('.bt-ring circle');
   window.addEventListener('scroll', () => {
     const s = document.documentElement;
     const y = window.scrollY || window.pageYOffset || s.scrollTop || 0;
     const max = (s.scrollHeight - window.innerHeight) || 1;
-    bar.style.width = Math.min(100, y / max * 100) + '%';
+    const pct = Math.min(100, y / max * 100);
+    bar.style.width = pct + '%';
     btn.classList.toggle('show', y > 400);
+    if (ring) ring.style.strokeDashoffset = 144.5 * (1 - pct / 100);
   }, { passive: true });
   btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 })();
@@ -2025,15 +2036,28 @@ document.addEventListener('click', () => {
       }, s && s.def.kind === 'video' ? 10000 : 6000);
     }
 
-    function show(i) {
+    let shown = false;
+    function show(i, dir) {
       if (!slides.length) return;
+      const old = cur;
       cur = (i + slides.length) % slides.length;
       slides[cur].load(); slides[(cur + 1) % slides.length].load();
-      slides.forEach((s, k) => {
-        s.el.classList.toggle('on', k === cur);
-        s.el.setAttribute('aria-hidden', k === cur ? 'false' : 'true');
-        if (k !== cur) stop(s);
-      });
+      if (!dir) dir = 1;
+      const inc = slides[cur].el;
+      if (!shown || cur === old) {
+        slides.forEach((s, k) => { s.el.classList.add('noanim'); s.el.classList.toggle('on', k === cur); s.el.classList.remove('prev'); });
+        void wrap.offsetWidth;
+        slides.forEach(s => s.el.classList.remove('noanim'));
+        shown = true;
+      } else {
+        const out = slides[old] && slides[old].el;
+        inc.classList.add('noanim'); inc.classList.toggle('prev', dir < 0);
+        void inc.offsetWidth;
+        inc.classList.remove('noanim');
+        inc.classList.add('on'); inc.classList.remove('prev');
+        if (out && out !== inc) { out.classList.remove('on'); out.classList.toggle('prev', dir > 0); }
+      }
+      slides.forEach((s, k) => { s.el.setAttribute('aria-hidden', k === cur ? 'false' : 'true'); if (k !== cur) stop(s); });
       [].forEach.call(dotsEl.children, (d, k) => d.classList.toggle('on', k === cur));
       schedule();
     }
@@ -2042,7 +2066,7 @@ document.addEventListener('click', () => {
       dotsEl.textContent = '';
       slides.forEach((s, k) => {
         const d = mk('button'); d.type = 'button'; d.setAttribute('aria-label', 'Go to slide ' + (k + 1));
-        d.addEventListener('click', () => show(k));
+        d.addEventListener('click', () => show(k, k < cur ? -1 : 1));
         dotsEl.appendChild(d);
       });
       wrap.classList.toggle('bn-single', slides.length < 2);
@@ -2053,25 +2077,35 @@ document.addEventListener('click', () => {
       if (k < 0) return;
       s.el.remove(); slides.splice(k, 1);
       if (!slides.length) { sec.hidden = true; clearTimeout(timer); return; }
-      layout(); show(k <= cur ? cur - 1 : cur);
+      layout(); shown = false; show(k <= cur ? cur - 1 : cur);
     }
 
     slides = defs.map(build);
     if (slides[0].img) slides[0].img.fetchPriority = 'high';
     slides.forEach(s => wrap.appendChild(s.el));
     layout();
-    prevBtn.addEventListener('click', () => show(cur - 1));
-    nextBtn.addEventListener('click', () => show(cur + 1));
+    prevBtn.addEventListener('click', () => show(cur - 1, -1));
+    nextBtn.addEventListener('click', () => show(cur + 1, 1));
     wrap.addEventListener('mouseenter', () => { hover = true; });
     wrap.addEventListener('mouseleave', () => { hover = false; });
-    let tx = null;
-    wrap.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+    let tx = null, ty = 0;
+    wrap.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
     wrap.addEventListener('touchend', e => {
       if (tx === null) return;
-      const dx = e.changedTouches[0].clientX - tx; tx = null;
-      if (Math.abs(dx) > 50) show(dx < 0 ? cur + 1 : cur - 1);
+      const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty; tx = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) show(dx < 0 ? cur + 1 : cur - 1, dx < 0 ? 1 : -1);
     }, { passive: true });
     document.addEventListener('visibilitychange', schedule);
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || e.defaultPrevented) return;
+      const lbEl = document.getElementById('lightbox');
+      if (!inView || (lbEl && !lbEl.hidden) || slides.length < 2) return;
+      const t = e.target, tag = t && t.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (t && t.isContentEditable)) return;
+      e.preventDefault();
+      show(e.key === 'ArrowRight' ? cur + 1 : cur - 1, e.key === 'ArrowRight' ? 1 : -1);
+    });
     if ('IntersectionObserver' in window) new IntersectionObserver(es => { inView = es[0].isIntersecting; }, { threshold: 0.2 }).observe(sec);
     sec.hidden = false;
     show(0);
