@@ -188,16 +188,20 @@ nav {
   to   { transform: translateX(-50%); }
 }
 
+#banner:not([hidden]) + #hero { min-height: 0; }
 /* ─── ROTATING BANNER (YouTube + Google Drive, fed from the "banner" sheet tab) ─── */
-#banner { background: var(--bg-1); padding: 1.1rem max(16px, env(safe-area-inset-left, 0px)) 1rem; border-bottom: 1px solid rgba(201,162,39,.2); }
-.bn-wrap { touch-action: pan-y; position: relative; width: min(100%, 960px, calc((100svh - 190px) * 16 / 9)); aspect-ratio: 16/9; margin: 0 auto; background: #000; border: 1px solid rgba(201,162,39,.45); box-shadow: 0 0 30px rgba(201,162,39,.14); overflow: hidden; }
+#banner { background: radial-gradient(ellipse at 50% 30%, #1E0600 0%, var(--bg-0) 70%); padding: 1.1rem max(16px, env(safe-area-inset-left, 0px)) 1rem; border-bottom: 1px solid rgba(201,162,39,.2); }
+.bn-wrap { touch-action: pan-x; overscroll-behavior: contain; position: relative; width: min(100%, 960px, calc((100svh - 190px) * 16 / 9)); aspect-ratio: 16/9; margin: 0 auto; background: radial-gradient(ellipse 60% 40% at 50% 20%, rgba(217,94,10,.12) 0%, transparent 70%), radial-gradient(ellipse 40% 60% at 20% 70%, rgba(90,0,0,.15) 0%, transparent 60%), radial-gradient(ellipse 40% 60% at 80% 70%, rgba(201,162,39,.06) 0%, transparent 60%), radial-gradient(ellipse at 50% 30%, #1E0600 0%, var(--bg-0) 70%); border: 1px solid rgba(201,162,39,.45); box-shadow: 0 0 30px rgba(201,162,39,.14); overflow: hidden; }
 .bn-slide { position: absolute; inset: 0; visibility: hidden; transform: translateX(100%); transition: transform .5s ease, visibility .5s; }
 .bn-slide.on { visibility: visible; transform: none; }
 .bn-slide.prev { transform: translateX(-100%); }
 .bn-slide.noanim { transition: none; }
 @media (prefers-reduced-motion: reduce) { .bn-slide { transition: none; } }
 .bn-slide > a, .bn-slide > img, .bn-slide iframe { display: block; width: 100%; height: 100%; border: 0; }
-.bn-slide img { width: 100%; height: 100%; object-fit: contain; background: #000; }
+.bn-slide img { width: 100%; height: 100%; object-fit: contain; background: transparent; }
+.bn-native .bn-play { display: none; }
+.bn-native .bn-slide iframe { position: absolute; inset: 0; }
+.bn-slide.has-frame .bn-cap { display: none; }
 .bn-slide img.cover { object-fit: cover; }
 .bn-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 2.2rem 1.2rem .9rem; background: linear-gradient(to top, rgba(6,2,0,.88), rgba(6,2,0,0)); color: var(--cream); font-family: var(--f-head); font-size: .95rem; letter-spacing: .06em; text-align: center; pointer-events: none; }
 .bn-play { position: absolute; top: 50%; left: 50%; width: 76px; height: 76px; margin: -38px 0 0 -38px; border-radius: 50%; background: rgba(6,2,0,.7); border: 2px solid var(--gold); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform .2s, background .2s; }
@@ -215,6 +219,7 @@ nav {
 @media (max-width: 640px), (pointer: coarse) { .bn-arrow { display: none; } }
 @media (max-width: 640px) {
   #banner { padding-top: .7rem; padding-bottom: .7rem; }
+  .bn-wrap { width: 100%; aspect-ratio: 1 / 1; }
   .bn-play { width: 56px; height: 56px; margin: -28px 0 0 -28px; } .bn-play svg { width: 22px; height: 22px; }
   .bn-cap { font-size: .75rem; padding: 1.6rem .8rem .6rem; }
 }
@@ -241,7 +246,7 @@ nav {
   position: relative; z-index: 2;
   display: flex; flex-direction: column; align-items: center;
   text-align: center;
-  padding: 5rem max(20px, env(safe-area-inset-left, 0px)) 6.5rem;
+  padding: 3.2rem max(20px, env(safe-area-inset-left, 0px)) 5.5rem;
   max-width: 820px; width: 100%;
   margin: 0 auto;
 }
@@ -249,8 +254,8 @@ nav {
 /* Deity Frame */
 .deity-wrap {
   position: relative;
-  width: min(300px, 72vw);
-  margin-bottom: 2.5rem;
+  width: min(200px, 52vw);
+  margin-bottom: 2rem;
 }
 .deity-outer-ring {
   position: absolute; inset: -10px;
@@ -303,7 +308,7 @@ nav {
 
 .hero-name-en {
   font-family: var(--f-display);
-  font-size: clamp(1.5rem, 4.5vw, 2.6rem);
+  font-size: clamp(1.25rem, 3.4vw, 1.9rem);
   color: var(--gold);
   text-wrap: balance;
   text-shadow: 0 0 24px rgba(201,162,39,.5), 0 2px 6px rgba(0,0,0,.8);
@@ -313,7 +318,7 @@ nav {
 }
 .hero-name-te {
   font-family: var(--f-te);
-  font-size: clamp(1.1rem, 2.8vw, 1.7rem);
+  font-size: clamp(1rem, 2.2vw, 1.3rem);
   color: var(--cream-2);
   margin-bottom: 1rem;
 }
@@ -841,7 +846,7 @@ footer {
 }
 @media (max-width: 480px) {
   .hero-cta { flex-direction: column; align-items: center; }
-  .deity-wrap { width: min(240px, 65vw); }
+  .deity-wrap { width: min(170px, 46vw); }
   .nav-links a { font-size: .72rem; }
   .nav-en { font-size: .72rem; }
 }
@@ -871,6 +876,7 @@ footer {
 }
 [data-theme="light"] body::before { background: var(--bg-0); }
 [data-theme="light"] #hero { background: radial-gradient(ellipse at 50% 30%, #FFD9A0 0%, var(--bg-0) 70%); }
+[data-theme="light"] #banner, [data-theme="light"] .bn-wrap { background-image: radial-gradient(ellipse at 50% 30%, #FFD9A0 0%, var(--bg-0) 70%); }
 [data-theme="light"] .hero-bg-glow {
   background:
     radial-gradient(ellipse 60% 40% at 50% 20%, rgba(184,64,0,.08) 0%, transparent 70%),
@@ -1983,6 +1989,8 @@ document.addEventListener('click', () => {
     const sec = document.getElementById('banner'), wrap = document.getElementById('bn-wrap'), dotsEl = document.getElementById('bn-dots');
     const prevBtn = wrap.querySelector('.bn-prev'), nextBtn = wrap.querySelector('.bn-next');
     let slides = [], cur = 0, timer = null, hover = false, inView = true;
+    const native = !!(window.matchMedia && matchMedia('(min-width: 641px) and (pointer: fine)').matches);
+    if (native) wrap.classList.add('bn-native');
     const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     function mk(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; return e; }
@@ -2011,27 +2019,44 @@ document.addEventListener('click', () => {
       return s;
     }
 
-    function play(s) {
+    function mount(s, auto) {
       if (s.frame) return;
       const f = mk('iframe');
-      f.src = s.def.embed; f.title = s.def.caption || 'Video';
+      f.src = auto ? s.def.embed : s.def.embed.replace('autoplay=1', 'autoplay=0'); f.title = s.def.caption || 'Video';
       f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen'; f.allowFullscreen = true;
       f.referrerPolicy = 'strict-origin-when-cross-origin';
-      s.el.insertBefore(f, s.el.firstChild);
-      s.frame = f; s.img.style.display = 'none'; s.btn.style.display = 'none';
+      if (auto) s.el.insertBefore(f, s.el.firstChild); else s.el.insertBefore(f, s.btn);
+      s.frame = f; s.el.classList.add('has-frame');
+    }
+    function play(s) {
+      if (s.frame) return;
+      mount(s, true);
+      s.img.style.display = 'none'; s.btn.style.display = 'none'; s.engaged = true;
       clearTimeout(timer);
     }
     function stop(s) {
+      s.engaged = false;
       if (!s.frame) return;
-      s.frame.remove(); s.frame = null; s.img.style.display = ''; s.btn.style.display = '';
+      const rm = () => {
+        if (!s.frame || (native && slides[cur] === s)) return;
+        s.frame.remove(); s.frame = null; s.el.classList.remove('has-frame');
+        if (!native) { s.img.style.display = ''; s.btn.style.display = ''; }
+      };
+      native ? setTimeout(rm, 700) : rm();
     }
+    window.addEventListener('blur', () => setTimeout(() => {
+      const a = document.activeElement;
+      if (!a || a.tagName !== 'IFRAME') return;
+      const s = slides.find(x => x.frame === a);
+      if (s) { s.engaged = true; clearTimeout(timer); }
+    }, 0));
 
     function schedule() {
       clearTimeout(timer);
       if (reduce || slides.length < 2) return;
       const s = slides[cur];
       timer = setTimeout(() => {
-        if (hover || !inView || document.hidden || (s && s.frame)) return schedule();
+        if (hover || !inView || document.hidden || (s && s.engaged)) return schedule();
         show(cur + 1);
       }, s && s.def.kind === 'video' ? 10000 : 6000);
     }
@@ -2058,6 +2083,7 @@ document.addEventListener('click', () => {
         if (out && out !== inc) { out.classList.remove('on'); out.classList.toggle('prev', dir > 0); }
       }
       slides.forEach((s, k) => { s.el.setAttribute('aria-hidden', k === cur ? 'false' : 'true'); if (k !== cur) stop(s); });
+      if (native && slides[cur].def.kind === 'video') { const t = slides[cur]; setTimeout(() => { if (slides[cur] === t) mount(t, false); }, 350); }
       [].forEach.call(dotsEl.children, (d, k) => d.classList.toggle('on', k === cur));
       schedule();
     }
