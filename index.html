@@ -70,7 +70,7 @@
   --maroon:    #5A0000;
   --cream:     #FFF0CC;
   --cream-2:   rgba(255,240,204,.72);
-  --cream-3:   rgba(255,240,204,.42);
+  --cream-3:   rgba(255,240,204,.6);
 
   --f-display: 'Cinzel Decorative', 'Palatino Linotype', serif;
   --f-head:    'Cinzel', 'Palatino Linotype', serif;
@@ -151,7 +151,7 @@ nav {
 .nav-links { display: flex; list-style: none; gap: 1.8rem; }
 .nav-links a { font-family: var(--f-head); font-size: .78rem; letter-spacing: .08em; color: var(--cream-2); text-transform: uppercase; transition: color .25s; }
 .nav-links a:hover { color: var(--gold-hi); }
-.nav-ham { display: none; color: var(--gold); font-size: 1.4rem; padding: .3rem; }
+.nav-ham { display: none; color: var(--gold); font-size: 1.4rem; padding: .3rem; min-width: 44px; min-height: 44px; }
 .nav-logo-img { width: 38px; height: 38px; object-fit: cover; border-radius: 50%; border: 1.5px solid rgba(201,162,39,.5); flex-shrink: 0; }
 .nav-drawer { display: none; }
 
@@ -211,25 +211,26 @@ nav {
 .bn-arrow svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
 .bn-prev { left: 14px; } .bn-next { right: 14px; }
 .bn-dots { display: flex; justify-content: center; gap: 9px; margin-top: .8rem; }
-.bn-dots button { width: 10px; height: 10px; padding: 0; border-radius: 999px; border: 1px solid var(--gold); background: transparent; cursor: pointer; transition: background .25s, width .25s; }
+.bn-dots button { position: relative; width: 10px; height: 10px; padding: 0; border-radius: 999px; border: 1px solid var(--gold); background: transparent; cursor: pointer; transition: background .25s, width .25s; }
+.bn-dots button::after, .ad-dots button::after { content:''; position:absolute; inset:-14px -5px; }
 .bn-dots button.on { background: var(--gold); width: 26px; }
 .bn-single .bn-arrow, .bn-single + .bn-dots { display: none; }
 @media (max-width: 640px), (pointer: coarse) { .bn-arrow { display: none; } }
 @media (max-width: 640px) {
   #banner { padding-top: .7rem; padding-bottom: .7rem; }
-  .bn-wrap { width: 100%; aspect-ratio: 1 / 1; }
+  #banner .bn-wrap { width: 100%; aspect-ratio: 1 / 1; }
     .bn-cap { font-size: .75rem; padding: 1.6rem .8rem .6rem; }
 }
 
 .bn-slide img.bn-bg { display: none; }
-@media (min-width: 641px) and (pointer: fine) {
+@media (min-width: 641px) {
   #banner { padding: 0; }
-  .bn-wrap { width: 100%; aspect-ratio: auto; height: min(620px, calc(100svh - 170px)); min-height: 340px; border: 0; box-shadow: none; }
+  #banner .bn-wrap { --bn-h: min(620px, calc(100svh - 160px)); width: 100%; aspect-ratio: auto; height: var(--bn-h); min-height: 240px; border: 0; box-shadow: none; }
   .bn-slide img.bn-bg { display: block; position: absolute; top: -6%; left: -6%; width: 112%; height: 112%; object-fit: cover; filter: blur(26px) brightness(.5) saturate(1.15); }
   .bn-slide > a, .bn-slide > img:not(.bn-bg) { position: relative; z-index: 1; }
-  .bn-slide img.cover { object-fit: contain; }
-  .bn-slide iframe { left: 50%; right: auto; width: auto; height: 100%; aspect-ratio: 16 / 9; transform: translateX(-50%); z-index: 1; }
-  .bn-prev { left: 28px; } .bn-next { right: 28px; }
+  #banner .bn-slide img.cover { object-fit: contain; }
+  #banner .bn-slide iframe { left: 50%; top: 50%; right: auto; bottom: auto; width: min(100%, calc(var(--bn-h) * 16 / 9)); height: auto; aspect-ratio: 16 / 9; transform: translate(-50%, -50%); z-index: 1; }
+  #banner .bn-prev { left: 28px; } #banner .bn-next { right: 28px; }
   .bn-cap { z-index: 2; }
 }
 
@@ -449,6 +450,7 @@ section[id] { scroll-margin-top: 68px; }
 /* ─── PEETADHIPATI ─── */
 .pth-grid { display: grid; grid-template-columns: auto 1fr; gap: 4rem; align-items: start; }
 .pth-photo-wrap { position: relative; width: min(280px, 72vw); }
+#peetadhipati { overflow-x: clip; }
 .pth-photo-outer { position: absolute; inset: -6px; border-radius: 12px; background: conic-gradient(var(--gold), var(--saffron), var(--gold-hi), var(--maroon), var(--gold)); animation: ringRotate 6s linear infinite; filter: blur(1.5px); }
 .pth-photo { position: relative; border-radius: 10px; overflow: hidden; border: 3px solid var(--gold); }
 .pth-photo img { width: 100%; display: block; object-fit: cover; aspect-ratio: 3/4; }
@@ -690,6 +692,8 @@ section[id] { scroll-margin-top: 68px; }
 .anna-grid { max-width:720px; margin:1.8rem auto; }
 .anna-item { border-radius:10px; overflow:hidden; border:1px solid rgba(201,162,39,.2); background:rgba(0,0,0,.4); aspect-ratio:16/9; position:relative; }
 .anna-item video,.anna-item img { width:100%; height:100%; object-fit:cover; display:block; }
+.bn-wrap.bn-card { width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; }
+.an-media .bn-dots { margin-top: .7rem; }
 .anna-item.empty { display:flex; align-items:center; justify-content:center; flex-direction:column; gap:.4rem; color:rgba(201,162,39,.2); font-family:var(--f-head); font-size:.72rem; letter-spacing:.07em; }
 .anna-cta { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin-top:2rem; }
 .anna-note { text-align:center; color:var(--cream-3); font-size:.85rem; margin-top:.8rem; font-style:italic; }
@@ -760,7 +764,7 @@ footer {
 .as-slot h4 { font-family:var(--f-head); font-size:.74rem; letter-spacing:.1em; color:var(--saff-hi); margin-bottom:.35rem; }
 .as-slot p { color:var(--cream); font-size:.98rem; line-height:1.45; overflow-wrap:anywhere; }
 .as-open { color:var(--cream-3); font-style:italic; text-align:center; margin-top:1rem; }
-.as-open a { color:var(--gold); }
+.as-open a { color:var(--gold); text-decoration:underline; text-underline-offset:3px; }
 .as-upcoming { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1.1rem; }
 .as-day { background:linear-gradient(160deg, rgba(30,11,0,.8), rgba(6,2,0,.9)); border:1px solid rgba(201,162,39,.22); padding:1.3rem 1.1rem; position:relative; overflow:hidden; min-width:0; }
 .as-day .as-slot { margin-top:.6rem; }
@@ -769,13 +773,16 @@ footer {
 [data-theme="light"] .as-slot { background:rgba(255,255,255,.55); border-color:rgba(122,92,10,.2); }
 [data-theme="light"] .as-slot p { color:var(--bg-0); }
 /* ─── Annadanam slot boxes + donor popup ─── */
+.skip-link { position:absolute; left:8px; top:-80px; z-index:1000; background:var(--gold); color:#1a0800; padding:.6rem 1rem; font-family:var(--f-head); letter-spacing:.06em; text-decoration:none; }
+.skip-link:focus { top:8px; }
+#main:focus { outline:none; }
 .as-slot[role="button"] { cursor:pointer; transition:border-color .2s, background .2s, transform .2s; }
 .as-slot[role="button"]:hover, .as-slot[role="button"]:focus-visible { border-color:var(--gold); background:rgba(201,162,39,.09); transform:translateY(-2px); outline:none; }
 .as-slot .as-more { display:block; margin-top:.5rem; font-family:var(--f-head); font-size:.62rem; letter-spacing:.14em; color:var(--gold); opacity:.85; }
 .as-slot.as-free { border-style:dashed; background:rgba(0,0,0,.2); }
 .as-slot.as-free p { color:var(--cream-3); font-style:italic; }
 [data-theme="light"] .as-slot.as-free p { color:rgba(6,2,0,.55); }
-[data-theme="light"] .as-slot .as-more { color:#7A5C0A; }
+[data-theme="light"] .as-slot .as-more, [data-theme="light"] .as-add button, [data-theme="light"] .df-btn { color:#7A5C0A; }
 
 #ad-pop { position:fixed; inset:0; z-index:450; display:flex; align-items:center; justify-content:center; background:rgba(3,1,0,.84); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); opacity:0; visibility:hidden; transition:opacity .3s, visibility .3s; padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px); }
 #ad-pop.open { opacity:1; visibility:visible; }
@@ -792,7 +799,7 @@ footer {
 .ad-when { font-family:var(--f-head); color:var(--gold); letter-spacing:.05em; font-size:1rem; }
 .ad-right { position:relative; display:flex; flex-direction:column; min-width:0; }
 .ad-stage { position:relative; flex:1; min-height:0; }
-.ad-slide { position:absolute; inset:0; padding:clamp(1.4rem,5vh,3rem) clamp(2.6rem,4vw,4rem) 3rem; display:flex; flex-direction:column; justify-content:center; opacity:0; visibility:hidden; transition:opacity .5s, visibility .5s; overflow:auto; }
+.ad-slide { position:absolute; inset:0; padding:clamp(1.4rem,5vh,3rem) clamp(3.6rem,5vw,5rem) 3rem; display:flex; flex-direction:column; justify-content:center; opacity:0; visibility:hidden; transition:opacity .5s, visibility .5s; overflow:auto; }
 .ad-slide.on { opacity:1; visibility:visible; }
 .ad-title { font-family:var(--f-display); color:var(--gold-hi); font-size:clamp(1.4rem,4vh,2.3rem); text-align:center; text-wrap:balance; line-height:1.2; }
 .ad-slide.te .ad-title { font-family:var(--f-te); font-weight:700; }
@@ -813,15 +820,25 @@ footer {
 .ad-phones { display:flex; flex-wrap:wrap; gap:.8rem; justify-content:center; margin-top:1.2rem; }
 .ad-phones a, .ad-contact { font-family:var(--f-head); color:var(--gold-hi); border:1px solid rgba(201,162,39,.6); padding:.55rem 1.1rem; letter-spacing:.06em; transition:background .2s, color .2s; display:inline-block; text-decoration:none; }
 .ad-phones a:hover, .ad-contact:hover { background:var(--gold); color:#1a0800; }
-.ad-actions { text-align:center; margin-top:1.1rem; }
-.ad-close, .ad-nav { position:absolute; z-index:5; width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.45); border:1px solid rgba(201,162,39,.65); color:var(--gold-hi); cursor:pointer; transition:background .2s, color .2s; padding:0; }
-.ad-close:hover, .ad-nav:hover, .ad-close:focus-visible, .ad-nav:focus-visible { background:var(--gold); color:#1a0800; outline:none; }
+.ad-actions { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:.9rem; margin-top:1.3rem; }
+.ad-close, .ad-fs, .ad-nav { position:absolute; z-index:5; width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.45); border:1px solid rgba(201,162,39,.65); color:var(--gold-hi); cursor:pointer; transition:background .2s, color .2s; padding:0; }
+.ad-close:hover, .ad-fs:hover, .ad-nav:hover, .ad-close:focus-visible, .ad-fs:focus-visible, .ad-nav:focus-visible { background:var(--gold); color:#1a0800; outline:none; }
 .ad-close { top:16px; right:16px; }
-.ad-close svg, .ad-nav svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
+.ad-fs { top:16px; right:66px; }
+.ad-fs .ic-cmp { display:none; } .ad-fs.on .ic-exp { display:none; } .ad-fs.on .ic-cmp { display:block; }
+.ad-nav { opacity:0; pointer-events:none; transition:opacity .3s, background .2s, color .2s; }
+.ad-card.nav-on .ad-nav, .ad-nav:focus-visible { opacity:1; pointer-events:auto; }
+#ad-pop:fullscreen { padding:0; }
+#ad-pop:-webkit-full-screen { padding:0; }
+#ad-pop:fullscreen .ad-card { width:100%; height:100%; max-width:none; border:0; }
+#ad-pop:-webkit-full-screen .ad-card { width:100%; height:100%; max-width:none; border:0; }
+#ad-pop.ad-max { padding:0; }
+#ad-pop.ad-max .ad-card { width:100%; height:100vh; height:100svh; max-width:none; border:0; }
+.ad-close svg, .ad-fs svg, .ad-nav svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
 .ad-nav { top:50%; margin-top:-21px; }
 .ad-prev { left:10px; } .ad-next { right:10px; }
 .ad-dots { position:absolute; left:0; right:0; bottom:20px; display:flex; justify-content:center; gap:8px; z-index:5; }
-.ad-dots button { width:9px; height:9px; padding:0; border-radius:999px; border:1px solid var(--gold); background:transparent; cursor:pointer; transition:background .25s, width .25s; }
+.ad-dots button { position:relative; width:9px; height:9px; padding:0; border-radius:999px; border:1px solid var(--gold); background:transparent; cursor:pointer; transition:background .25s, width .25s; }
 .ad-dots button.on { background:var(--gold); width:24px; }
 .ad-bar { position:absolute; left:0; right:0; bottom:0; height:3px; background:rgba(201,162,39,.15); z-index:5; }
 .ad-bar i { display:block; height:100%; width:0; background:linear-gradient(to right, var(--gold), var(--gold-hi)); }
@@ -840,7 +857,23 @@ footer {
   .ad-rows { gap:.6rem 1rem; font-size:1rem; margin-top:1rem; }
   .ad-nav { display:none; }
   .ad-close { top:10px; right:10px; }
+  .ad-fs { top:10px; right:58px; }
+  .ad-left { padding-right:6.2rem; }
 }
+@media (max-height: 520px) {
+  .ad-card { width:96vw; height:94vh; height:94svh; }
+  .ad-logo { width:min(46%, 34vh); }
+  .ad-left { gap:.5rem; padding:1rem; }
+  .ad-peetam-en { font-size:1rem; } .ad-peetam-te { font-size:.9rem; }
+  .ad-orn { display:none; } .ad-meal { font-size:.7rem; } .ad-when { font-size:.85rem; }
+  .ad-slide { padding:1rem clamp(3.4rem,6vw,4.4rem) 2.4rem; }
+  .ad-title { font-size:1.35rem; } .ad-rule { margin-top:.5rem; }
+  .ad-rows { font-size:.98rem; gap:.45rem 1.2rem; margin-top:.7rem; }
+  .ad-text { font-size:.95rem; margin-top:.6rem; } .ad-phones, .ad-actions { margin-top:.7rem; }
+  .ad-sub { font-size:.9rem; } .ad-dots { bottom:12px; }
+  .ad-cap { font-size:.9rem; margin-top:.4rem; }
+}
+@media (max-width: 360px) { .ad-meal { letter-spacing:.06em; white-space:nowrap; } .ad-left { padding-right:5.4rem; } }
 @media (prefers-reduced-motion: reduce) { .ad-slide { transition:none; } }
 /* ─── Add-donor form ─── */
 .as-add { text-align:center; margin-top:1.2rem; }
@@ -977,6 +1010,15 @@ footer {
   .nav-links a { font-size: .72rem; }
   .nav-en { font-size: .72rem; }
 }
+@media (max-width: 380px) {
+  nav { gap: .4rem; padding-left: max(12px, env(safe-area-inset-left, 0px)); padding-right: max(12px, env(safe-area-inset-right, 0px)); }
+  .nav-brand { gap: 8px; min-width: 0; flex-shrink: 1; }
+  .nav-names { min-width: 0; }
+  .nav-en { font-size: .6rem; letter-spacing: .03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .nav-te { display: none; }
+  .nav-logo-img { width: 32px; height: 32px; }
+  .theme-toggle { flex-shrink: 0; }
+}
 /* ─── LIGHT MODE ─── */
 [data-theme="light"] {
   --bg-0:      #FFF7EE;
@@ -984,13 +1026,13 @@ footer {
   --bg-2:      #FFE8CC;
   --bg-3:      #FFDCA8;
   --gold:      #7A5C0A;
-  --gold-hi:   #8F6D10;
+  --gold-hi:   #7D5F0B;
   --gold-glow: rgba(122,92,10,.2);
   --saffron:   #B84000;
   --saff-hi:   #CC4800;
   --cream:     #1A0500;
   --cream-2:   rgba(26,5,0,.72);
-  --cream-3:   rgba(26,5,0,.45);
+  --cream-3:   rgba(26,5,0,.65);
   color-scheme: light;
 }
 [data-theme="light"] nav {
@@ -1059,6 +1101,7 @@ footer {
 </style>
 
 <!-- ──────────────────────────────────── PRELOADER ─── -->
+<a class="skip-link" href="#main">Skip to content</a>
 <div id="preloader" aria-hidden="true">
   <img class="pre-logo" src="assets/logo.webp" alt="">
 </div>
@@ -1098,6 +1141,7 @@ footer {
   <li><a href="#contact"       onclick="closeNav()">Contact</a></li>
 </ul>
 
+<main id="main" tabindex="-1">
 <!-- ──────────────────────────────────── TICKER ─── -->
 <div class="ticker" aria-label="Devotional mantra">
   <div class="ticker-inner">
@@ -1228,15 +1272,15 @@ footer {
 
       <div class="info-cards reveal">
         <div class="info-card">
-          <h4>🕉 Presiding Deity</h4>
+          <h4 aria-level="3">🕉 Presiding Deity</h4>
           <p>Lord Ayyappa Swamy (Sastha) — divine son of Shiva and Mohini, chief presiding deity of Sabarimala, embodiment of righteousness and grace</p>
         </div>
         <div class="info-card">
-          <h4>🙏 Our Mission</h4>
+          <h4 aria-level="3">🙏 Our Mission</h4>
           <p>To nurture bhakti, propagate spiritual wisdom, and create a sanctuary of peace where every devotee finds the Lord's anugraha (grace)</p>
         </div>
         <div class="info-card">
-          <h4>🌟 Patron Deity Mantra</h4>
+          <h4 aria-level="3">🌟 Patron Deity Mantra</h4>
           <p style="font-family: var(--f-te); font-size:.96rem; line-height:1.7;">ఓం శాస్త్రే నమః · Om Sastre Namah · Swamiye Saranam Ayyappa</p>
         </div>
       </div>
@@ -1260,8 +1304,15 @@ footer {
     </p>
 
     <div class="anna-grid reveal">
-      <div class="anna-item">
-        <video src="assets/annadanam.mp4#t=0.001" controls playsinline preload="metadata"></video>
+      <div class="anna-item" id="an-video">
+        <video src="assets/annadanam.mp4" poster="assets/annadanam-poster.webp" controls playsinline preload="none"></video>
+      </div>
+      <div class="an-media" id="an-media" hidden>
+        <div class="bn-wrap bn-card" id="an-wrap">
+          <button class="bn-arrow bn-prev" type="button" aria-label="Previous slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4l-8 8 8 8"/></svg></button>
+          <button class="bn-arrow bn-next" type="button" aria-label="Next slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8"/></svg></button>
+        </div>
+        <div class="bn-dots" id="an-dots"></div>
       </div>
     </div>
 
@@ -1578,6 +1629,7 @@ footer {
     </div>
   </div>
 </section>
+</main>
 
 <!-- ──────────────────────────────────── FOOTER ─── -->
 <footer>
@@ -1617,7 +1669,7 @@ footer {
   <button class="lb-arrow" id="lb-prev" aria-label="Previous">&#8249;</button>
   <button class="lb-arrow" id="lb-next" aria-label="Next">&#8250;</button>
   <div class="lb-frame">
-    <img class="lb-img" id="lb-img" src="" alt="">
+    <img class="lb-img" id="lb-img" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="">
     <video class="lb-video" id="lb-video" controls hidden></video>
   </div>
   <div class="lb-counter" id="lb-counter" aria-live="polite"></div>
@@ -1780,7 +1832,7 @@ function startAudio() {
 function stopAudio() {
   if (!masterGain) return;
   masterGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 2);
-  const ctxToClose = audioCtx, gnToNull = masterGain;
+  const ctxToClose = audioCtx;
   audioCtx = null; masterGain = null;
   setTimeout(() => { try { ctxToClose.close(); } catch(e){} }, 2200);
 }
@@ -1849,7 +1901,7 @@ document.addEventListener('click', () => {
     lbCount.textContent = (cur + 1) + ' of ' + items.length;
     if (it.type === 'video') {
       lbVideo.src = it.src; lbVideo.hidden = false;
-      lbImg.hidden = true; lbImg.src = '';
+      lbImg.hidden = true; lbImg.src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
     } else {
       lbImg.src = it.src; lbImg.alt = it.alt;
       lbImg.hidden = false; lbVideo.hidden = true; lbVideo.src = '';
@@ -2089,8 +2141,25 @@ document.addEventListener('click', () => {
     return m ? m[1] : (/^[\w-]{25,}$/.test(v) ? v : null);
   }
 
-  async function applyBanner() {
-    const rows = await fetchSheet('banner');
+  // Arrow keys move whichever carousel is on screen (the top banner wins if both are).
+  const carousels = []; let keysBound = false;
+  function bindKeys() {
+    if (keysBound) return; keysBound = true;
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || e.defaultPrevented) return;
+      const lbEl = document.getElementById('lightbox'), adEl = document.getElementById('ad-pop');
+      if ((lbEl && !lbEl.hidden) || (adEl && adEl.classList.contains('open'))) return;
+      const t = e.target, tag = t && t.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (t && t.isContentEditable)) return;
+      const c = carousels.find(x => x.inView() && x.count() > 1);
+      if (!c) return;
+      e.preventDefault(); c.go(e.key === 'ArrowRight' ? 1 : -1);
+    });
+  }
+
+  async function initCarousel(cfg) {
+    const rows = await fetchSheet(cfg.tab);
     if (!rows || rows.length < 2) return;
     const head = rows[0].map(h => h.trim().toLowerCase());
     const li = head.indexOf('link'), ci = head.indexOf('caption'), ui = head.indexOf('url'), ti = head.indexOf('type');
@@ -2110,11 +2179,13 @@ document.addEventListener('click', () => {
       const img = driveImage(v);
       if (img) defs.push({ kind: 'image', caption, src: img.thumb.replace(/(sz=w|=w)800$/, '$11280'), click: /^https?:\/\//i.test(click) ? click : '' });
     });
-    const MAX_BANNER = 12;
-    defs.length = Math.min(defs.length, MAX_BANNER);
+    defs.length = Math.min(defs.length, cfg.max || 12);
     if (!defs.length) return;
+    if (cfg.lazy && 'IntersectionObserver' in window) {          // build slides (and load their pictures) only when the section is near the screen
+      await new Promise(res => { const io = new IntersectionObserver(es => { if (es.some(x => x.isIntersecting)) { io.disconnect(); res(); } }, { rootMargin: '600px' }); io.observe(cfg.lazy); });
+    }
 
-    const sec = document.getElementById('banner'), wrap = document.getElementById('bn-wrap'), dotsEl = document.getElementById('bn-dots');
+    const sec = cfg.sec, wrap = cfg.wrap, dotsEl = cfg.dots;
     const prevBtn = wrap.querySelector('.bn-prev'), nextBtn = wrap.querySelector('.bn-next');
     let slides = [], cur = 0, timer = null, hover = false, inView = true;
     const touch = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches);
@@ -2122,14 +2193,14 @@ document.addEventListener('click', () => {
 
     function mk(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; return e; }
 
-    const wide = !!(window.matchMedia && matchMedia('(min-width: 641px) and (pointer: fine)').matches);
+    const wide = !!(window.matchMedia && matchMedia('(min-width: 641px)').matches);
     function build(def) {
       const el = mk('div', 'bn-slide'), s = { def, el, frame: null };
-      const bg = mk('img', 'bn-bg'); bg.alt = ''; bg.setAttribute('aria-hidden', 'true'); bg.decoding = 'async'; bg.referrerPolicy = 'no-referrer';
-      el.appendChild(bg);
+      const bg = cfg.backdrop ? mk('img', 'bn-bg') : null;
+      if (bg) { bg.alt = ''; bg.setAttribute('aria-hidden', 'true'); bg.decoding = 'async'; bg.referrerPolicy = 'no-referrer'; el.appendChild(bg); }
       const im = mk('img', def.cover ? 'cover' : '');
       s.img = im;
-      im.onload = () => { if (wide) bg.src = im.currentSrc || im.src; };
+      im.onload = () => { if (bg && wide) bg.src = im.currentSrc || im.src; };
       im.alt = def.caption || (def.kind === 'video' ? 'Video' : 'Banner'); im.referrerPolicy = 'no-referrer'; im.decoding = 'async';
       im.onerror = () => {
         if (def.posterAlt && im.getAttribute('src') !== def.posterAlt) { im.src = def.posterAlt; return; }
@@ -2222,7 +2293,7 @@ document.addEventListener('click', () => {
       const k = slides.indexOf(s);
       if (k < 0) return;
       s.el.remove(); slides.splice(k, 1);
-      if (!slides.length) { sec.hidden = true; clearTimeout(timer); return; }
+      if (!slides.length) { cfg.onEmpty(); clearTimeout(timer); return; }
       layout(); shown = false; show(k <= cur ? cur - 1 : cur);
     }
 
@@ -2242,20 +2313,24 @@ document.addEventListener('click', () => {
       if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) show(dx < 0 ? cur + 1 : cur - 1, dx < 0 ? 1 : -1);
     }, { passive: true });
     document.addEventListener('visibilitychange', schedule);
-    document.addEventListener('keydown', e => {
-      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || e.defaultPrevented) return;
-      const lbEl = document.getElementById('lightbox');
-      const adEl = document.getElementById('ad-pop');
-      if (!inView || (lbEl && !lbEl.hidden) || (adEl && adEl.classList.contains('open')) || slides.length < 2) return;
-      const t = e.target, tag = t && t.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (t && t.isContentEditable)) return;
-      e.preventDefault();
-      show(e.key === 'ArrowRight' ? cur + 1 : cur - 1, e.key === 'ArrowRight' ? 1 : -1);
-    });
+    carousels.push({ inView: () => inView, count: () => slides.length, go: d => show(cur + d, d) }); bindKeys();
     if ('IntersectionObserver' in window) new IntersectionObserver(es => { inView = es[0].isIntersecting; }, { threshold: 0.2 }).observe(sec);
-    sec.hidden = false;
+    cfg.onShow();
     show(0);
+  }
+
+  const $id = id => document.getElementById(id);
+  function applyBanner() {
+    return initCarousel({ tab: 'banner', sec: $id('banner'), wrap: $id('bn-wrap'), dots: $id('bn-dots'), backdrop: true,
+      onShow() { $id('banner').hidden = false; }, onEmpty() { $id('banner').hidden = true; } });
+  }
+  // Annadanam section: same carousel, fed by the "annadanam_media" tab. The built-in video is the fallback.
+  function applyAnnaMedia() {
+    const vid = $id('an-video'), box = $id('an-media');
+    if (!vid || !box) return Promise.resolve();
+    return initCarousel({ tab: 'annadanam_media', sec: box, wrap: $id('an-wrap'), dots: $id('an-dots'), lazy: box.parentNode,
+      onShow() { const v = vid.querySelector('video'); if (v) v.pause(); vid.hidden = true; box.hidden = false; },
+      onEmpty() { box.hidden = true; vid.hidden = false; } });
   }
 
   function tickerHTML(s) {
@@ -2275,8 +2350,9 @@ document.addEventListener('click', () => {
   }
 
   async function loadAll() {
-    ['banner','ticker','hero','peetadhipati','about','events','timings','poojas','annadanam','donations','contact','gallery','gallery_settings','social'].forEach(fetchSheet);
+    ['banner','annadanam_media','ticker','hero','peetadhipati','about','events','timings','poojas','annadanam','donations','contact','gallery','gallery_settings','social'].forEach(fetchSheet);
     applyBanner().catch(function () {});
+    applyAnnaMedia().catch(function () {});
     // ── Ticker ──
     const ticker = await fetchSheet('ticker');
     if (ticker && ticker.length > 1) {
@@ -2526,12 +2602,37 @@ document.addEventListener('click', () => {
   const fmtDate = dt => dt.getUTCDate() + ' ' + MONTHS[dt.getUTCMonth()] + ' ' + dt.getUTCFullYear();
   const svg = path => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + path + '"/></svg>';
 
-  let pop = null, stage, dotsEl, bar, card, slides = [], cur = 0, lastFocus = null;
+  let pop = null, stage, dotsEl, bar, card, fsBtn, slides = [], cur = 0, lastFocus = null, navTimer = null;
+
+  // arrows fade out while the slides run and come back when the mouse moves over the popup
+  function showNav() {
+    card.classList.add('nav-on'); clearTimeout(navTimer);
+    navTimer = setTimeout(() => { if (!card.querySelector('.ad-nav:hover')) card.classList.remove('nav-on'); }, 2200);
+  }
+  const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
+  const isFs = () => !!fsEl() || pop.classList.contains('ad-max');
+  function syncFs() {
+    const on = isFs();
+    fsBtn.classList.toggle('on', on);
+    fsBtn.setAttribute('aria-label', on ? 'Exit full screen' : 'Full screen'); fsBtn.title = on ? 'Exit full screen' : 'Full screen';
+  }
+  function toggleFs() {
+    if (isFs()) {
+      if (fsEl()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      pop.classList.remove('ad-max');
+    } else {
+      const r = pop.requestFullscreen || pop.webkitRequestFullscreen;
+      if (r) { try { const p = r.call(pop); if (p && p.catch) p.catch(() => { pop.classList.add('ad-max'); syncFs(); }); } catch (e) { pop.classList.add('ad-max'); } }
+      else pop.classList.add('ad-max');
+    }
+    syncFs();
+  }
 
   function buildPop() {
     pop = el('div'); pop.id = 'ad-pop'; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-modal', 'true'); pop.setAttribute('aria-label', 'Annadanam details');
     pop.innerHTML =
       '<div class="ad-card"><button class="ad-close" type="button" aria-label="Close">' + svg('M6 6l12 12M18 6L6 18') + '</button>' +
+      '<button class="ad-fs" type="button" aria-label="Full screen" title="Full screen">' + svg('M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5').replace('<svg', '<svg class="ic-exp"') + svg('M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5').replace('<svg', '<svg class="ic-cmp"') + '</button>' +
       '<div class="ad-left"><img class="ad-logo" src="assets/logo.webp" alt="">' +
       '<div class="ad-peetam-en">Sree Sastha Anugraha Peetam</div><div class="ad-peetam-te">శ్రీ శాస్త్ర అనుగ్రహ పీఠం</div>' +
       '<div class="ad-orn" aria-hidden="true">✦ ✦ ✦</div><div class="ad-meal"></div><div class="ad-when"></div></div>' +
@@ -2542,14 +2643,17 @@ document.addEventListener('click', () => {
     document.body.appendChild(pop);
     card = pop.querySelector('.ad-card'); stage = pop.querySelector('.ad-stage'); dotsEl = pop.querySelector('.ad-dots'); bar = pop.querySelector('.ad-bar');
     pop.querySelector('.ad-close').addEventListener('click', closePop);
+    fsBtn = pop.querySelector('.ad-fs'); fsBtn.addEventListener('click', toggleFs);
+    document.addEventListener('fullscreenchange', syncFs); document.addEventListener('webkitfullscreenchange', syncFs);
     pop.querySelector('.ad-prev').addEventListener('click', () => show(cur - 1));
     pop.querySelector('.ad-next').addEventListener('click', () => show(cur + 1));
     pop.addEventListener('click', e => { if (e.target === pop) closePop(); });
     bar.addEventListener('animationend', () => show(cur + 1));
-    card.addEventListener('mouseenter', () => card.classList.add('paused'));
-    card.addEventListener('mouseleave', () => card.classList.remove('paused'));
+    card.addEventListener('mouseenter', () => { card.classList.add('paused'); showNav(); });
+    card.addEventListener('mousemove', showNav);
+    card.addEventListener('mouseleave', () => { card.classList.remove('paused', 'nav-on'); });
     let tx = null, ty = 0;
-    card.addEventListener('touchstart', e => { card.classList.add('paused'); tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+    card.addEventListener('touchstart', e => { card.classList.add('paused'); showNav(); tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
     card.addEventListener('touchend', e => {
       card.classList.remove('paused');
       if (tx === null) return;
@@ -2626,7 +2730,7 @@ document.addEventListener('click', () => {
     const act = el('div', 'ad-actions'), c = el('a', 'ad-contact', 'Contact the Peetam'); c.href = '#contact'; c.addEventListener('click', closePop);
     act.appendChild(c);
     if (DONOR_FORM_URL) {
-      const a = el('button', 'df-btn', '+ Add donor details for this slot'); a.type = 'button'; a.style.marginLeft = '.6rem';
+      const a = el('button', 'df-btn', '+ Add donor details for this slot'); a.type = 'button';
       a.addEventListener('click', () => { closePop(); openForm({ date: dkey(o.date), slot: o.label }); });
       act.appendChild(a);
     }
@@ -2673,13 +2777,14 @@ document.addEventListener('click', () => {
     lastFocus = document.activeElement;
     document.documentElement.style.overflow = 'hidden';
     pop.classList.add('open');
-    show(0);
+    show(0); syncFs(); showNav();
     pop.querySelector('.ad-close').focus();
   }
 
   function closePop() {
     if (!pop) return;
-    pop.classList.remove('open'); bar.classList.remove('run');
+    if (fsEl()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    pop.classList.remove('open', 'ad-max'); bar.classList.remove('run'); syncFs();
     document.documentElement.style.overflow = '';
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
@@ -2747,7 +2852,17 @@ document.addEventListener('click', () => {
     card.appendChild(el('div', 'df-note', 'Details are saved to the Peetam’s sheet and can be edited there later.'));
     document.body.appendChild(fpop);
     fpop.addEventListener('click', e => { if (e.target === fpop) closeForm(); });
-    fpop.addEventListener('keydown', e => { if (e.key === 'Escape') { e.stopPropagation(); closeForm(); } });
+    document.addEventListener('keydown', e => {
+      if (!fpop.classList.contains('open')) return;
+      if (e.key === 'Escape') { e.preventDefault(); closeForm(); }
+      else if (e.key === 'Tab') {
+        const f = [].filter.call(fpop.querySelectorAll('input:not([tabindex="-1"]), select, button'), x => !x.disabled && x.offsetParent && getComputedStyle(x).visibility !== 'hidden');
+        if (!f.length) return;
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && (document.activeElement === first || !fpop.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && (document.activeElement === last || !fpop.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+      }
+    });
 
     fpop._f = { date, slot, nameEn, nameTe, gothEn, gothTe, famList, famRow, file, prev, pass, passF, hp, msg, save };
     save.addEventListener('click', submitForm);
@@ -2838,7 +2953,7 @@ document.addEventListener('click', () => {
     const wrap = el('div', 'as-slots');
     items.forEach(it => {
       const s = el('div', 'as-slot' + (it.filled ? '' : ' as-free'));
-      s.appendChild(el('h4', '', it.label.toUpperCase()));
+      const hh = el('h4', '', it.label.toUpperCase()); hh.setAttribute('aria-level', '3'); s.appendChild(hh);
       s.appendChild(el('p', '', it.filled ? it.name : 'Open for sponsorship'));
       s.appendChild(el('span', 'as-more', it.filled ? 'VIEW DETAILS ›' : 'SPONSOR THIS SLOT ›'));
       s.setAttribute('role', 'button'); s.tabIndex = 0;
