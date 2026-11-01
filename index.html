@@ -221,6 +221,18 @@ nav {
     .bn-cap { font-size: .75rem; padding: 1.6rem .8rem .6rem; }
 }
 
+.bn-slide img.bn-bg { display: none; }
+@media (min-width: 641px) and (pointer: fine) {
+  #banner { padding: 0; }
+  .bn-wrap { width: 100%; aspect-ratio: auto; height: min(620px, calc(100svh - 170px)); min-height: 340px; border: 0; box-shadow: none; }
+  .bn-slide img.bn-bg { display: block; position: absolute; top: -6%; left: -6%; width: 112%; height: 112%; object-fit: cover; filter: blur(26px) brightness(.5) saturate(1.15); }
+  .bn-slide > a, .bn-slide > img:not(.bn-bg) { position: relative; z-index: 1; }
+  .bn-slide img.cover { object-fit: contain; }
+  .bn-slide iframe { left: 50%; right: auto; width: auto; height: 100%; aspect-ratio: 16 / 9; transform: translateX(-50%); z-index: 1; }
+  .bn-prev { left: 28px; } .bn-next { right: 28px; }
+  .bn-cap { z-index: 2; }
+}
+
 /* ─── HERO ─── */
 #hero {
   position: relative;
@@ -756,6 +768,124 @@ footer {
 [data-theme="light"] .as-today, [data-theme="light"] .as-day { background:linear-gradient(160deg, rgba(255,235,195,.95), rgba(255,220,170,.9)); border-color:rgba(122,92,10,.3); }
 [data-theme="light"] .as-slot { background:rgba(255,255,255,.55); border-color:rgba(122,92,10,.2); }
 [data-theme="light"] .as-slot p { color:var(--bg-0); }
+/* ─── Annadanam slot boxes + donor popup ─── */
+.as-slot[role="button"] { cursor:pointer; transition:border-color .2s, background .2s, transform .2s; }
+.as-slot[role="button"]:hover, .as-slot[role="button"]:focus-visible { border-color:var(--gold); background:rgba(201,162,39,.09); transform:translateY(-2px); outline:none; }
+.as-slot .as-more { display:block; margin-top:.5rem; font-family:var(--f-head); font-size:.62rem; letter-spacing:.14em; color:var(--gold); opacity:.85; }
+.as-slot.as-free { border-style:dashed; background:rgba(0,0,0,.2); }
+.as-slot.as-free p { color:var(--cream-3); font-style:italic; }
+[data-theme="light"] .as-slot.as-free p { color:rgba(6,2,0,.55); }
+[data-theme="light"] .as-slot .as-more { color:#7A5C0A; }
+
+#ad-pop { position:fixed; inset:0; z-index:450; display:flex; align-items:center; justify-content:center; background:rgba(3,1,0,.84); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); opacity:0; visibility:hidden; transition:opacity .3s, visibility .3s; padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px); }
+#ad-pop.open { opacity:1; visibility:visible; }
+#ad-pop:not(.open) { pointer-events:none; }
+#ad-pop:not(.open) * { visibility:hidden; }
+.ad-card { position:relative; width:min(80vw,1500px); height:80vh; height:80svh; display:grid; grid-template-columns:1fr 1fr; background:radial-gradient(ellipse at 30% 20%, #2A0A00 0%, #0C0400 70%); border:1px solid rgba(201,162,39,.55); box-shadow:0 0 60px rgba(201,162,39,.18); overflow:hidden; color:var(--cream); }
+.ad-card::after { content:''; position:absolute; inset:8px; border:1px solid rgba(201,162,39,.25); pointer-events:none; z-index:4; }
+.ad-left { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.9rem; padding:2rem 1.5rem; text-align:center; border-right:1px solid rgba(201,162,39,.25); background:radial-gradient(circle at 50% 42%, rgba(201,162,39,.16), transparent 65%); min-width:0; }
+.ad-logo { width:min(52%, 34vh); aspect-ratio:1; border-radius:50%; object-fit:cover; border:3px solid var(--gold); box-shadow:0 0 40px rgba(201,162,39,.4); }
+.ad-peetam-en { font-family:var(--f-display); color:var(--gold); font-size:clamp(1.05rem,2.6vh,1.7rem); letter-spacing:.04em; line-height:1.25; text-wrap:balance; }
+.ad-peetam-te { font-family:var(--f-te); color:var(--cream-2); font-size:clamp(.95rem,2.1vh,1.3rem); }
+.ad-orn { color:var(--gold); letter-spacing:.5em; font-size:.8rem; }
+.ad-meal { font-family:var(--f-head); letter-spacing:.14em; font-size:.8rem; color:var(--bg-0); background:linear-gradient(135deg, var(--gold), var(--gold-hi)); padding:.3rem .9rem; }
+.ad-when { font-family:var(--f-head); color:var(--gold); letter-spacing:.05em; font-size:1rem; }
+.ad-right { position:relative; display:flex; flex-direction:column; min-width:0; }
+.ad-stage { position:relative; flex:1; min-height:0; }
+.ad-slide { position:absolute; inset:0; padding:clamp(1.4rem,5vh,3rem) clamp(2.6rem,4vw,4rem) 3rem; display:flex; flex-direction:column; justify-content:center; opacity:0; visibility:hidden; transition:opacity .5s, visibility .5s; overflow:auto; }
+.ad-slide.on { opacity:1; visibility:visible; }
+.ad-title { font-family:var(--f-display); color:var(--gold-hi); font-size:clamp(1.4rem,4vh,2.3rem); text-align:center; text-wrap:balance; line-height:1.2; }
+.ad-slide.te .ad-title { font-family:var(--f-te); font-weight:700; }
+.ad-sub { font-family:var(--f-te); color:var(--cream-2); text-align:center; font-size:clamp(.95rem,2.2vh,1.25rem); margin-top:.3rem; }
+.ad-rule { width:min(60%,260px); height:1px; margin:.9rem auto 0; background:linear-gradient(to right, transparent, var(--gold), transparent); }
+.ad-rows { display:grid; grid-template-columns:auto 1fr; gap:.9rem 1.6rem; align-items:baseline; margin-top:clamp(1rem,3.5vh,2rem); font-size:clamp(1.02rem,2.5vh,1.55rem); }
+.ad-k { font-family:var(--f-head); color:var(--gold); letter-spacing:.06em; font-size:.82em; text-transform:uppercase; }
+.ad-v { color:var(--cream); line-height:1.4; overflow-wrap:anywhere; }
+.ad-full { grid-column:1 / -1; color:var(--cream); }
+.ad-slide.te .ad-k { font-family:var(--f-te); text-transform:none; letter-spacing:0; font-size:.95em; }
+.ad-slide.te .ad-v, .ad-slide.te .ad-full { font-family:var(--f-te); line-height:1.6; }
+.ad-photo-wrap { flex:1; min-height:0; display:flex; align-items:center; justify-content:center; margin-top:.9rem; }
+.ad-photo-wrap img { max-width:100%; max-height:100%; object-fit:contain; border:2px solid var(--gold); box-shadow:0 0 30px rgba(201,162,39,.25); background:rgba(0,0,0,.4); }
+.ad-cap { text-align:center; margin-top:.8rem; font-family:var(--f-head); color:var(--cream); font-size:clamp(.95rem,2.2vh,1.3rem); letter-spacing:.04em; }
+.ad-cap small { display:block; font-family:var(--f-te); color:var(--cream-2); font-size:.85em; letter-spacing:0; margin-top:.15rem; }
+.ad-blessing { text-align:center; color:var(--gold); font-style:italic; font-family:var(--f-head); font-size:.85rem; letter-spacing:.1em; margin-top:.4rem; }
+.ad-text { text-align:center; color:var(--cream); font-size:clamp(1.02rem,2.4vh,1.4rem); line-height:1.55; margin-top:1.2rem; }
+.ad-phones { display:flex; flex-wrap:wrap; gap:.8rem; justify-content:center; margin-top:1.2rem; }
+.ad-phones a, .ad-contact { font-family:var(--f-head); color:var(--gold-hi); border:1px solid rgba(201,162,39,.6); padding:.55rem 1.1rem; letter-spacing:.06em; transition:background .2s, color .2s; display:inline-block; text-decoration:none; }
+.ad-phones a:hover, .ad-contact:hover { background:var(--gold); color:#1a0800; }
+.ad-actions { text-align:center; margin-top:1.1rem; }
+.ad-close, .ad-nav { position:absolute; z-index:5; width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.45); border:1px solid rgba(201,162,39,.65); color:var(--gold-hi); cursor:pointer; transition:background .2s, color .2s; padding:0; }
+.ad-close:hover, .ad-nav:hover, .ad-close:focus-visible, .ad-nav:focus-visible { background:var(--gold); color:#1a0800; outline:none; }
+.ad-close { top:16px; right:16px; }
+.ad-close svg, .ad-nav svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
+.ad-nav { top:50%; margin-top:-21px; }
+.ad-prev { left:10px; } .ad-next { right:10px; }
+.ad-dots { position:absolute; left:0; right:0; bottom:20px; display:flex; justify-content:center; gap:8px; z-index:5; }
+.ad-dots button { width:9px; height:9px; padding:0; border-radius:999px; border:1px solid var(--gold); background:transparent; cursor:pointer; transition:background .25s, width .25s; }
+.ad-dots button.on { background:var(--gold); width:24px; }
+.ad-bar { position:absolute; left:0; right:0; bottom:0; height:3px; background:rgba(201,162,39,.15); z-index:5; }
+.ad-bar i { display:block; height:100%; width:0; background:linear-gradient(to right, var(--gold), var(--gold-hi)); }
+.ad-bar.run i { animation:adFill 7s linear forwards; }
+.ad-card.paused .ad-bar i { animation-play-state:paused; }
+@keyframes adFill { from { width:0; } to { width:100%; } }
+.ad-single .ad-nav, .ad-single .ad-dots, .ad-single .ad-bar { display:none; }
+@media (max-width: 760px) {
+  .ad-card { width:94vw; height:90svh; grid-template-columns:1fr; grid-template-rows:auto 1fr; }
+  .ad-left { display:grid; grid-template-columns:auto 1fr; align-items:center; gap:.15rem .9rem; padding:1rem 3.4rem 1rem 1rem; text-align:left; border-right:0; border-bottom:1px solid rgba(201,162,39,.25); }
+  .ad-logo { grid-row:1 / 3; width:64px; border-width:2px; }
+  .ad-peetam-en { grid-column:2; align-self:end; font-size:.9rem; } .ad-peetam-te { grid-column:2; align-self:start; font-size:.85rem; }
+  .ad-orn { display:none; }
+  .ad-meal { grid-column:1 / -1; justify-self:start; margin-top:.6rem; font-size:.66rem; } .ad-when { grid-column:1 / -1; font-size:.8rem; }
+  .ad-slide { padding:1.2rem 1.2rem 2.6rem; justify-content:flex-start; }
+  .ad-rows { gap:.6rem 1rem; font-size:1rem; margin-top:1rem; }
+  .ad-nav { display:none; }
+  .ad-close { top:10px; right:10px; }
+}
+@media (prefers-reduced-motion: reduce) { .ad-slide { transition:none; } }
+/* ─── Add-donor form ─── */
+.as-add { text-align:center; margin-top:1.2rem; }
+.df-f > .df-btn { align-self:flex-start; }
+.as-add button, .df-btn { font-family:var(--f-head); letter-spacing:.1em; font-size:.8rem; color:var(--gold-hi); background:transparent; border:1px solid rgba(201,162,39,.6); padding:.65rem 1.3rem; cursor:pointer; transition:background .2s, color .2s; }
+.as-add button:hover, .df-btn:hover { background:var(--gold); color:#1a0800; }
+#df-pop { position:fixed; inset:0; z-index:460; display:flex; align-items:center; justify-content:center; background:rgba(3,1,0,.86); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); opacity:0; visibility:hidden; transition:opacity .3s, visibility .3s; padding:calc(12px + env(safe-area-inset-top,0px)) calc(12px + env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) calc(12px + env(safe-area-inset-left,0px)); }
+#df-pop.open { opacity:1; visibility:visible; }
+#df-pop:not(.open) { pointer-events:none; }
+#df-pop:not(.open) * { visibility:hidden; }
+.df-card { position:relative; width:min(100%,760px); max-height:100%; overflow:auto; color-scheme:dark; background:radial-gradient(ellipse at 30% 0%, #2A0A00 0%, #0C0400 70%); border:1px solid rgba(201,162,39,.55); box-shadow:0 0 60px rgba(201,162,39,.18); padding:1.8rem clamp(1.1rem,4vw,2.2rem) 1.6rem; color:var(--cream); }
+.df-card h3 { font-family:var(--f-display); color:var(--gold-hi); text-align:center; font-size:1.45rem; padding:0 2rem; }
+.df-te { text-align:center; font-family:var(--f-te); color:var(--cream-2); margin-top:.2rem; }
+.df-x { position:absolute; top:12px; right:12px; width:38px; height:38px; border-radius:50%; background:rgba(0,0,0,.45); border:1px solid rgba(201,162,39,.65); color:var(--gold-hi); cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; }
+.df-x:hover { background:var(--gold); color:#1a0800; }
+.df-x svg { width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2.6; stroke-linecap:round; }
+.df-grid { display:grid; grid-template-columns:1fr 1fr; gap:.9rem 1rem; margin-top:1.2rem; }
+.df-f { display:flex; flex-direction:column; gap:.3rem; min-width:0; }
+.df-f.full { grid-column:1 / -1; }
+.df-f label, .df-h { font-family:var(--f-head); font-size:.7rem; letter-spacing:.1em; color:var(--gold); text-transform:uppercase; }
+.df-f label i { color:var(--gold-hi); font-style:normal; }
+.df-card input, .df-card select { background:rgba(0,0,0,.45); border:1px solid rgba(201,162,39,.4); color:var(--cream); padding:.6rem .7rem; font:inherit; font-size:1rem; border-radius:0; min-width:0; width:100%; }
+.df-card input:focus, .df-card select:focus { outline:none; border-color:var(--gold-hi); box-shadow:0 0 0 2px rgba(201,162,39,.25); }
+.df-card option { background:#150700; color:var(--cream); }
+.df-card input.te { font-family:var(--f-te); }
+.df-fam { display:grid; grid-template-columns:120px 1fr 1fr 36px; gap:.5rem; margin-top:.5rem; align-items:center; }
+.df-fam button { height:38px; background:transparent; border:1px solid rgba(201,162,39,.4); color:var(--gold); cursor:pointer; font-size:1.1rem; line-height:1; padding:0; }
+.df-fam button:hover { background:var(--gold); color:#1a0800; }
+.df-hp { position:absolute; left:-9999px; width:1px; height:1px; opacity:0; }
+.df-photo { display:flex; gap:.9rem; align-items:center; flex-wrap:wrap; }
+.df-photo img { width:64px; height:64px; object-fit:cover; border:1px solid var(--gold); display:none; }
+.df-photo input { flex:1; min-width:180px; font-size:.9rem; }
+.df-msg { min-height:1.4rem; text-align:center; margin-top:.9rem; font-size:.98rem; }
+.df-msg.err { color:#ff9d8a; } .df-msg.ok { color:var(--gold-hi); }
+.df-actions { display:flex; gap:.8rem; justify-content:center; margin-top:.9rem; flex-wrap:wrap; }
+.df-submit { background:linear-gradient(135deg, var(--gold), var(--gold-hi)); color:#1a0800; border-color:transparent; }
+.df-submit:disabled { opacity:.6; cursor:wait; }
+.df-note { text-align:center; color:var(--cream-3); font-size:.82rem; margin-top:.7rem; }
+@media (max-width: 560px) {
+  .df-grid { grid-template-columns:1fr; }
+  .df-fam { grid-template-columns:1fr 36px; }
+  .df-fam input { grid-column:1 / -1; } .df-fam select { grid-column:1; } .df-fam button { grid-column:2; grid-row:1; }
+}
+
+
 
 /* ─── SCROLL PROGRESS BAR ─── */
 #scroll-bar { position:fixed; top:0; left:0; width:0%; height:3px; background:linear-gradient(to right,var(--saffron),var(--gold),var(--gold-hi)); z-index:500; transition:width .1s linear; }
@@ -957,7 +1087,7 @@ footer {
   <button class="nav-ham" id="nav-ham" aria-label="Open menu" aria-expanded="false">☰</button>
 </nav>
 <ul class="nav-drawer" id="nav-drawer" role="list" hidden>
-  <li><a href="#peetadhipati" onclick="closeNav()">Our Peetadhipati</a></li>
+  <li><a href="#peetadhipati" onclick="closeNav()">Our Guru Swamy</a></li>
   <li><a href="#about"         onclick="closeNav()">About the Peetam</a></li>
   <li><a href="#annadanam"     onclick="closeNav()">Annadanam</a></li>
   <li><a href="#gallery"       onclick="closeNav()">Gallery</a></li>
@@ -1031,8 +1161,8 @@ footer {
   <div class="container">
     <header class="sec-head reveal">
       <span class="sec-icon" aria-hidden="true">🙏</span>
-      <h2 class="sec-en">Our Peetadhipati</h2>
-      <div class="sec-te">మన పీఠాధిపతి</div>
+      <h2 class="sec-en">Our Guru Swamy</h2>
+      <div class="sec-te">మన గురు స్వామి</div>
       <div class="sec-rule"></div>
     </header>
 
@@ -1148,14 +1278,15 @@ footer {
   <div class="container">
     <header class="sec-head reveal">
       <span class="sec-icon" aria-hidden="true">🍽️</span>
-      <h2 class="sec-en">Annadanam Sevarthulu</h2>
-      <div class="sec-te">అన్నదాన సేవార్థులు</div>
+      <h2 class="sec-en">Annadathalu</h2>
+      <div class="sec-te">అన్నదాతలు</div>
       <div class="sec-rule"></div>
     </header>
     <div id="as-today"></div>
     <h3 class="as-sub" id="as-upcoming-title">UPCOMING ANNADANAM</h3>
     <div class="as-upcoming" id="as-upcoming"></div>
     <p class="as-open">Want to sponsor Annadanam on a day with no donor? <a href="#contact">Contact us to book your slot</a>.</p>
+    <div class="as-add" id="as-add" hidden><button type="button" id="as-add-btn">+ ADD DONOR DETAILS</button></div>
   </div>
 </section>
 
@@ -1276,10 +1407,10 @@ footer {
         <p>The evening lamp ceremony — the Lord is honoured with camphor flames, conch blows and devotional singing</p>
       </div>
       <div class="svc-card reveal">
-        <div class="svc-icon">🎵</div>
-        <h3>Bhajan Seva</h3>
-        <div class="svc-te">భజన సేవ</div>
-        <p>Ayyappa bhajans, Harivarasanam and devotional songs performed in the divine presence of the Lord</p>
+        <div class="svc-icon">🕉️</div>
+        <h3>Padi Pooja</h3>
+        <div class="svc-te">పడి పూజ</div>
+        <p>Sacred worship of the eighteen holy steps (Padi) with lamps, flowers, Ayyappa bhajans and Harivarasanam, performed at the Peetam or at devotees' homes</p>
       </div>
       <div class="svc-card reveal">
         <div class="svc-icon">🎗️</div>
@@ -1294,10 +1425,10 @@ footer {
         <p>Grand 41-day Mandala season celebrations with special rituals, annadanam and community gatherings</p>
       </div>
       <div class="svc-card reveal">
-        <div class="svc-icon">✨</div>
-        <h3>Special Prayers</h3>
-        <div class="svc-te">విశేష ప్రార్థనలు</div>
-        <p>Satyanarayana Pooja, Navagraha Pooja and personalised prayers for birthdays, marriages and auspicious occasions</p>
+        <div class="svc-icon">🏺</div>
+        <h3>Ashta Kalasa Pooja</h3>
+        <div class="svc-te">అష్ట కలశ పూజ</div>
+        <p>Eight sacred kalasams filled with holy water are invoked and offered to the Lord with Vedic mantras for peace, prosperity and well-being</p>
       </div>
     </div>
 
@@ -1991,10 +2122,14 @@ document.addEventListener('click', () => {
 
     function mk(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; return e; }
 
+    const wide = !!(window.matchMedia && matchMedia('(min-width: 641px) and (pointer: fine)').matches);
     function build(def) {
       const el = mk('div', 'bn-slide'), s = { def, el, frame: null };
+      const bg = mk('img', 'bn-bg'); bg.alt = ''; bg.setAttribute('aria-hidden', 'true'); bg.decoding = 'async'; bg.referrerPolicy = 'no-referrer';
+      el.appendChild(bg);
       const im = mk('img', def.cover ? 'cover' : '');
       s.img = im;
+      im.onload = () => { if (wide) bg.src = im.currentSrc || im.src; };
       im.alt = def.caption || (def.kind === 'video' ? 'Video' : 'Banner'); im.referrerPolicy = 'no-referrer'; im.decoding = 'async';
       im.onerror = () => {
         if (def.posterAlt && im.getAttribute('src') !== def.posterAlt) { im.src = def.posterAlt; return; }
@@ -2111,7 +2246,8 @@ document.addEventListener('click', () => {
       if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
       if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || e.defaultPrevented) return;
       const lbEl = document.getElementById('lightbox');
-      if (!inView || (lbEl && !lbEl.hidden) || slides.length < 2) return;
+      const adEl = document.getElementById('ad-pop');
+      if (!inView || (lbEl && !lbEl.hidden) || (adEl && adEl.classList.contains('open')) || slides.length < 2) return;
       const t = e.target, tag = t && t.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (t && t.isContentEditable)) return;
       e.preventDefault();
@@ -2297,6 +2433,8 @@ document.addEventListener('click', () => {
   const SCHEDULE_SHEET_ID = '1Q_EkgF5QhDgx7ndO2-1nXOSLC8iuhlLJeEblwh8i-AI';
   const SCHEDULE_GID = '1208846177';
   const UPCOMING_DAYS = 5;
+  // Web-app URL of the Google Apps Script that saves new donors into the sheet (see donor-form-apps-script.gs). Empty = the Add button stays hidden.
+  const DONOR_FORM_URL = 'https://script.google.com/macros/s/AKfycbwbZklbOhQ1vbMOQSA8IvJkkpM4M4lq8tDPr7fAeWJLzqSsjbcg3Phe2ZPAAJ3swuJdiA/exec';
   const sec = document.getElementById('annadanam-schedule');
   if (!sec || !SCHEDULE_SHEET_ID || SCHEDULE_SHEET_ID.indexOf('YOUR_') === 0) return;
 
@@ -2337,19 +2475,393 @@ document.addEventListener('click', () => {
     return h;
   }
 
-  function slotsFor(d) {
-    const wrap = el('div', 'as-slots');
-    SLOTS.forEach(([label, idx]) => {
-      const name = cleanName(d.cols[idx]);
-      if (!name) return;
-      const s = el('div', 'as-slot'); s.appendChild(el('h4', '', label.toUpperCase())); s.appendChild(el('p', '', name)); wrap.appendChild(s);
+  /* ── Donor details (separate "donors" tab of the same spreadsheet) ── */
+  const PAD = n => (n < 10 ? '0' : '') + n;
+  const dkey = dt => dt.getUTCFullYear() + '-' + PAD(dt.getUTCMonth() + 1) + '-' + PAD(dt.getUTCDate());
+  const SLOT_KEYS = { morning: 1, afternoon: 1, evening: 1 };
+  const reduceMotion = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  let donors = {}, lastSched = null;
+
+  function parseDonors(text) {
+    const rows = parseCSV(text);
+    if (rows.length < 2) return {};
+    const head = rows[0].map(h => h.trim().toLowerCase().replace(/\s+/g, '_'));
+    const ix = k => head.indexOf(k);
+    if (ix('date') < 0 || ix('slot') < 0) return {};          // a missing tab returns the first tab, so check the headers
+    const out = {};
+    rows.slice(1).forEach(r => {
+      const g = k => (ix(k) >= 0 ? (r[ix(k)] || '') : '').trim();
+      if (/^(no|n|false|0|hide)$/i.test(g('show'))) return;
+      const raw = g('date'); let m, key = '';
+      if ((m = /^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/.exec(raw))) key = m[3] + '-' + PAD(+m[2]) + '-' + PAD(+m[1]);
+      else if ((m = /^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/.exec(raw))) key = m[1] + '-' + PAD(+m[2]) + '-' + PAD(+m[3]);
+      const slot = g('slot').toLowerCase();
+      if (!key || !SLOT_KEYS[slot]) return;
+      const d = {};
+      ['name_en', 'name_te', 'gothram_en', 'gothram_te', 'family_en', 'family_te', 'photo'].forEach(k => { d[k] = g(k); });
+      if (!d.name_en && !d.name_te) return;
+      (out[key + '|' + slot] = out[key + '|' + slot] || []).push(d);
     });
-    return wrap.children.length ? wrap : null;
+    return out;
   }
+
+  function photoURL(v) {
+    v = (v || '').trim();
+    if (!v) return '';
+    let m;
+    if (/google\.com\//i.test(v) && (m = v.match(/\/d\/([\w-]{20,})/) || v.match(/[?&]id=([\w-]{20,})/))) return 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w1000';
+    if (/^[\w-]{25,}$/.test(v)) return 'https://drive.google.com/thumbnail?id=' + v + '&sz=w1000';
+    if (/^https:\/\/lh3\.googleusercontent\.com\//i.test(v)) return v.replace(/=[wh]\d[\w-]*$|=s\d+[\w-]*$/i, '') + '=w1000';
+    if (/^https:\/\/\S+\.(jpe?g|png|webp|gif)(\?\S*)?$/i.test(v)) return v;
+    return '';
+  }
+
+  function parseFamily(str) {
+    return (str || '').split(/[;\n]+/).map(p => p.trim()).filter(Boolean).map(p => {
+      const i = p.indexOf(':');
+      return i > 0 ? [p.slice(0, i).trim(), p.slice(i + 1).trim()] : ['', p];
+    });
+  }
+
+  const fmtDate = dt => dt.getUTCDate() + ' ' + MONTHS[dt.getUTCMonth()] + ' ' + dt.getUTCFullYear();
+  const svg = path => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + path + '"/></svg>';
+
+  let pop = null, stage, dotsEl, bar, card, slides = [], cur = 0, lastFocus = null;
+
+  function buildPop() {
+    pop = el('div'); pop.id = 'ad-pop'; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-modal', 'true'); pop.setAttribute('aria-label', 'Annadanam details');
+    pop.innerHTML =
+      '<div class="ad-card"><button class="ad-close" type="button" aria-label="Close">' + svg('M6 6l12 12M18 6L6 18') + '</button>' +
+      '<div class="ad-left"><img class="ad-logo" src="assets/logo.webp" alt="">' +
+      '<div class="ad-peetam-en">Sree Sastha Anugraha Peetam</div><div class="ad-peetam-te">శ్రీ శాస్త్ర అనుగ్రహ పీఠం</div>' +
+      '<div class="ad-orn" aria-hidden="true">✦ ✦ ✦</div><div class="ad-meal"></div><div class="ad-when"></div></div>' +
+      '<div class="ad-right"><div class="ad-stage" aria-live="polite"></div>' +
+      '<button class="ad-nav ad-prev" type="button" aria-label="Previous">' + svg('M15 4l-8 8 8 8') + '</button>' +
+      '<button class="ad-nav ad-next" type="button" aria-label="Next">' + svg('M9 4l8 8-8 8') + '</button>' +
+      '<div class="ad-dots"></div><div class="ad-bar"><i></i></div></div></div>';
+    document.body.appendChild(pop);
+    card = pop.querySelector('.ad-card'); stage = pop.querySelector('.ad-stage'); dotsEl = pop.querySelector('.ad-dots'); bar = pop.querySelector('.ad-bar');
+    pop.querySelector('.ad-close').addEventListener('click', closePop);
+    pop.querySelector('.ad-prev').addEventListener('click', () => show(cur - 1));
+    pop.querySelector('.ad-next').addEventListener('click', () => show(cur + 1));
+    pop.addEventListener('click', e => { if (e.target === pop) closePop(); });
+    bar.addEventListener('animationend', () => show(cur + 1));
+    card.addEventListener('mouseenter', () => card.classList.add('paused'));
+    card.addEventListener('mouseleave', () => card.classList.remove('paused'));
+    let tx = null, ty = 0;
+    card.addEventListener('touchstart', e => { card.classList.add('paused'); tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+    card.addEventListener('touchend', e => {
+      card.classList.remove('paused');
+      if (tx === null) return;
+      const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty; tx = null;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) show(dx < 0 ? cur + 1 : cur - 1);
+    }, { passive: true });
+    document.addEventListener('visibilitychange', () => card.classList.toggle('paused', document.hidden));
+    document.addEventListener('keydown', e => {
+      if (!pop.classList.contains('open')) return;
+      if (e.key === 'Escape') { e.preventDefault(); closePop(); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); show(cur + 1); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); show(cur - 1); }
+      else if (e.key === 'Tab') {
+        const f = [].filter.call(pop.querySelectorAll('button, a[href]'), x => x.offsetParent && getComputedStyle(x).visibility !== 'hidden');
+        if (!f.length) return;
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+  }
+
+  function titleBlock(parent, lang) {
+    parent.appendChild(el('div', 'ad-title', lang === 'te' ? 'మహాన్నదాత' : 'Maha Annadatha'));
+    parent.appendChild(el('div', 'ad-rule'));
+  }
+
+  function detailSlide(lang, d) {
+    const s = el('div', 'ad-slide' + (lang === 'te' ? ' te' : ''));
+    titleBlock(s, lang);
+    const rows = el('div', 'ad-rows');
+    const pick = k => (lang === 'te' ? (d[k + '_te'] || d[k + '_en']) : (d[k + '_en'] || d[k + '_te'])) || '';
+    const add = (k, v) => {
+      if (!v) return;
+      if (k) { rows.appendChild(el('div', 'ad-k', k)); rows.appendChild(el('div', 'ad-v', v)); }
+      else rows.appendChild(el('div', 'ad-full', v));
+    };
+    add(lang === 'te' ? 'స్వామి పేరు' : 'Swamy Name', pick('name'));
+    add(lang === 'te' ? 'గోత్రం' : 'Gothram', pick('gothram'));
+    parseFamily(pick('family')).forEach(p => add(p[0], p[1]));
+    s.appendChild(rows);
+    return s;
+  }
+
+  function photoSlide(title, img, name, nameTe, blessing) {
+    const s = el('div', 'ad-slide');
+    s.appendChild(el('div', 'ad-title', title));
+    s.appendChild(el('div', 'ad-rule'));
+    const w = el('div', 'ad-photo-wrap'), im = new Image();
+    im.alt = name || ''; im.referrerPolicy = 'no-referrer'; im.decoding = 'async';
+    im.onerror = () => { const i = slides.indexOf(s); if (i >= 0) { s.remove(); slides.splice(i, 1); layout(); show(Math.min(cur, slides.length - 1)); } };
+    im.src = img; w.appendChild(im); s.appendChild(w);
+    if (name) { const c = el('div', 'ad-cap', name); if (nameTe) c.appendChild(el('small', '', nameTe)); s.appendChild(c); }
+    if (blessing) s.appendChild(el('div', 'ad-blessing', blessing));
+    return s;
+  }
+
+  function guruSlide() {
+    const en = document.querySelector('.pth-content h3'), te = document.querySelector('.pth-content .p-sub');
+    return photoSlide('Our Guru Swamy', 'assets/founder.webp', en ? en.textContent.trim() : 'Manya Sri Ayyappa Indra Kumar Dev Guru Swamy', te ? te.textContent.trim() : '', 'Swamiye Saranam Ayyappa');
+  }
+
+  function sponsorSlide(o) {
+    const s = el('div', 'ad-slide');
+    s.appendChild(el('div', 'ad-title', 'Sponsor This Annadanam'));
+    s.appendChild(el('div', 'ad-sub', 'ఈ అన్నదాన సేవను చేయడానికి సంప్రదించండి'));
+    s.appendChild(el('div', 'ad-rule'));
+    s.appendChild(el('p', 'ad-text', 'The ' + o.label + ' Annadanam on ' + fmtDate(o.date) + ' is open for sponsorship. Offering food is the highest seva — contact us to book this slot.'));
+    const ph = el('div', 'ad-phones');
+    [].forEach.call(document.querySelectorAll('.contact-phones a'), a => {
+      const l = el('a', '', a.textContent.trim()); l.href = a.getAttribute('href'); ph.appendChild(l);
+    });
+    if (ph.children.length) s.appendChild(ph);
+    const act = el('div', 'ad-actions'), c = el('a', 'ad-contact', 'Contact the Peetam'); c.href = '#contact'; c.addEventListener('click', closePop);
+    act.appendChild(c);
+    if (DONOR_FORM_URL) {
+      const a = el('button', 'df-btn', '+ Add donor details for this slot'); a.type = 'button'; a.style.marginLeft = '.6rem';
+      a.addEventListener('click', () => { closePop(); openForm({ date: dkey(o.date), slot: o.label }); });
+      act.appendChild(a);
+    }
+    s.appendChild(act);
+    return s;
+  }
+
+  function layout() {
+    dotsEl.textContent = '';
+    slides.forEach((_, k) => {
+      const b = el('button'); b.type = 'button'; b.setAttribute('aria-label', 'Go to slide ' + (k + 1));
+      b.addEventListener('click', () => show(k)); dotsEl.appendChild(b);
+    });
+    pop.querySelector('.ad-card').classList.toggle('ad-single', slides.length < 2);
+  }
+
+  function show(i) {
+    if (!slides.length) return;
+    cur = (i + slides.length) % slides.length;
+    slides.forEach((s, k) => { s.classList.toggle('on', k === cur); s.setAttribute('aria-hidden', k === cur ? 'false' : 'true'); });
+    [].forEach.call(dotsEl.children, (b, k) => b.classList.toggle('on', k === cur));
+    bar.classList.remove('run'); void bar.offsetWidth;
+    if (slides.length > 1 && !reduceMotion) bar.classList.add('run');
+  }
+
+  function openPop(o) {
+    if (!pop) buildPop();
+    pop.querySelector('.ad-meal').textContent = o.label.toUpperCase() + ' ANNADANAM';
+    pop.querySelector('.ad-when').textContent = fmtDate(o.date) + (o.day ? ' · ' + o.day : '');
+    stage.textContent = ''; slides = [];
+    if (o.free) slides.push(sponsorSlide(o));
+    else {
+      if (o.list.length) o.list.forEach(d => {
+        if (d.name_en || d.gothram_en || d.family_en) slides.push(detailSlide('en', d));
+        if (d.name_te || d.gothram_te || d.family_te) slides.push(detailSlide('te', d));
+        const p = photoURL(d.photo);
+        if (p) slides.push(photoSlide('Maha Annadatha', p, d.name_en || d.name_te, d.name_en ? d.name_te : ''));
+      });
+      else slides.push(detailSlide('en', { name_en: o.name }));
+      slides.push(guruSlide());
+    }
+    slides.forEach(sl => stage.appendChild(sl));
+    layout(); card.classList.remove('paused');
+    lastFocus = document.activeElement;
+    document.documentElement.style.overflow = 'hidden';
+    pop.classList.add('open');
+    show(0);
+    pop.querySelector('.ad-close').focus();
+  }
+
+  function closePop() {
+    if (!pop) return;
+    pop.classList.remove('open'); bar.classList.remove('run');
+    document.documentElement.style.overflow = '';
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+
+  /* ── Add-donor form (writes to the "donors" tab through the Apps Script web app) ── */
+  const REL = [['Wife', 'సహధర్మచారిణి'], ['Husband', 'భర్త'], ['Son', 'కుమారుడు'], ['Daughter', 'కుమార్తె'], ['Father', 'తండ్రి'], ['Mother', 'తల్లి'], ['Brother', 'సోదరుడు'], ['Sister', 'సోదరి'], ['Other', '']];
+  let fpop = null, fcfg = null, fpre = null;
+
+  function field(label, input, cls, req) {
+    const w = el('div', 'df-f' + (cls ? ' ' + cls : ''));
+    const l = el('label', '', label); if (req) l.appendChild(el('i', '', ' *'));
+    w.appendChild(l); w.appendChild(input); return w;
+  }
+  function inp(type, ph, cls) { const i = el('input', cls || ''); i.type = type; if (ph) i.placeholder = ph; i.autocomplete = 'off'; return i; }
+
+  function buildForm() {
+    fpop = el('div'); fpop.id = 'df-pop'; fpop.setAttribute('role', 'dialog'); fpop.setAttribute('aria-modal', 'true'); fpop.setAttribute('aria-label', 'Add donor details');
+    const card = el('div', 'df-card'); fpop.appendChild(card);
+    const x = el('button', 'df-x'); x.type = 'button'; x.setAttribute('aria-label', 'Close'); x.innerHTML = svg('M6 6l12 12M18 6L6 18'); x.addEventListener('click', closeForm); card.appendChild(x);
+    card.appendChild(el('h3', '', 'Add Donor Details'));
+    card.appendChild(el('div', 'df-te', 'అన్నదాత వివరాలు నమోదు చేయండి'));
+    const g = el('div', 'df-grid'); card.appendChild(g);
+
+    const date = inp('date'); const slot = el('select');
+    ['Morning', 'Afternoon', 'Evening'].forEach(v => { const o = el('option', '', v); o.value = v; slot.appendChild(o); });
+    const nameEn = inp('text', 'e.g. Ramesh Kumar'), nameTe = inp('text', 'తెలుగులో పేరు', 'te');
+    const gothEn = inp('text', 'e.g. Kaushika'), gothTe = inp('text', 'గోత్రం', 'te');
+    g.appendChild(field('Date', date, '', true)); g.appendChild(field('Meal', slot, '', true));
+    g.appendChild(field('Donor name (English)', nameEn, '', true)); g.appendChild(field('Donor name (తెలుగు)', nameTe));
+    g.appendChild(field('Gothram (English)', gothEn)); g.appendChild(field('Gothram (తెలుగు)', gothTe));
+
+    const famWrap = el('div', 'df-f full'); famWrap.appendChild(el('div', 'df-h', 'Family members (optional)'));
+    const famList = el('div'); famWrap.appendChild(famList);
+    const addFam = el('button', 'df-btn', '+ Add family member'); addFam.type = 'button'; addFam.style.marginTop = '.6rem'; famWrap.appendChild(addFam);
+    g.appendChild(famWrap);
+    function famRow() {
+      const r = el('div', 'df-fam'), sel = el('select');
+      REL.forEach(p => { const o = el('option', '', p[0]); o.value = p[0]; sel.appendChild(o); });
+      const en = inp('text', 'Name (English)'), te = inp('text', 'పేరు (తెలుగు)', 'te'), rm = el('button', '', '×'); rm.type = 'button'; rm.setAttribute('aria-label', 'Remove');
+      rm.addEventListener('click', () => r.remove());
+      r.appendChild(sel); r.appendChild(en); r.appendChild(te); r.appendChild(rm); r._f = { sel, en, te };
+      famList.appendChild(r); en.focus();
+    }
+    addFam.addEventListener('click', famRow);
+
+    const file = inp('file'); file.accept = 'image/*';
+    const prev = new Image(); prev.alt = '';
+    const ph = el('div', 'df-photo'); ph.appendChild(prev); ph.appendChild(file);
+    const photoF = el('div', 'df-f full'); photoF.appendChild(el('label', '', 'Donor photo (optional)')); photoF.appendChild(ph); g.appendChild(photoF);
+    file.addEventListener('change', () => {
+      const f = file.files[0];
+      if (!f) { prev.style.display = 'none'; return; }
+      prev.src = URL.createObjectURL(f); prev.style.display = 'block';
+    });
+
+    const pass = inp('password', 'Passcode'); const passF = field('Passcode', pass, 'full', true); passF.hidden = true; g.appendChild(passF);
+    const hp = inp('text'); hp.className = 'df-hp'; hp.tabIndex = -1; hp.setAttribute('aria-hidden', 'true'); hp.name = 'website'; card.appendChild(hp);
+
+    const msg = el('div', 'df-msg'); msg.setAttribute('role', 'status'); card.appendChild(msg);
+    const act = el('div', 'df-actions');
+    const save = el('button', 'df-btn df-submit', 'SAVE DONOR DETAILS'); save.type = 'button';
+    const cancel = el('button', 'df-btn', 'CANCEL'); cancel.type = 'button'; cancel.addEventListener('click', closeForm);
+    act.appendChild(save); act.appendChild(cancel); card.appendChild(act);
+    card.appendChild(el('div', 'df-note', 'Details are saved to the Peetam’s sheet and can be edited there later.'));
+    document.body.appendChild(fpop);
+    fpop.addEventListener('click', e => { if (e.target === fpop) closeForm(); });
+    fpop.addEventListener('keydown', e => { if (e.key === 'Escape') { e.stopPropagation(); closeForm(); } });
+
+    fpop._f = { date, slot, nameEn, nameTe, gothEn, gothTe, famList, famRow, file, prev, pass, passF, hp, msg, save };
+    save.addEventListener('click', submitForm);
+  }
+
+  function famText(rows, lang) {
+    return rows.map(r => {
+      const name = (lang === 'te' ? r.te : r.en).trim().replace(/[;:]+/g, ',');
+      if (!name) return '';
+      const rel = REL.find(p => p[0] === r.rel);
+      return (lang === 'te' ? (rel && rel[1]) || r.rel : r.rel) + ': ' + name;
+    }).filter(Boolean).join('; ');
+  }
+
+  function compress(file) {
+    return new Promise((res, rej) => {
+      const u = URL.createObjectURL(file), im = new Image();
+      im.onload = () => {
+        const k = Math.min(1, 1000 / Math.max(im.naturalWidth, im.naturalHeight));
+        const c = document.createElement('canvas'); c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+        c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(u); res(c.toDataURL('image/jpeg', 0.82).split(',')[1]);
+      };
+      im.onerror = () => rej(new Error('Could not read that photo.'));
+      im.src = u;
+    });
+  }
+
+  function openForm(pre) {
+    if (!DONOR_FORM_URL) return;
+    if (!fpop) buildForm();
+    const f = fpop._f; fpre = pre || {};
+    f.nameEn.value = f.nameTe.value = f.gothEn.value = f.gothTe.value = ''; f.famList.textContent = '';
+    f.file.value = ''; f.prev.style.display = 'none'; f.msg.textContent = ''; f.msg.className = 'df-msg'; f.hp.value = ''; f.save.disabled = false;
+    const t = new Date(istToday());
+    f.date.value = fpre.date || dkey(t); f.date.min = dkey(t);
+    f.slot.value = fpre.slot || 'Morning';
+    if (!fcfg) fcfg = fetch(DONOR_FORM_URL).then(r => r.json()).catch(() => ({}));
+    fcfg.then(c => { f.passF.hidden = !(c && c.requirePasscode); });
+    lastFocus = document.activeElement;
+    document.documentElement.style.overflow = 'hidden';
+    fpop.classList.add('open'); f.nameEn.focus();
+  }
+
+  function closeForm() {
+    if (!fpop) return;
+    fpop.classList.remove('open'); document.documentElement.style.overflow = '';
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  async function submitForm() {
+    const f = fpop._f, say = (t, c) => { f.msg.textContent = t; f.msg.className = 'df-msg ' + (c || ''); };
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(f.date.value);
+    if (!m) return say('Please choose a date.', 'err');
+    const nameEn = f.nameEn.value.trim(), nameTe = f.nameTe.value.trim();
+    if (!nameEn && !nameTe) return say('Please enter the donor name.', 'err');
+    const fam = [].map.call(f.famList.children, r => ({ rel: r._f.sel.value, en: r._f.en.value, te: r._f.te.value }));
+    f.save.disabled = true; say('Saving…');
+    try {
+      const body = {
+        date: m[3] + '-' + m[2] + '-' + m[1], slot: f.slot.value, name_en: nameEn, name_te: nameTe,
+        gothram_en: f.gothEn.value.trim(), gothram_te: f.gothTe.value.trim(),
+        family_en: famText(fam, 'en'), family_te: famText(fam, 'te'), passcode: f.pass.value, website: f.hp.value
+      };
+      if (f.file.files[0]) body.photo = { data: await compress(f.file.files[0]), type: 'image/jpeg' };
+      const r = await fetch(DONOR_FORM_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
+      const j = await r.json();
+      if (!j.ok) throw new Error(j.error || 'Could not save.');
+      const d = { name_en: nameEn, name_te: nameTe, gothram_en: body.gothram_en, gothram_te: body.gothram_te, family_en: body.family_en, family_te: body.family_te, photo: j.photo || '' };
+      const key = f.date.value + '|' + f.slot.value.toLowerCase();
+      if (j.hidden !== true) (donors[key] = donors[key] || []).push(d);
+      if (lastSched) renderSched(lastSched);
+      say(j.hidden === true ? 'Saved. It will appear after review.' : 'Saved. Thank you!', 'ok');
+      setTimeout(closeForm, 1400);
+    } catch (e) {
+      f.save.disabled = false; say(e && e.message ? e.message : 'Could not save. Please try again.', 'err');
+    }
+  }
+
+  function slotsFor(d) {
+    const key = dkey(d.date);
+    const items = SLOTS.map(([label, idx]) => {
+      const list = donors[key + '|' + label.toLowerCase()] || [];
+      const name = cleanName(d.cols[idx]) || list.map(x => x.name_en || x.name_te).join(' · ');
+      return { label, list, name, filled: !!name };
+    });
+    if (!items.some(it => it.filled)) return null;
+    const wrap = el('div', 'as-slots');
+    items.forEach(it => {
+      const s = el('div', 'as-slot' + (it.filled ? '' : ' as-free'));
+      s.appendChild(el('h4', '', it.label.toUpperCase()));
+      s.appendChild(el('p', '', it.filled ? it.name : 'Open for sponsorship'));
+      s.appendChild(el('span', 'as-more', it.filled ? 'VIEW DETAILS ›' : 'SPONSOR THIS SLOT ›'));
+      s.setAttribute('role', 'button'); s.tabIndex = 0;
+      const go = () => openPop({ date: d.date, day: d.day, label: it.label, list: it.list, name: it.name, free: !it.filled });
+      s.addEventListener('click', go);
+      s.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+      wrap.appendChild(s);
+    });
+    return wrap;
+  }
+
+  const donorsP = fetch('https://docs.google.com/spreadsheets/d/' + SCHEDULE_SHEET_ID + '/gviz/tq?tqx=out:csv&headers=1&sheet=donors')
+    .then(r => (r.ok ? r.text() : ''))
+    .then(t => { donors = parseDonors(t); })
+    .catch(() => {});
 
   fetch('https://docs.google.com/spreadsheets/d/' + SCHEDULE_SHEET_ID + '/gviz/tq?tqx=out:csv&headers=0&gid=' + SCHEDULE_GID)
     .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
-    .then(text => {
+    .then(text => donorsP.then(() => text))
+    .then(text => { lastSched = text; renderSched(text); })
+    .catch(() => { sec.hidden = true; });
+
+  function renderSched(text) {
       const today = istToday();
       const days = [];
       parseCSV(text).forEach(cols => {
@@ -2382,7 +2894,11 @@ document.addEventListener('click', () => {
       }
       sec.hidden = false;
       document.querySelectorAll('#annadanam-schedule .reveal').forEach(e => e.classList.add('in'));
-    })
-    .catch(() => { sec.hidden = true; });
+  }
+
+  if (DONOR_FORM_URL) {
+    document.getElementById('as-add').hidden = false;
+    document.getElementById('as-add-btn').addEventListener('click', () => openForm());
+  }
 })();
 </script>
