@@ -2614,6 +2614,7 @@ document.addEventListener('click', () => {
   function syncFs() {
     const on = isFs();
     fsBtn.classList.toggle('on', on);
+    if (on && card) card.classList.remove('paused');
     fsBtn.setAttribute('aria-label', on ? 'Exit full screen' : 'Full screen'); fsBtn.title = on ? 'Exit full screen' : 'Full screen';
   }
   function toggleFs() {
@@ -2649,8 +2650,10 @@ document.addEventListener('click', () => {
     pop.querySelector('.ad-next').addEventListener('click', () => show(cur + 1));
     pop.addEventListener('click', e => { if (e.target === pop) closePop(); });
     bar.addEventListener('animationend', () => show(cur + 1));
-    card.addEventListener('mouseenter', () => { card.classList.add('paused'); showNav(); });
+    // Hovering pauses the rotation so a visitor can read; in full screen the pointer is always over the card, so only the arrows pause it there.
+    card.addEventListener('mouseenter', () => { if (!isFs()) card.classList.add('paused'); showNav(); });
     card.addEventListener('mousemove', showNav);
+    card.addEventListener('mouseover', e => { if (isFs()) card.classList.toggle('paused', !!e.target.closest('.ad-nav')); });
     card.addEventListener('mouseleave', () => { card.classList.remove('paused', 'nav-on'); });
     let tx = null, ty = 0;
     card.addEventListener('touchstart', e => { card.classList.add('paused'); showNav(); tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
