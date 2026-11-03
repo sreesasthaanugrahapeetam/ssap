@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Peetam Admin | Devotee Manager</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--gold:#C9A227;--saffron:#D95E0A;--maroon:#5A0000;--cream:#FFF0CC;--bg:#FFF9EC;--card:#fff;--ink:#2a1500;--mute:#7a6a55;--line:#ecdcb8;--ok:#2e7d32;--warn:#c62828}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select,textarea{font:inherit}
+.btn{border:0;border-radius:8px;padding:8px 14px;cursor:pointer;background:var(--saffron);color:#fff;font-weight:600}
+.btn.sec{background:#fff;color:var(--maroon);border:1px solid var(--line)}
+.btn.danger{background:var(--warn)}
+.btn.sm{padding:4px 9px;font-size:13px}
+.btn:hover{filter:brightness(1.07)}
+input,select,textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+label{display:block;font-size:12px;font-weight:600;color:var(--mute);margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
+.hide{display:none!important}
+
+/* login */
+#login{min-height:100vh;display:grid;place-items:center;background:linear-gradient(160deg,var(--maroon),#2b0000)}
+#login .box{background:var(--card);padding:32px;border-radius:14px;width:min(380px,92vw);text-align:center}
+#login h1{margin:0 0 4px;color:var(--maroon);font-size:20px}
+#login p{color:var(--mute);margin:0 0 18px}
+#login .hint{font-size:12px;margin-top:12px}
+
+/* shell */
+#app{display:grid;grid-template-columns:210px 1fr;min-height:100vh}
+aside{background:var(--maroon);color:var(--cream);padding:18px 12px;position:sticky;top:0;height:100vh}
+aside h2{font-size:15px;margin:0 6px 18px;color:var(--gold)}
+aside a{display:block;padding:9px 12px;border-radius:8px;color:var(--cream);text-decoration:none;cursor:pointer;margin-bottom:3px}
+aside a.on,aside a:hover{background:rgba(255,255,255,.12)}
+aside .foot{position:absolute;bottom:14px;left:12px;right:12px;font-size:12px;opacity:.7}
+main{padding:22px 26px;min-width:0}
+.top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.top h1{margin:0;font-size:22px;color:var(--maroon);flex:1}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.stat b{display:block;font-size:26px;color:var(--saffron)}
+.stat span{color:var(--mute);font-size:13px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:16px}
+.panel h3{margin:0 0 10px;font-size:15px;color:var(--maroon)}
+.filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;background:var(--card)}
+th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle}
+th{font-size:12px;text-transform:uppercase;color:var(--mute);letter-spacing:.04em;background:#fff6dc;position:sticky;top:0}
+tr.row{cursor:pointer}
+tr.row:hover{background:#fff6dc}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px;max-height:68vh}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--gold);color:#fff;display:inline-grid;place-items:center;font-weight:700;vertical-align:middle;margin-right:8px;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;background:#eee}
+.pill.ok{background:#e1f3e2;color:var(--ok)}
+.pill.warn{background:#fde4e4;color:var(--warn)}
+.pill.gold{background:#fbefc6;color:#7a5c0a}
+.muted{color:var(--mute)}
+
+/* drawer */
+#drawer{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:10;display:flex;justify-content:flex-end}
+#drawer .sheet{background:var(--bg);width:min(720px,100vw);height:100%;overflow:auto;padding:20px 22px}
+#drawer .hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+#drawer .hdr h2{margin:0;flex:1;color:var(--maroon);font-size:19px}
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:14px;flex-wrap:wrap}
+.tabs button{border:0;background:none;padding:8px 12px;cursor:pointer;font-weight:600;color:var(--mute);border-bottom:3px solid transparent;margin-bottom:-2px}
+.tabs button.on{color:var(--saffron);border-color:var(--saffron)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid2 .full{grid-column:1/-1}
+.sub{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px;background:#fff}
+.err{color:var(--warn);font-size:13px;margin-top:4px}
+.dropzone{border:2px dashed var(--gold);border-radius:12px;padding:22px;text-align:center;color:var(--mute);background:#fffdf5}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--maroon);color:#fff;padding:10px 18px;border-radius:99px;z-index:50;opacity:0;transition:.25s;pointer-events:none}
+#toast.show{opacity:1}
+.bar{height:8px;border-radius:99px;background:#eee;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--saffron)}
+
+@media(max-width:760px){
+ #app{grid-template-columns:1fr}
+ aside{position:static;height:auto;display:flex;flex-wrap:wrap;gap:4px;padding:10px}
+ aside h2,aside .foot{display:none}
+ .filters{grid-template-columns:1fr 1fr}
+ .grid2{grid-template-columns:1fr}
+ main{padding:14px}
+ .hm{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN (dummy; real auth comes with Supabase) -->
+<div id="login">
+  <form class="box" onsubmit="return doLogin(event)">
+    <h1>శ్రీ శాస్త్ర అనుగ్రహ పీఠం</h1>
+    <p>Devotee Manager · Admin</p>
+    <label>Passcode</label>
+    <input id="pass" type="password" placeholder="Enter passcode" autofocus>
+    <div class="err hide" id="loginErr">Wrong passcode</div>
+    <button class="btn" style="width:100%;margin-top:14px">Enter</button>
+    <div class="hint muted">Demo passcode: <b>swamiye</b>. Prototype only, not secure.</div>
+  </form>
+</div>
+
+<div id="app" class="hide">
+  <aside>
+    <h2>🕉 Peetam Admin</h2>
+    <a data-v="dash" class="on">Dashboard</a>
+    <a data-v="devotees">Devotees</a>
+    <a data-v="batches">Batches / Yatra</a>
+    <a data-v="payments">Payments</a>
+    <a data-v="excel">Excel Import / Export</a>
+    <div class="foot">Data saved in this browser. Use Excel export to back up.<br><br><a onclick="logout()" style="padding:0;cursor:pointer;text-decoration:underline">Log out</a></div>
+  </aside>
+  <main id="main"></main>
+</div>
+
+<div id="drawer" class="hide"><div class="sheet" id="sheet"></div></div>
+<div id="toast"></div>
+
+<script>
+/* ───────── storage ───────── */
+const KEY='ssap_admin_v1';
+const THIS_YEAR=new Date().getFullYear();
+let DB=load();
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.devotees)return d}catch(e){}return seed()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){toast('Could not save (storage blocked)')}}
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),2200)}
+
+/* phone = devotee id, normalised to +91XXXXXXXXXX */
+function normPhone(p){
+  let d=String(p||'').replace(/[^\d+]/g,'');
+  if(d.startsWith('+'))return d.length>=11?d:'';
+  d=d.replace(/^0+/,'');
+  if(d.length===12&&d.startsWith('91'))return'+'+d;
+  if(d.length===10)return'+91'+d;
+  return'';
+}
+const fmtPhone=p=>p&&p.startsWith('+91')?'+91 '+p.slice(3,8)+' '+p.slice(8):p||'';
+const initials=n=>String(n||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();
+const money=n=>'₹'+(Number(n)||0).toLocaleString('en-IN');
+
+/* ───────── dummy data ───────── */
+function seed(){
+  const D=(phone,full_name,extra)=>Object.assign({phone,full_name,email:'',address:'',dob:'',blood_group:'',gothram:'',guru_swamy:'Sri Giridhar Swamy',photo:'',notes:'',active:'yes'},extra);
+  const d={
+    devotees:[
+      D('+919848011111','Ramesh Kumar',{email:'ramesh@example.com',address:'Hyderabad',dob:'1985-04-12',blood_group:'O+',gothram:'Kashyapa'}),
+      D('+919848022222','Srinivas Rao',{address:'Vijayawada',dob:'1978-09-03',blood_group:'B+',gothram:'Bharadwaja'}),
+      D('+919848033333','Venkata Reddy',{address:'Guntur',dob:'1990-01-21',blood_group:'A+',gothram:'Vasishta'}),
+      D('+919848044444','Anil Varma',{address:'Warangal',dob:'1982-11-30',blood_group:'AB+',gothram:'Atreya'}),
+      D('+919848055555','Prasad Sharma',{address:'Hyderabad',dob:'1969-06-15',blood_group:'O-',gothram:'Kaushika',notes:'Senior guru swamy'}),
+      D('+919848066666','Mahesh Babu',{address:'Nellore',dob:'1995-02-08',blood_group:'B-',gothram:'Gautama'}),
+    ],
+    family:[
+      {phone:'+919848011111',name:'Lakshmi Kumar',relation:'Wife',member_phone:'+919848077777',emergency:'yes'},
+      {phone:'+919848011111',name:'Arjun Kumar',relation:'Son',member_phone:'',emergency:'no'},
+      {phone:'+919848022222',name:'Padma Rao',relation:'Wife',member_phone:'+919848088888',emergency:'yes'},
+      {phone:'+919848033333',name:'Suresh Reddy',relation:'Brother',member_phone:'+919848099999',emergency:'yes'},
+    ],
+    deekshas:[
+      {phone:'+919848011111',year:THIS_YEAR,malai_date:THIS_YEAR+'-11-17',end_date:'',mandala_days:41,irumudi_date:''},
+      {phone:'+919848022222',year:THIS_YEAR,malai_date:THIS_YEAR+'-11-17',end_date:'',mandala_days:41,irumudi_date:''},
+      {phone:'+919848033333',year:THIS_YEAR,malai_date:THIS_YEAR+'-11-20',end_date:'',mandala_days:48,irumudi_date:''},
+      {phone:'+919848055555',year:THIS_YEAR,malai_date:THIS_YEAR+'-11-17',end_date:'',mandala_days:41,irumudi_date:''},
+      {phone:'+919848011111',year:THIS_YEAR-1,malai_date:(THIS_YEAR-1)+'-11-17',end_date:(THIS_YEAR-1)+'-12-28',mandala_days:41,irumudi_date:(THIS_YEAR-1)+'-12-27'},
+      {phone:'+919848044444',year:THIS_YEAR-1,malai_date:(THIS_YEAR-1)+'-11-17',end_date:(THIS_YEAR-1)+'-12-28',mandala_days:41,irumudi_date:(THIS_YEAR-1)+'-12-27'},
+    ],
+    payments:[
+      {id:1,phone:'+919848011111',type:'Annadanam',amount:5000,date:THIS_YEAR+'-10-02',mode:'UPI',status:'Paid',note:'Morning meal 20-Nov'},
+      {id:2,phone:'+919848022222',type:'Pooja',amount:1500,date:THIS_YEAR+'-10-05',mode:'Cash',status:'Paid',note:'Mandala pooja'},
+      {id:3,phone:'+919848033333',type:'Yatra',amount:6000,date:'',mode:'',status:'Pending',note:'Bus seat'},
+      {id:4,phone:'+919848055555',type:'Annadanam',amount:10000,date:THIS_YEAR+'-10-10',mode:'UPI',status:'Paid',note:'Full day'},
+      {id:5,phone:'+919848011111',type:'Yatra',amount:6000,date:'',mode:'',status:'Pending',note:'Bus seat'},
+    ],
+    batches:[
+      {id:1,year:THIS_YEAR,name:'Batch 1 – Bus A',travel_date:THIS_YEAR+'-12-26',vehicle:'Bus A (45 seats)',capacity:45,notes:'Depart 5 AM from Peetam'},
+      {id:2,year:THIS_YEAR,name:'Batch 2 – Tempo',travel_date:THIS_YEAR+'-12-28',vehicle:'Tempo Traveller',capacity:14,notes:''},
+    ],
+    batch_members:[
+      {batch_id:1,phone:'+919848011111'},{batch_id:1,phone:'+919848022222'},{batch_id:1,phone:'+919848055555'},{batch_id:2,phone:'+919848033333'},
+    ],
+    nextId:{pay:6,batch:3}
+  };
+  try{localStorage.setItem(KEY,JSON.stringify(d))}catch(e){}
+  return d;
+}
+
+/* ───────── helpers ───────── */
+const dev=p=>DB.devotees.find(d=>d.phone===p);
+const curDeeksha=p=>DB.deekshas.filter(x=>x.phone===p).sort((a,b)=>b.year-a.year)[0];
+const duesOf=p=>DB.payments.filter(x=>x.phone===p&&x.status==='Pending').reduce((s,x)=>s+(+x.amount||0),0);
+function daysLeft(dk){
+  if(!dk||!dk.malai_date||dk.end_date)return null;
+  const end=new Date(dk.malai_date);end.setDate(end.getDate()+(+dk.mandala_days||41));
+  return Math.ceil((end-new Date())/864e5);
+}
+function deekshaPill(dk){
+  if(!dk)return'<span class="pill">—</span>';
+  if(dk.end_date)return'<span class="pill ok">Completed '+dk.year+'</span>';
+  const left=daysLeft(dk);
+  if(left==null)return'<span class="pill">—</span>';
+  if(new Date(dk.malai_date)>new Date())return'<span class="pill gold">Starts '+esc(dk.malai_date)+'</span>';
+  return left>=0?'<span class="pill gold">Day '+((+dk.mandala_days)-left)+' / '+dk.mandala_days+'</span>':'<span class="pill warn">Overdue</span>';
+}
+const batchOf=p=>{const m=DB.batch_members.find(x=>x.phone===p&&(DB.batches.find(b=>b.id===x.batch_id)||{}).year===THIS_YEAR);return m?DB.batches.find(b=>b.id===m.batch_id):null};
+
+/* ───────── auth (dummy) ───────── */
+function doLogin(e){e.preventDefault();
+  if($('#pass').value==='swamiye'){try{sessionStorage.setItem('ssap_in','1')}catch(x){}enter()}
+  else $('#loginErr').classList.remove('hide');
+  return false}
+function enter(){$('#login').classList.add('hide');$('#app').classList.remove('hide');go('dash')}
+function logout(){try{sessionStorage.removeItem('ssap_in')}catch(x){}location.reload()}
+
+/* ───────── router ───────── */
+let view='dash',filt={q:'',deeksha:'',batch:'',dues:''};
+document.querySelectorAll('aside a[data-v]').forEach(a=>a.onclick=()=>go(a.dataset.v));
+function go(v){view=v;document.querySelectorAll('aside a[data-v]').forEach(a=>a.classList.toggle('on',a.dataset.v===v));
+  ({dash:vDash,devotees:vDevotees,batches:vBatches,payments:vPayments,excel:vExcel})[v]()}
+
+/* ───────── dashboard ───────── */
+function vDash(){
+  const active=DB.deekshas.filter(x=>x.year===THIS_YEAR&&!x.end_date);
+  const dues=DB.payments.filter(p=>p.status==='Pending').reduce((s,p)=>s+(+p.amount||0),0);
+  const paid=DB.payments.filter(p=>p.status==='Paid').reduce((s,p)=>s+(+p.amount||0),0);
+  const unassigned=active.filter(x=>!batchOf(x.phone)).length;
+  const upcoming=DB.devotees.map(d=>({d,dk:curDeeksha(d.phone)})).filter(x=>x.dk&&!x.dk.end_date).map(x=>({...x,left:daysLeft(x.dk)})).filter(x=>x.left!=null&&x.left>=0).sort((a,b)=>a.left-b.left).slice(0,5);
+  $('#main').innerHTML=`
+  <div class="top"><h1>Dashboard</h1><button class="btn" onclick="openDevotee()">+ Add devotee</button></div>
+  <div class="cards">
+    <div class="stat"><b>${DB.devotees.length}</b><span>Total devotees</span></div>
+    <div class="stat"><b>${active.length}</b><span>In deeksha ${THIS_YEAR}</span></div>
+    <div class="stat"><b>${unassigned}</b><span>Not in any batch</span></div>
+    <div class="stat"><b>${money(paid)}</b><span>Collected</span></div>
+    <div class="stat"><b>${money(dues)}</b><span>Pending dues</span></div>
+  </div>
+  <div class="panel"><h3>Deeksha ending soonest</h3>
+   ${upcoming.length?'<table><tr><th>Devotee</th><th>Mandala</th><th>Days left</th></tr>'+upcoming.map(x=>`<tr class="row" onclick="openDevotee('${x.d.phone}')"><td>${esc(x.d.full_name)}</td><td>${x.dk.mandala_days} days</td><td>${x.left}</td></tr>`).join('')+'</table>':'<span class="muted">None running right now.</span>'}
+  </div>
+  <div class="panel"><h3>Batches ${THIS_YEAR}</h3>
+   ${DB.batches.filter(b=>b.year===THIS_YEAR).map(b=>{const n=DB.batch_members.filter(m=>m.batch_id===b.id).length;return`<div style="margin-bottom:10px"><b>${esc(b.name)}</b> <span class="muted">· ${esc(b.travel_date)} · ${n}/${b.capacity}</span><div class="bar"><i style="width:${Math.min(100,n/b.capacity*100)}%"></i></div></div>`}).join('')||'<span class="muted">No batches yet.</span>'}
+  </div>`;
+}
+
+/* ───────── devotees list ───────── */
+function vDevotees(){
+  $('#main').innerHTML=`
+  <div class="top"><h1>Devotees</h1><button class="btn sec" onclick="exportXlsx()">⬇ Excel</button><button class="btn" onclick="openDevotee()">+ Add devotee</button></div>
+  <div class="filters">
+    <input id="fq" placeholder="Search name, phone, gothram, place…" value="${esc(filt.q)}">
+    <select id="fd"><option value="">All deeksha</option><option value="active">In deeksha ${THIS_YEAR}</option><option value="none">Not in deeksha ${THIS_YEAR}</option></select>
+    <select id="fb"><option value="">All batches</option><option value="none">No batch</option>${DB.batches.map(b=>`<option value="${b.id}">${esc(b.name)} (${b.year})</option>`).join('')}</select>
+    <select id="fp"><option value="">Dues: any</option><option value="due">Has pending dues</option></select>
+  </div>
+  <div class="tablewrap"><table><thead><tr><th>Devotee</th><th>Phone (ID)</th><th class="hm">Gothram</th><th>Deeksha</th><th class="hm">Batch</th><th>Dues</th></tr></thead><tbody id="tb"></tbody></table></div>
+  <div class="muted" style="margin-top:8px" id="cnt"></div>`;
+  $('#fd').value=filt.deeksha;$('#fb').value=filt.batch;$('#fp').value=filt.dues;
+  ['fq','fd','fb','fp'].forEach(id=>$('#'+id).oninput=()=>{filt={q:$('#fq').value,deeksha:$('#fd').value,batch:$('#fb').value,dues:$('#fp').value};renderRows()});
+  renderRows();
+}
+function renderRows(){
+  const q=filt.q.toLowerCase().trim();
+  const rows=DB.devotees.filter(d=>{
+    if(q&&![d.full_name,d.phone,d.gothram,d.address,d.email].join(' ').toLowerCase().includes(q))return false;
+    const dk=DB.deekshas.find(x=>x.phone===d.phone&&x.year===THIS_YEAR);
+    if(filt.deeksha==='active'&&!dk)return false;
+    if(filt.deeksha==='none'&&dk)return false;
+    const b=batchOf(d.phone);
+    if(filt.batch==='none'&&b)return false;
+    if(filt.batch&&filt.batch!=='none'&&(!b||String(b.id)!==filt.batch))return false;
+    if(filt.dues==='due'&&!duesOf(d.phone))return false;
+    return true;
+  });
+  $('#tb').innerHTML=rows.map(d=>{const dues=duesOf(d.phone),b=batchOf(d.phone);return`<tr class="row" onclick="openDevotee('${d.phone}')">
+    <td><span class="avatar">${d.photo?`<img src="${esc(d.photo)}" alt="">`:esc(initials(d.full_name))}</span>${esc(d.full_name)}${d.active==='no'?' <span class="pill warn">inactive</span>':''}</td>
+    <td>${esc(fmtPhone(d.phone))}</td><td class="hm">${esc(d.gothram)}</td>
+    <td>${deekshaPill(curDeeksha(d.phone))}</td><td class="hm">${b?esc(b.name):'<span class="muted">—</span>'}</td>
+    <td>${dues?'<span class="pill warn">'+money(dues)+'</span>':'<span class="pill ok">Clear</span>'}</td></tr>`}).join('')||'<tr><td colspan="6" class="muted">No devotees match.</td></tr>';
+  $('#cnt').textContent=rows.length+' of '+DB.devotees.length+' devotees';
+}
+
+/* ───────── devotee drawer ───────── */
+let editing=null,tab='basics',isNew=false;
+function openDevotee(phone){
+  isNew=!phone;tab='basics';
+  editing=phone?JSON.parse(JSON.stringify(dev(phone))):{phone:'',full_name:'',email:'',address:'',dob:'',blood_group:'',gothram:'',guru_swamy:'',photo:'',notes:'',active:'yes'};
+  editing._orig=phone||'';
+  $('#drawer').classList.remove('hide');drawSheet();
+}
+function closeDrawer(){$('#drawer').classList.add('hide')}
+$('#drawer').addEventListener('mousedown',e=>{if(e.target.id==='drawer')closeDrawer()});
+function drawSheet(){
+  const e=editing,ph=e._orig;
+  const tabs=[['basics','Basics'],['spiritual','Deeksha'],['family','Family'],['payments','Payments'],['yatra','Yatra']];
+  $('#sheet').innerHTML=`
+  <div class="hdr"><span class="avatar" style="width:46px;height:46px;font-size:17px">${e.photo?`<img src="${esc(e.photo)}" alt="">`:esc(initials(e.full_name))}</span>
+   <h2>${isNew?'New devotee':esc(e.full_name)}<div class="muted" style="font-size:13px;font-weight:400">${isNew?'Phone number becomes the devotee ID':'ID '+esc(fmtPhone(ph))}</div></h2>
+   <button class="btn sec" onclick="closeDrawer()">Close</button></div>
+  <div class="tabs">${tabs.map(t=>`<button class="${tab===t[0]?'on':''}" ${(isNew&&t[0]!=='basics')?'disabled style="opacity:.4;cursor:not-allowed"':''} onclick="setTab('${t[0]}')">${t[1]}</button>`).join('')}</div>
+  <div id="tabbody"></div>`;
+  ({basics:tBasics,spiritual:tSpiritual,family:tFamily,payments:tPay,yatra:tYatra})[tab]();
+}
+function setTab(t){if(tab==='basics')pullBasics();tab=t;drawSheet()}
+function pullBasics(){['full_name','phone','email','address','dob','blood_group','gothram','guru_swamy','notes','active'].forEach(k=>{const el=$('#f_'+k);if(el)editing[k]=el.value})}
+
+function tBasics(){
+  const e=editing;
+  $('#tabbody').innerHTML=`<div class="grid2">
+   <div><label>Full name *</label><input id="f_full_name" value="${esc(e.full_name)}"></div>
+   <div><label>Phone (devotee ID) *</label><input id="f_phone" value="${esc(isNew?e.phone:fmtPhone(e.phone))}" placeholder="98480 11111"><div class="err hide" id="phErr"></div></div>
+   <div><label>Email</label><input id="f_email" value="${esc(e.email)}"></div>
+   <div><label>Date of birth</label><input id="f_dob" type="date" value="${esc(e.dob)}"></div>
+   <div><label>Blood group</label><select id="f_blood_group">${['','A+','A-','B+','B-','AB+','AB-','O+','O-'].map(b=>`<option ${b===e.blood_group?'selected':''}>${b}</option>`).join('')}</select></div>
+   <div><label>Gothram</label><input id="f_gothram" value="${esc(e.gothram)}"></div>
+   <div><label>Guru Swamy</label><input id="f_guru_swamy" value="${esc(e.guru_swamy)}"></div>
+   <div><label>Status</label><select id="f_active"><option value="yes" ${e.active!=='no'?'selected':''}>Active</option><option value="no" ${e.active==='no'?'selected':''}>Inactive</option></select></div>
+   <div class="full"><label>Address</label><textarea id="f_address" rows="2">${esc(e.address)}</textarea></div>
+   <div class="full"><label>Photo</label><input type="file" accept="image/*" id="f_photo"><div class="muted" style="font-size:12px">Prototype stores a small resized copy in this browser.</div></div>
+   <div class="full"><label>Notes</label><textarea id="f_notes" rows="2">${esc(e.notes)}</textarea></div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:16px">
+   <button class="btn" onclick="saveBasics()">${isNew?'Create devotee':'Save changes'}</button>
+   ${isNew?'':'<button class="btn danger" onclick="delDevotee()">Delete</button>'}
+  </div>`;
+  $('#f_photo').onchange=ev=>{const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),s=160,k=Math.min(1,s/Math.max(im.width,im.height));c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);editing.photo=c.toDataURL('image/jpeg',.7);toast('Photo ready, click Save')};im.src=r.result};r.readAsDataURL(f)};
+}
+function saveBasics(){
+  pullBasics();const e=editing;
+  const ph=normPhone(e.phone),err=$('#phErr');
+  if(!e.full_name.trim()){toast('Name required');return}
+  if(!ph){err.textContent='Enter valid 10-digit phone';err.classList.remove('hide');return}
+  const clash=DB.devotees.find(d=>d.phone===ph&&d.phone!==e._orig);
+  if(clash){err.innerHTML='Already registered as <b>'+esc(clash.full_name)+'</b>. <a href="#" onclick="openDevotee(\''+ph+'\');return false">Open that record</a>';err.classList.remove('hide');return}
+  const rec={phone:ph,full_name:e.full_name.trim(),email:e.email,address:e.address,dob:e.dob,blood_group:e.blood_group,gothram:e.gothram,guru_swamy:e.guru_swamy,photo:e.photo,notes:e.notes,active:e.active};
+  if(isNew){DB.devotees.push(rec)}
+  else{
+    const i=DB.devotees.findIndex(d=>d.phone===e._orig);DB.devotees[i]=rec;
+    if(ph!==e._orig){ // change-phone cascade
+      ['family','deekshas','payments','batch_members'].forEach(t=>DB[t].forEach(r=>{if(r.phone===e._orig)r.phone=ph}));
+      toast('Phone changed, all linked records updated');
+    }
+  }
+  save();editing._orig=ph;editing.phone=ph;isNew=false;toast('Saved');drawSheet();
+  if(view==='devotees')renderRows();else go(view);
+}
+function delDevotee(){
+  const p=editing._orig;if(!confirm('Delete '+editing.full_name+' and all linked records? This cannot be undone.'))return;
+  DB.devotees=DB.devotees.filter(d=>d.phone!==p);
+  ['family','deekshas','payments','batch_members'].forEach(t=>DB[t]=DB[t].filter(r=>r.phone!==p));
+  save();closeDrawer();go(view);toast('Deleted');
+}
+
+function tSpiritual(){
+  const p=editing._orig,list=DB.deekshas.filter(x=>x.phone===p).sort((a,b)=>b.year-a.year);
+  $('#tabbody').innerHTML=list.map((x,i)=>`<div class="sub"><b>${x.year}</b> ${deekshaPill(x)}
+   <div class="grid2" style="margin-top:8px">
+    <div><label>Malai date</label><input type="date" value="${esc(x.malai_date)}" onchange="upd('deekshas','${p}',${x.year},'malai_date',this.value)"></div>
+    <div><label>Mandala days</label><select onchange="upd('deekshas','${p}',${x.year},'mandala_days',+this.value)">${[41,48,21,11].map(n=>`<option ${n==x.mandala_days?'selected':''}>${n}</option>`).join('')}</select></div>
+    <div><label>Irumudi date</label><input type="date" value="${esc(x.irumudi_date)}" onchange="upd('deekshas','${p}',${x.year},'irumudi_date',this.value)"></div>
+    <div><label>Completed on</label><input type="date" value="${esc(x.end_date)}" onchange="upd('deekshas','${p}',${x.year},'end_date',this.value)"></div>
+   </div><button class="btn danger sm" style="margin-top:8px" onclick="delDeeksha('${p}',${x.year})">Remove</button></div>`).join('')
+   +`<button class="btn sec" onclick="addDeeksha()">+ Add deeksha year</button>`;
+}
+function upd(t,p,y,k,v){const r=DB[t].find(x=>x.phone===p&&x.year===y);if(r){r[k]=v;save();toast('Saved');if(k==='end_date'||k==='malai_date'||k==='mandala_days')tSpiritual()}}
+function addDeeksha(){const p=editing._orig;const y=+prompt('Year?',THIS_YEAR);if(!y)return;if(DB.deekshas.some(x=>x.phone===p&&x.year===y)){toast('Year already exists');return}
+  DB.deekshas.push({phone:p,year:y,malai_date:'',end_date:'',mandala_days:41,irumudi_date:''});save();tSpiritual()}
+function delDeeksha(p,y){DB.deekshas=DB.deekshas.filter(x=>!(x.phone===p&&x.year===y));save();tSpiritual()}
+
+function tFamily(){
+  const p=editing._orig,list=DB.family.map((f,i)=>({f,i})).filter(x=>x.f.phone===p);
+  $('#tabbody').innerHTML=list.map(({f,i})=>`<div class="sub"><div class="grid2">
+    <div><label>Name</label><input value="${esc(f.name)}" onchange="DB.family[${i}].name=this.value;save()"></div>
+    <div><label>Relation</label><input value="${esc(f.relation)}" onchange="DB.family[${i}].relation=this.value;save()"></div>
+    <div><label>Phone (optional)</label><input value="${esc(fmtPhone(f.member_phone))}" onchange="DB.family[${i}].member_phone=normPhone(this.value);save()"></div>
+    <div><label>Emergency contact</label><select onchange="DB.family[${i}].emergency=this.value;save()"><option value="no" ${f.emergency!=='yes'?'selected':''}>No</option><option value="yes" ${f.emergency==='yes'?'selected':''}>Yes</option></select></div>
+   </div><button class="btn danger sm" style="margin-top:8px" onclick="DB.family.splice(${i},1);save();tFamily()">Remove</button></div>`).join('')
+   +`<button class="btn sec" onclick="DB.family.push({phone:'${p}',name:'',relation:'',member_phone:'',emergency:'no'});save();tFamily()">+ Add family member</button>
+   <div class="muted" style="font-size:12px;margin-top:8px">Kids / elders without own phone live here, under the family head.</div>`;
+}
+
+function tPay(){
+  const p=editing._orig,list=DB.payments.map((x,i)=>({x,i})).filter(o=>o.x.phone===p);
+  $('#tabbody').innerHTML=(list.length?`<table><tr><th>Type</th><th>Amount</th><th>Status</th><th>Date</th><th></th></tr>${list.map(({x,i})=>`<tr>
+   <td>${esc(x.type)}<div class="muted" style="font-size:12px">${esc(x.note)}</div></td><td>${money(x.amount)}</td>
+   <td><span class="pill ${x.status==='Paid'?'ok':'warn'}">${esc(x.status)}</span></td><td>${esc(x.date)}</td>
+   <td style="white-space:nowrap">${x.status==='Pending'?`<button class="btn sm" onclick="markPaid(${i})">Mark paid</button> `:''}<button class="btn danger sm" onclick="DB.payments.splice(${i},1);save();tPay()">✕</button></td></tr>`).join('')}</table>`:'<div class="muted">No payments yet.</div>')
+  +`<div class="sub" style="margin-top:12px"><b>Add payment</b><div class="grid2" style="margin-top:8px">
+    <div><label>Type</label><select id="pt"><option>Annadanam</option><option>Pooja</option><option>Yatra</option><option>Donation</option><option>Other</option></select></div>
+    <div><label>Amount (₹)</label><input id="pa" type="number" min="0"></div>
+    <div><label>Status</label><select id="ps"><option>Paid</option><option>Pending</option></select></div>
+    <div><label>Mode</label><select id="pm"><option>UPI</option><option>Cash</option><option>Bank</option></select></div>
+    <div class="full"><label>Note</label><input id="pn"></div></div>
+    <button class="btn" style="margin-top:8px" onclick="addPay()">Add</button></div>`;
+}
+function addPay(){const a=+$('#pa').value;if(!a){toast('Enter amount');return}const st=$('#ps').value;
+  DB.payments.push({id:DB.nextId.pay++,phone:editing._orig,type:$('#pt').value,amount:a,date:st==='Paid'?new Date().toISOString().slice(0,10):'',mode:st==='Paid'?$('#pm').value:'',status:st,note:$('#pn').value});save();tPay();toast('Added')}
+function markPaid(i){const x=DB.payments[i];x.status='Paid';x.date=new Date().toISOString().slice(0,10);x.mode=x.mode||'UPI';save();tPay()}
+
+function tYatra(){
+  const p=editing._orig,cur=batchOf(p),bs=DB.batches.filter(b=>b.year===THIS_YEAR);
+  $('#tabbody').innerHTML=`<div class="sub"><label>Sabarimala batch ${THIS_YEAR}</label>
+   <select onchange="setBatch(this.value)"><option value="">Not assigned</option>${bs.map(b=>{const n=DB.batch_members.filter(m=>m.batch_id===b.id).length;return`<option value="${b.id}" ${cur&&cur.id===b.id?'selected':''}>${esc(b.name)} · ${esc(b.travel_date)} (${n}/${b.capacity})</option>`}).join('')}</select></div>
+   <div class="muted">Past batches</div>${DB.batch_members.filter(m=>m.phone===p).map(m=>DB.batches.find(b=>b.id===m.batch_id)).filter(b=>b&&b.year!==THIS_YEAR).map(b=>`<div class="sub">${esc(b.name)} · ${b.year}</div>`).join('')||'<div class="muted">None.</div>'}`;
+}
+function setBatch(id){const p=editing._orig;
+  DB.batch_members=DB.batch_members.filter(m=>!(m.phone===p&&(DB.batches.find(b=>b.id===m.batch_id)||{}).year===THIS_YEAR));
+  if(id)DB.batch_members.push({batch_id:+id,phone:p});save();toast('Batch updated');tYatra()}
+
+/* ───────── batches view ───────── */
+function vBatches(){
+  $('#main').innerHTML=`<div class="top"><h1>Batches / Yatra</h1><button class="btn" onclick="addBatch()">+ New batch</button></div>`+
+  (DB.batches.slice().sort((a,b)=>b.year-a.year).map(b=>{
+    const mem=DB.batch_members.filter(m=>m.batch_id===b.id).map(m=>dev(m.phone)).filter(Boolean);
+    return`<div class="panel"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><h3 style="margin:0;flex:1">${esc(b.name)} <span class="muted" style="font-weight:400">· ${b.year}</span></h3>
+     <span class="pill gold">${mem.length}/${b.capacity}</span><button class="btn sec sm" onclick="editBatch(${b.id})">Edit</button><button class="btn danger sm" onclick="delBatch(${b.id})">Delete</button></div>
+     <div class="muted" style="margin:4px 0 8px">${esc(b.travel_date)} · ${esc(b.vehicle)} ${b.notes?'· '+esc(b.notes):''}</div>
+     ${mem.map(d=>`<span class="pill" style="cursor:pointer;margin:2px" onclick="openDevotee('${d.phone}')">${esc(d.full_name)}</span>`).join('')||'<span class="muted">No members yet. Assign from a devotee’s Yatra tab.</span>'}</div>`}).join('')||'<div class="muted">No batches.</div>');
+}
+function addBatch(){const name=prompt('Batch name?','Batch '+(DB.batches.length+1));if(!name)return;
+  DB.batches.push({id:DB.nextId.batch++,year:THIS_YEAR,name,travel_date:'',vehicle:'',capacity:45,notes:''});save();editBatch(DB.batches[DB.batches.length-1].id)}
+function editBatch(id){const b=DB.batches.find(x=>x.id===id);
+  const name=prompt('Name',b.name);if(name===null)return;b.name=name;
+  const td=prompt('Travel date (YYYY-MM-DD)',b.travel_date);if(td!==null)b.travel_date=td;
+  const v=prompt('Vehicle',b.vehicle);if(v!==null)b.vehicle=v;
+  const c=prompt('Capacity',b.capacity);if(c!==null&&+c>0)b.capacity=+c;
+  save();vBatches()}
+function delBatch(id){if(!confirm('Delete batch? Members become unassigned.'))return;DB.batches=DB.batches.filter(b=>b.id!==id);DB.batch_members=DB.batch_members.filter(m=>m.batch_id!==id);save();vBatches()}
+
+/* ───────── payments view ───────── */
+function vPayments(){
+  const rows=DB.payments.map((p,i)=>({p,i,d:dev(p.phone)}));
+  const tot=s=>rows.filter(r=>r.p.status===s).reduce((a,r)=>a+(+r.p.amount||0),0);
+  $('#main').innerHTML=`<div class="top"><h1>Payments</h1></div>
+  <div class="cards"><div class="stat"><b>${money(tot('Paid'))}</b><span>Collected</span></div><div class="stat"><b>${money(tot('Pending'))}</b><span>Pending</span></div></div>
+  <div class="tablewrap"><table><thead><tr><th>Devotee</th><th>Type</th><th>Amount</th><th>Status</th><th class="hm">Date</th><th></th></tr></thead><tbody>
+  ${rows.map(({p,i,d})=>`<tr><td><a href="#" onclick="openDevotee('${p.phone}');return false">${esc(d?d.full_name:p.phone)}</a></td><td>${esc(p.type)}</td><td>${money(p.amount)}</td>
+   <td><span class="pill ${p.status==='Paid'?'ok':'warn'}">${esc(p.status)}</span></td><td class="hm">${esc(p.date)}</td>
+   <td>${p.status==='Pending'?`<button class="btn sm" onclick="markPaid(${i});vPayments()">Mark paid</button>`:''}</td></tr>`).join('')}</tbody></table></div>`;
+}
+
+/* ───────── Excel import / export ───────── */
+const SHEETS={Devotees:['phone','full_name','email','address','dob','blood_group','gothram','guru_swamy','active','notes'],
+  Family:['phone','name','relation','member_phone','emergency'],
+  Deekshas:['phone','year','malai_date','mandala_days','irumudi_date','end_date'],
+  Payments:['phone','type','amount','date','mode','status','note'],
+  Batches:['id','year','name','travel_date','vehicle','capacity','notes'],
+  BatchMembers:['batch_id','phone']};
+const KEYMAP={Devotees:'devotees',Family:'family',Deekshas:'deekshas',Payments:'payments',Batches:'batches',BatchMembers:'batch_members'};
+function vExcel(){
+  $('#main').innerHTML=`<div class="top"><h1>Excel Import / Export</h1></div>
+  <div class="panel"><h3>1 · Export</h3><p class="muted">One workbook, one sheet per table. Keep it as your master copy.</p>
+   <button class="btn" onclick="exportXlsx()">⬇ Download peetam-devotees.xlsx</button>
+   <button class="btn sec" onclick="templateXlsx()">⬇ Blank template</button></div>
+  <div class="panel"><h3>2 · Import</h3><p class="muted">Sheets: Devotees, Family, Deekshas, Payments, Batches, BatchMembers. <b>phone</b> column is the ID. Existing phones are updated, new ones added.</p>
+   <div class="dropzone" id="dz">Drop .xlsx here or <input type="file" id="xf" accept=".xlsx,.xls,.csv"></div><div id="impLog" style="margin-top:10px"></div></div>
+  <div class="panel"><h3>3 · Reset</h3><button class="btn danger" onclick="if(confirm('Replace everything with demo data?')){DB=seed();toast('Demo data restored');vExcel()}">Reset to demo data</button>
+   <button class="btn danger" onclick="if(confirm('Delete ALL data?')){DB={devotees:[],family:[],deekshas:[],payments:[],batches:[],batch_members:[],nextId:{pay:1,batch:1}};save();toast('Cleared');vExcel()}">Clear all</button></div>`;
+  $('#xf').onchange=e=>e.target.files[0]&&importXlsx(e.target.files[0]);
+  const dz=$('#dz');dz.ondragover=e=>{e.preventDefault()};dz.ondrop=e=>{e.preventDefault();e.dataTransfer.files[0]&&importXlsx(e.dataTransfer.files[0])};
+}
+function needXlsx(){if(typeof XLSX==='undefined'){toast('Excel library not loaded (check internet)');return false}return true}
+function wb(withData){const w=XLSX.utils.book_new();
+  Object.keys(SHEETS).forEach(n=>{const cols=SHEETS[n],rows=withData?DB[KEYMAP[n]].map(r=>cols.map(c=>r[c]==null?'':r[c])):[];
+    const ws=XLSX.utils.aoa_to_sheet([cols].concat(rows));ws['!cols']=cols.map(()=>({wch:18}));XLSX.utils.book_append_sheet(w,ws,n)});return w}
+function exportXlsx(){if(!needXlsx())return;XLSX.writeFile(wb(true),'peetam-devotees.xlsx');toast('Exported')}
+function templateXlsx(){if(!needXlsx())return;XLSX.writeFile(wb(false),'peetam-template.xlsx')}
+function importXlsx(file){
+  if(!needXlsx())return;
+  const r=new FileReader();r.onload=()=>{
+    const w=XLSX.read(r.result,{type:'array',cellDates:false,raw:false});const log=[];let added=0,updated=0,skipped=0;
+    const sheet=n=>w.Sheets[n]?XLSX.utils.sheet_to_json(w.Sheets[n],{defval:'',raw:false}):[];
+    sheet('Devotees').forEach((row,i)=>{
+      const ph=normPhone(row.phone);if(!ph||!String(row.full_name).trim()){skipped++;log.push('Devotees row '+(i+2)+': bad phone or name, skipped');return}
+      const rec={phone:ph,photo:'',...Object.fromEntries(SHEETS.Devotees.map(c=>[c,String(row[c]==null?'':row[c]).trim()])),phone:ph};
+      if(!rec.active)rec.active='yes';
+      const ix=DB.devotees.findIndex(d=>d.phone===ph);
+      if(ix>=0){rec.photo=DB.devotees[ix].photo;DB.devotees[ix]=rec;updated++}else{DB.devotees.push(rec);added++}
+    });
+    const known=new Set(DB.devotees.map(d=>d.phone));
+    const child=(sn,tk,keyf)=>{const rows=sheet(sn);if(!rows.length)return;
+      const seen=new Set();const out=[];
+      rows.forEach((row,i)=>{const ph=normPhone(row.phone);if(!ph||!known.has(ph)){log.push(sn+' row '+(i+2)+': phone not in Devotees, skipped');return}
+        const rec={};SHEETS[sn].forEach(c=>rec[c]=row[c]==null?'':row[c]);rec.phone=ph;
+        if(rec.member_phone)rec.member_phone=normPhone(rec.member_phone);
+        ['year','mandala_days','amount'].forEach(k=>{if(k in rec)rec[k]=+rec[k]||0});
+        out.push(rec)});
+      const phones=new Set(out.map(o=>o.phone));
+      DB[tk]=DB[tk].filter(x=>!phones.has(x.phone)).concat(out);log.push(sn+': '+out.length+' rows loaded')};
+    child('Family','family');child('Deekshas','deekshas');child('Payments','payments');
+    DB.payments.forEach(p=>{if(!p.id)p.id=DB.nextId.pay++});
+    const bs=sheet('Batches');if(bs.length){bs.forEach(b=>{const id=+b.id||DB.nextId.batch++;const rec={id,year:+b.year||THIS_YEAR,name:b.name,travel_date:b.travel_date,vehicle:b.vehicle,capacity:+b.capacity||45,notes:b.notes};
+      const ix=DB.batches.findIndex(x=>x.id===id);ix>=0?DB.batches[ix]=rec:DB.batches.push(rec);DB.nextId.batch=Math.max(DB.nextId.batch,id+1)});log.push('Batches: '+bs.length+' rows loaded')}
+    const bm=sheet('BatchMembers');if(bm.length){DB.batch_members=bm.map(m=>({batch_id:+m.batch_id,phone:normPhone(m.phone)})).filter(m=>m.phone&&known.has(m.phone));log.push('BatchMembers: '+DB.batch_members.length+' rows loaded')}
+    save();
+    $('#impLog').innerHTML='<div class="pill ok">Added '+added+' · Updated '+updated+' · Skipped '+skipped+'</div><ul style="margin:8px 0 0 18px;color:var(--mute);font-size:13px">'+log.map(l=>'<li>'+esc(l)+'</li>').join('')+'</ul>';
+    toast('Import done');
+  };r.readAsArrayBuffer(file);
+}
+
+try{if(sessionStorage.getItem('ssap_in')==='1')enter()}catch(e){}
+</script>
+</body>
+</html>
