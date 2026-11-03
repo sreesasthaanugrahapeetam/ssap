@@ -11,14 +11,18 @@
 *{box-sizing:border-box}
 body{margin:0;font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
 button,input,select,textarea{font:inherit}
-.btn{border:0;border-radius:8px;padding:8px 14px;cursor:pointer;background:var(--saffron);color:#fff;font-weight:600}
+.btn{border:0;border-radius:8px;padding:9px 14px;min-height:40px;cursor:pointer;background:var(--saffron);color:#fff;font-weight:600}
 .btn.sec{background:#fff;color:var(--maroon);border:1px solid var(--line)}
 .btn.danger{background:var(--warn)}
-.btn.sm{padding:4px 9px;font-size:13px}
+.btn.sm{padding:5px 10px;min-height:32px;font-size:13px}
 .btn:hover{filter:brightness(1.07)}
-input,select,textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+input,select,textarea{width:100%;min-height:40px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
 label{display:block;font-size:12px;font-weight:600;color:var(--mute);margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
 .hide{display:none!important}
+:focus-visible{outline:3px solid var(--saffron);outline-offset:2px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+body:has(#drawer:not(.hide)),body:has(#modal:not(.hide)){overflow:hidden}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 
 /* login */
 #login{min-height:100vh;display:grid;place-items:center;background:linear-gradient(160deg,var(--maroon),#2b0000)}
@@ -29,12 +33,31 @@ label{display:block;font-size:12px;font-weight:600;color:var(--mute);margin-bott
 
 /* shell */
 #app{display:grid;grid-template-columns:210px 1fr;min-height:100vh}
-aside{background:var(--maroon);color:var(--cream);padding:18px 12px;position:sticky;top:0;height:100vh}
+aside{background:var(--maroon);color:var(--cream);padding:18px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;overflow:auto}
 aside h2{font-size:15px;margin:0 6px 18px;color:var(--gold)}
 aside a{display:block;padding:9px 12px;border-radius:8px;color:var(--cream);text-decoration:none;cursor:pointer;margin-bottom:3px}
 aside a.on,aside a:hover{background:rgba(255,255,255,.12)}
-aside .foot{position:absolute;bottom:14px;left:12px;right:12px;font-size:12px;opacity:.7}
-main{padding:22px 26px;min-width:0}
+aside a.on{box-shadow:inset 3px 0 0 var(--gold);font-weight:600}
+aside .navlist{display:flex;flex-direction:column}
+aside a{min-height:40px;display:flex;align-items:center}
+.mbar,#scrim{display:none}
+@media(max-width:1000px){
+ #app{grid-template-columns:1fr}
+ .mbar{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:20;background:var(--maroon);color:var(--gold);padding:8px 12px;padding-top:calc(8px + env(safe-area-inset-top));font-weight:700}
+ .burger{border:0;background:rgba(255,255,255,.12);color:var(--cream);width:44px;height:44px;border-radius:10px;font-size:22px;line-height:1;cursor:pointer}
+ aside{position:fixed;left:0;top:0;bottom:0;height:100%;width:min(280px,84vw);z-index:30;transform:translateX(-100%);transition:transform .25s;padding-top:calc(18px + env(safe-area-inset-top))}
+ body.navopen aside{transform:none;box-shadow:6px 0 30px rgba(0,0,0,.35)}
+ #scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:25}
+ body.navopen #scrim{display:block}
+ body.navopen{overflow:hidden}
+}
+aside .foot{margin-top:auto;padding-top:14px;font-size:12px;opacity:.8}
+main{padding:22px clamp(14px,2.4vw,40px);min-width:0}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;align-items:start}
+.dgrid .panel{margin-bottom:0}
+.dgrid+.panel,.cards+.dgrid{margin-top:0}
+@media(min-width:1100px){#app{grid-template-columns:230px 1fr}.cards{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}}
+@media(min-width:1200px){#drawer .sheet{width:min(960px,60vw)}}
 .top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
 .top h1{margin:0;font-size:22px;color:var(--maroon);flex:1}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px}
@@ -49,7 +72,7 @@ th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);font-
 th{font-size:12px;text-transform:uppercase;color:var(--mute);letter-spacing:.04em;background:#fff6dc;position:sticky;top:0}
 tr.row{cursor:pointer}
 tr.row:hover{background:#fff6dc}
-.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px;max-height:68vh}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px;max-height:max(320px,calc(100vh - 300px))}
 .avatar{width:34px;height:34px;border-radius:50%;background:var(--gold);color:#fff;display:inline-grid;place-items:center;font-weight:700;vertical-align:middle;margin-right:8px;overflow:hidden}
 .avatar img{width:100%;height:100%;object-fit:cover}
 .pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;background:#eee}
@@ -60,31 +83,52 @@ tr.row:hover{background:#fff6dc}
 
 /* drawer */
 #drawer{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:10;display:flex;justify-content:flex-end}
-#drawer .sheet{background:var(--bg);width:min(720px,100vw);height:100%;overflow:auto;padding:20px 22px}
-#drawer .hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+#drawer .sheet{background:var(--bg);width:min(760px,100vw);height:100%;overflow:auto;padding:20px 22px}
+#drawer .hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px;position:sticky;top:-20px;margin-top:-20px;padding:20px 0 8px;background:var(--bg);z-index:2}
 #drawer .hdr h2{margin:0;flex:1;color:var(--maroon);font-size:19px}
-.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:14px;flex-wrap:wrap}
-.tabs button{border:0;background:none;padding:8px 12px;cursor:pointer;font-weight:600;color:var(--mute);border-bottom:3px solid transparent;margin-bottom:-2px}
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:14px;overflow-x:auto;scrollbar-width:thin}
+.tabs button{white-space:nowrap;min-height:40px;border:0;background:none;padding:8px 12px;cursor:pointer;font-weight:600;color:var(--mute);border-bottom:3px solid transparent;margin-bottom:-2px}
 .tabs button.on{color:var(--saffron);border-color:var(--saffron)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
 .grid2 .full{grid-column:1/-1}
+.actbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;position:sticky;bottom:-20px;background:var(--bg);padding:12px 0 14px;border-top:1px solid var(--line);z-index:1}
+.actbar .push{margin-left:auto}
+.empty{padding:28px 12px;text-align:center;color:var(--mute)}
+.req{color:var(--warn)}
 .sub{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px;background:#fff}
 .err{color:var(--warn);font-size:13px;margin-top:4px}
 .dropzone{border:2px dashed var(--gold);border-radius:12px;padding:22px;text-align:center;color:var(--mute);background:#fffdf5}
-#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--maroon);color:#fff;padding:10px 18px;border-radius:99px;z-index:50;opacity:0;transition:.25s;pointer-events:none}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40;display:flex;align-items:center;justify-content:center;padding:16px}
+#modal .box{background:var(--bg);border-radius:12px;padding:20px 22px;width:min(420px,100%);box-shadow:0 10px 40px rgba(0,0,0,.3)}
+#modal h3{margin:0 0 10px;color:var(--maroon)}
+#modal .acts{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+#toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));max-width:90vw;left:50%;transform:translateX(-50%);background:var(--maroon);color:#fff;padding:10px 18px;border-radius:99px;z-index:50;opacity:0;transition:.25s;pointer-events:none}
 #toast.show{opacity:1}
 .bar{height:8px;border-radius:99px;background:#eee;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--saffron)}
 
 @media(max-width:760px){
  #app{grid-template-columns:1fr}
- aside{position:static;height:auto;display:flex;flex-wrap:wrap;gap:4px;padding:10px}
- aside h2,aside .foot{display:none}
  .filters{grid-template-columns:1fr 1fr}
+ .filters input:first-child{grid-column:1/-1}
  .grid2{grid-template-columns:1fr}
- main{padding:14px}
+ main{padding:14px 14px calc(14px + env(safe-area-inset-bottom))}
  .hm{display:none}
+ .tablewrap{max-height:none}
+ .top h1{flex-basis:100%}
+ .top .btn{flex:1}
+ .stat b{font-size:22px}
+ input,select,textarea{font-size:16px}
+ #drawer .sheet{width:100vw;padding:16px 14px;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+ #drawer .hdr{top:-16px;margin-top:-16px;padding-top:16px}
+ .actbar{bottom:-16px}
+ .actbar .btn{flex:1}
+ .actbar .push{margin-left:0}
+ #modal{align-items:flex-end;padding:0}
+ #modal .box{width:100%;border-radius:16px 16px 0 0;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+ #modal .acts .btn{flex:1}
 }
+@media(max-width:420px){.filters{grid-template-columns:1fr}.cards{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -94,29 +138,35 @@ tr.row:hover{background:#fff6dc}
   <form class="box" onsubmit="return doLogin(event)">
     <h1>శ్రీ శాస్త్ర అనుగ్రహ పీఠం</h1>
     <p>Devotee Manager · Admin</p>
-    <label>Passcode</label>
-    <input id="pass" type="password" placeholder="Enter passcode" autofocus>
-    <div class="err hide" id="loginErr">Wrong passcode</div>
+    <label for="pass">Passcode</label>
+    <input id="pass" type="password" placeholder="Enter passcode" autocomplete="current-password" autofocus>
+    <div class="err hide" id="loginErr" role="alert">Wrong passcode</div>
     <button class="btn" style="width:100%;margin-top:14px">Enter</button>
     <div class="hint muted">Demo passcode: <b>swamiye</b>. Prototype only, not secure.</div>
   </form>
 </div>
 
 <div id="app" class="hide">
-  <aside>
+  <header class="mbar"><button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="side" onclick="toggleNav()">☰</button><span>🕉 Peetam Admin</span></header>
+  <div id="scrim" onclick="toggleNav(false)"></div>
+  <aside id="side" aria-label="Main navigation">
     <h2>🕉 Peetam Admin</h2>
+    <nav class="navlist">
     <a data-v="dash" class="on">Dashboard</a>
     <a data-v="devotees">Devotees</a>
     <a data-v="batches">Batches / Yatra</a>
     <a data-v="payments">Payments</a>
+    <a data-v="expenses">Expenses</a>
     <a data-v="excel">Excel Import / Export</a>
-    <div class="foot">Data saved in this browser. Use Excel export to back up.<br><br><a onclick="logout()" style="padding:0;cursor:pointer;text-decoration:underline">Log out</a></div>
+    </nav>
+    <div class="foot">Data saved in this browser. Use Excel export to back up.<br><br><a href="#" onclick="logout();return false" style="padding:0;text-decoration:underline;display:inline-flex">Log out</a></div>
   </aside>
-  <main id="main"></main>
+  <main id="main" tabindex="-1"></main>
 </div>
 
-<div id="drawer" class="hide"><div class="sheet" id="sheet"></div></div>
-<div id="toast"></div>
+<div id="drawer" class="hide"><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Details"></div></div>
+<div id="modal" class="hide"></div>
+<div id="toast" role="status" aria-live="polite"></div>
 
 <script>
 /* ───────── storage ───────── */
@@ -125,11 +175,35 @@ const THIS_YEAR=new Date().getFullYear();
 const NEW_TAG='New to SSAP';
 const GOTHRAMS=['Achyuta','Agastya','Angirasa','Atreya','Aupamanyava','Badarayana','Bharadwaja','Bhargava','Bhrigu','Chyavana','Dhananjaya','Garga','Gargeya','Gautama','Haritasa','Jabali','Jamadagni','Kanva','Kapila','Kashyapa','Katyayana','Kaundinya','Kaushika','Krishnatreya','Kutsa','Lohita','Maitreya','Mandavya','Markandeya','Maudgalya','Mudgala','Naidhruva','Paingala','Parashara','Pulaha','Pulastya','Rathitara','Sandilya','Sankriti','Sathyakama','Shaunaka','Srivatsa','Upamanyu','Vadhula','Valmiki','Vamadeva','Vasishta','Vatsa','Vishnuvriddha','Vishwamitra','Vyaghrapada','Yaska'];
 let DB=load();
-function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.devotees){d.devotees.forEach(x=>{if(!x.referred_by)x.referred_by=NEW_TAG;delete x.guru_swamy});return d}}catch(e){}return seed()}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.devotees){d.devotees.forEach(x=>{if(!x.referred_by)x.referred_by=NEW_TAG;delete x.guru_swamy});if(!d.expenses)d.expenses=[];d.nextId=d.nextId||{};if(!d.nextId.exp)d.nextId.exp=d.expenses.reduce((m,e)=>Math.max(m,+e.id||0),0)+1;return d}}catch(e){}return seed()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){toast('Could not save (storage blocked)')}}
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),2200)}
+
+/* ───────── in-app dialogs (replace browser prompt/confirm) ───────── */
+function closeModal(){$('#modal').classList.add('hide');$('#modal').innerHTML=''}
+function confirmBox(msg,onOk,label){
+  window._mok=()=>{closeModal();onOk()};
+  $('#modal').innerHTML=`<div class="box" role="dialog" aria-modal="true"><h3>Please confirm</h3><div>${esc(msg)}</div>
+   <div class="acts"><button class="btn sec" onclick="closeModal()">Cancel</button><button class="btn danger" onclick="_mok()">${esc(label||'Delete')}</button></div></div>`;
+  $('#modal').classList.remove('hide');
+}
+function formBox(title,fieldsHtml,onOk,label){
+  window._mok=()=>{if(onOk()!==false)closeModal()};
+  $('#modal').innerHTML=`<form class="box" role="dialog" aria-modal="true" onsubmit="_mok();return false"><h3>${esc(title)}</h3>${fieldsHtml}
+   <div class="acts"><button type="button" class="btn sec" onclick="closeModal()">Cancel</button><button class="btn">${esc(label||'Save')}</button></div></form>`;
+  $('#modal').classList.remove('hide');const f=$('#modal input');if(f)f.focus();
+}
+
+/* ───────── a11y helpers: label↔control linking, Esc, keyboard rows ───────── */
+let _lid=0;
+function linkLabels(root){root.querySelectorAll('label:not([for])').forEach(l=>{if(l.querySelector('input,select,textarea'))return;const c=l.nextElementSibling;if(!c||!/^(INPUT|SELECT|TEXTAREA)$/.test(c.tagName))return;if(!c.id)c.id='ax'+(++_lid);l.htmlFor=c.id;if(/\*/.test(l.textContent))c.setAttribute('aria-required','true')})}
+['#main','#sheet','#modal'].forEach(q=>new MutationObserver(()=>linkLabels($(q))).observe($(q),{childList:true,subtree:true}));
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){if(document.body.classList.contains('navopen'))toggleNav(false);else if(!$('#modal').classList.contains('hide'))closeModal();else if(!$('#drawer').classList.contains('hide'))closeDrawer()}
+  if(e.key==='Enter'&&e.target.matches&&e.target.matches('tr.row')){e.target.click()}
+});
 
 /* phone = devotee id, normalised to +91XXXXXXXXXX */
 function normPhone(p){
@@ -171,10 +245,10 @@ function seed(){
       {phone:'+919848044444',year:THIS_YEAR-1,malai_date:(THIS_YEAR-1)+'-11-17',end_date:(THIS_YEAR-1)+'-12-28',mandala_days:41,irumudi_date:(THIS_YEAR-1)+'-12-27'},
     ],
     payments:[
-      {id:1,phone:'+919848011111',type:'Annadanam',amount:5000,date:THIS_YEAR+'-10-02',mode:'UPI',status:'Paid',note:'Morning meal 20-Nov'},
-      {id:2,phone:'+919848022222',type:'Pooja',amount:1500,date:THIS_YEAR+'-10-05',mode:'Cash',status:'Paid',note:'Mandala pooja'},
+      {id:1,phone:'+919848011111',type:'Annadanam',service_date:THIS_YEAR+'-11-20',session:'Morning',amount:5000,date:THIS_YEAR+'-10-02',mode:'UPI',status:'Paid',note:'Morning meal 20-Nov'},
+      {id:2,phone:'+919848022222',type:'Pooja',service_date:THIS_YEAR+'-11-17',session:'Evening',amount:1500,date:THIS_YEAR+'-10-05',mode:'Cash',status:'Paid',note:'Mandala pooja'},
       {id:3,phone:'+919848033333',type:'Yatra',amount:6000,date:'',mode:'',status:'Pending',note:'Bus seat'},
-      {id:4,phone:'+919848055555',type:'Annadanam',amount:10000,date:THIS_YEAR+'-10-10',mode:'UPI',status:'Paid',note:'Full day'},
+      {id:4,phone:'+919848055555',type:'Annadanam',service_date:THIS_YEAR+'-11-25',session:'Evening',amount:10000,date:THIS_YEAR+'-10-10',mode:'UPI',status:'Paid',note:'Full day'},
       {id:5,phone:'+919848011111',type:'Yatra',amount:6000,date:'',mode:'',status:'Pending',note:'Bus seat'},
     ],
     batches:[
@@ -184,7 +258,13 @@ function seed(){
     batch_members:[
       {batch_id:1,phone:'+919848011111'},{batch_id:1,phone:'+919848022222'},{batch_id:1,phone:'+919848055555'},{batch_id:2,phone:'+919848033333'},
     ],
-    nextId:{pay:6,batch:3}
+    expenses:[
+      {id:1,date:THIS_YEAR+'-10-03',category:'Annadanam supplies',amount:8200,mode:'Cash',paid_to:'Sri Lakshmi Provisions',note:'Rice, dal, oil'},
+      {id:2,date:THIS_YEAR+'-10-06',category:'Pooja items',amount:2400,mode:'UPI',paid_to:'Flower market',note:'Garlands, camphor, ghee'},
+      {id:3,date:THIS_YEAR+'-10-12',category:'Utilities',amount:3100,mode:'Bank',paid_to:'TSSPDCL',note:'Electricity bill'},
+      {id:4,date:THIS_YEAR+'-10-20',category:'Yatra / Transport',amount:12000,mode:'UPI',paid_to:'Bus operator',note:'Advance for Bus A'},
+    ],
+    nextId:{pay:6,batch:3,exp:5}
   };
   try{localStorage.setItem(KEY,JSON.stringify(d))}catch(e){}
   return d;
@@ -219,9 +299,11 @@ function logout(){try{sessionStorage.removeItem('ssap_in')}catch(x){}location.re
 
 /* ───────── router ───────── */
 let view='dash',filt={q:'',deeksha:'',batch:'',dues:''};
+document.querySelectorAll('aside a').forEach(a=>{a.tabIndex=0;a.setAttribute('role','button');a.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();a.click()}})});
 document.querySelectorAll('aside a[data-v]').forEach(a=>a.onclick=()=>go(a.dataset.v));
-function go(v){view=v;document.querySelectorAll('aside a[data-v]').forEach(a=>a.classList.toggle('on',a.dataset.v===v));
-  ({dash:vDash,devotees:vDevotees,batches:vBatches,payments:vPayments,excel:vExcel})[v]()}
+function toggleNav(on){const o=on==null?!document.body.classList.contains('navopen'):on;document.body.classList.toggle('navopen',o);const b=$('#burger');b.setAttribute('aria-expanded',o);b.setAttribute('aria-label',o?'Close menu':'Open menu');if(o){const a=$('aside a.on');a&&a.focus()}else if(document.activeElement&&document.activeElement.closest('aside'))b.focus()}
+function go(v){toggleNav(false);view=v;document.querySelectorAll('aside a[data-v]').forEach(a=>{const on=a.dataset.v===v;a.classList.toggle('on',on);on?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current');if(on&&a.scrollIntoView)a.scrollIntoView({block:'nearest',inline:'nearest'})});
+  ({dash:vDash,devotees:vDevotees,batches:vBatches,payments:vPayments,expenses:vExpenses,excel:vExcel})[v]()}
 
 /* ───────── dashboard ───────── */
 function vDash(){
@@ -229,6 +311,7 @@ function vDash(){
   const dues=DB.payments.filter(p=>p.status==='Pending').reduce((s,p)=>s+(+p.amount||0),0);
   const paid=DB.payments.filter(p=>p.status==='Paid').reduce((s,p)=>s+(+p.amount||0),0);
   const unassigned=active.filter(x=>!batchOf(x.phone)).length;
+  const spent=DB.expenses.reduce((s,e)=>s+(+e.amount||0),0);
   const upcoming=DB.devotees.map(d=>({d,dk:curDeeksha(d.phone)})).filter(x=>x.dk&&!x.dk.end_date).map(x=>({...x,left:daysLeft(x.dk)})).filter(x=>x.left!=null&&x.left>=0).sort((a,b)=>a.left-b.left).slice(0,5);
   $('#main').innerHTML=`
   <div class="top"><h1>Dashboard</h1><button class="btn" onclick="openDevotee()">+ Add devotee</button></div>
@@ -238,12 +321,16 @@ function vDash(){
     <div class="stat"><b>${unassigned}</b><span>Not in any batch</span></div>
     <div class="stat"><b>${money(paid)}</b><span>Collected</span></div>
     <div class="stat"><b>${money(dues)}</b><span>Pending dues</span></div>
+    <div class="stat"><b>${money(spent)}</b><span>Expenses</span></div>
+    <div class="stat"><b>${money(paid-spent)}</b><span>Balance (collected − expenses)</span></div>
   </div>
+  <div class="dgrid">
   <div class="panel"><h3>Deeksha ending soonest</h3>
-   ${upcoming.length?'<table><tr><th>Devotee</th><th>Mandala</th><th>Days left</th></tr>'+upcoming.map(x=>`<tr class="row" onclick="openDevotee('${x.d.phone}')"><td>${esc(x.d.full_name)}</td><td>${x.dk.mandala_days} days</td><td>${x.left}</td></tr>`).join('')+'</table>':'<span class="muted">None running right now.</span>'}
+   ${upcoming.length?'<table><tr><th>Devotee</th><th>Mandala</th><th>Days left</th></tr>'+upcoming.map(x=>`<tr class="row" tabindex="0" onclick="openDevotee('${x.d.phone}')"><td>${esc(x.d.full_name)}</td><td>${x.dk.mandala_days} days</td><td>${x.left}</td></tr>`).join('')+'</table>':'<span class="muted">None running right now.</span>'}
   </div>
   <div class="panel"><h3>Batches ${THIS_YEAR}</h3>
    ${DB.batches.filter(b=>b.year===THIS_YEAR).map(b=>{const n=DB.batch_members.filter(m=>m.batch_id===b.id).length;return`<div style="margin-bottom:10px"><b>${esc(b.name)}</b> <span class="muted">· ${esc(b.travel_date)} · ${n}/${b.capacity}</span><div class="bar"><i style="width:${Math.min(100,n/b.capacity*100)}%"></i></div></div>`}).join('')||'<span class="muted">No batches yet.</span>'}
+  </div>
   </div>`;
 }
 
@@ -276,11 +363,11 @@ function renderRows(){
     if(filt.dues==='due'&&!duesOf(d.phone))return false;
     return true;
   });
-  $('#tb').innerHTML=rows.map(d=>{const dues=duesOf(d.phone),b=batchOf(d.phone);return`<tr class="row" onclick="openDevotee('${d.phone}')">
+  $('#tb').innerHTML=rows.map(d=>{const dues=duesOf(d.phone),b=batchOf(d.phone);return`<tr class="row" tabindex="0" onclick="openDevotee('${d.phone}')">
     <td><span class="avatar">${d.photo?`<img src="${esc(d.photo)}" alt="">`:esc(initials(d.full_name))}</span>${esc(d.full_name)}${d.active==='no'?' <span class="pill warn">inactive</span>':''}</td>
     <td>${esc(fmtPhone(d.phone))}</td><td class="hm">${d.referred_by&&d.referred_by!==NEW_TAG?esc(d.referred_by):'<span class="pill gold">'+NEW_TAG+'</span>'}</td>
     <td>${deekshaPill(curDeeksha(d.phone))}</td><td class="hm">${b?esc(b.name):'<span class="muted">—</span>'}</td>
-    <td>${dues?'<span class="pill warn">'+money(dues)+'</span>':'<span class="pill ok">Clear</span>'}</td></tr>`}).join('')||'<tr><td colspan="6" class="muted">No devotees match.</td></tr>';
+    <td>${dues?'<span class="pill warn">'+money(dues)+'</span>':'<span class="pill ok">Clear</span>'}</td></tr>`}).join('')||'<tr><td colspan="6" class="empty">'+(DB.devotees.length?'No devotees match these filters.':'No devotees yet. Click “+ Add devotee” to start.')+'</td></tr>';
   $('#cnt').textContent=rows.length+' of '+DB.devotees.length+' devotees';
 }
 
@@ -290,9 +377,10 @@ function openDevotee(phone){
   isNew=!phone;tab='basics';
   editing=phone?JSON.parse(JSON.stringify(dev(phone))):{phone:'',full_name:'',email:'',address:'',dob:'',blood_group:'',gothram:'',referred_by:NEW_TAG,photo:'',notes:'',active:'yes'};
   editing._orig=phone||'';
-  $('#drawer').classList.remove('hide');drawSheet();
+  $('#drawer').classList.remove('hide');drawSheet();focusSheet();
 }
 function closeDrawer(){$('#drawer').classList.add('hide')}
+function focusSheet(){const f=$('#sheet input:not([type=file]),#sheet select');if(f&&matchMedia('(min-width:761px)').matches)f.focus()}
 $('#drawer').addEventListener('mousedown',e=>{if(e.target.id==='drawer')closeDrawer()});
 function drawSheet(){
   const e=editing,ph=e._orig;
@@ -312,8 +400,8 @@ function tBasics(){
   const e=editing;
   $('#tabbody').innerHTML=`<div class="grid2">
    <div><label>Full name *</label><input id="f_full_name" value="${esc(e.full_name)}"><div class="err hide" id="nmErr"></div></div>
-   <div><label>Phone (devotee ID) *</label><input id="f_phone" value="${esc(isNew?e.phone:fmtPhone(e.phone))}" placeholder="98480 11111"><div class="err hide" id="phErr"></div></div>
-   <div><label>Email</label><input id="f_email" value="${esc(e.email)}"></div>
+   <div><label>Phone (devotee ID) *</label><input id="f_phone" type="tel" inputmode="tel" autocomplete="off" value="${esc(isNew?e.phone:fmtPhone(e.phone))}" placeholder="98480 11111"><div class="err hide" id="phErr"></div></div>
+   <div><label>Email</label><input id="f_email" type="email" inputmode="email" autocomplete="off" value="${esc(e.email)}"></div>
    <div><label>Date of birth</label><input id="f_dob" type="date" value="${esc(e.dob)}"></div>
    <div><label>Blood group</label><select id="f_blood_group">${['','A+','A-','B+','B-','AB+','AB-','O+','O-'].map(b=>`<option ${b===e.blood_group?'selected':''}>${b}</option>`).join('')}</select></div>
    <div><label>Gothram *</label><input id="f_gothram" list="gothramList" autocomplete="off" placeholder="Pick or type" value="${esc(e.gothram)}"><datalist id="gothramList">${GOTHRAMS.map(g=>`<option value="${g}">`).join('')}</datalist><div class="err hide" id="gtErr"></div></div>
@@ -323,9 +411,9 @@ function tBasics(){
    <div class="full"><label>Photo</label><input type="file" accept="image/*" id="f_photo"><div class="muted" style="font-size:12px">Prototype stores a small resized copy in this browser.</div></div>
    <div class="full"><label>Notes</label><textarea id="f_notes" rows="2">${esc(e.notes)}</textarea></div>
   </div>
-  <div style="display:flex;gap:8px;margin-top:16px">
+  <div class="actbar">
    <button class="btn" onclick="saveBasics()">${isNew?'Create devotee':'Save changes'}</button>
-   ${isNew?'':'<button class="btn danger" onclick="delDevotee()">Delete</button>'}
+   ${isNew?'':'<button class="btn danger push" onclick="delDevotee()">Delete</button>'}
   </div>`;
   $('#f_photo').onchange=ev=>{const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),s=160,k=Math.min(1,s/Math.max(im.width,im.height));c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);editing.photo=c.toDataURL('image/jpeg',.7);toast('Photo ready, click Save')};im.src=r.result};r.readAsDataURL(f)};
 }
@@ -353,7 +441,9 @@ function saveBasics(){
   if(view==='devotees')renderRows();else go(view);
 }
 function delDevotee(){
-  const p=editing._orig;if(!confirm('Delete '+editing.full_name+' and all linked records? This cannot be undone.'))return;
+  const p=editing._orig;confirmBox('Delete '+editing.full_name+' and all linked records? This cannot be undone.',()=>doDelDevotee(p));
+}
+function doDelDevotee(p){
   DB.devotees=DB.devotees.filter(d=>d.phone!==p);
   ['family','deekshas','payments','batch_members'].forEach(t=>DB[t]=DB[t].filter(r=>r.phone!==p));
   save();closeDrawer();go(view);toast('Deleted');
@@ -371,8 +461,11 @@ function tSpiritual(){
    +`<button class="btn sec" onclick="addDeeksha()">+ Add deeksha year</button>`;
 }
 function upd(t,p,y,k,v){const r=DB[t].find(x=>x.phone===p&&x.year===y);if(r){r[k]=v;save();toast('Saved');if(k==='end_date'||k==='malai_date'||k==='mandala_days')tSpiritual()}}
-function addDeeksha(){const p=editing._orig;const y=+prompt('Year?',THIS_YEAR);if(!y)return;if(DB.deekshas.some(x=>x.phone===p&&x.year===y)){toast('Year already exists');return}
-  DB.deekshas.push({phone:p,year:y,malai_date:'',end_date:'',mandala_days:41,irumudi_date:''});save();tSpiritual()}
+function addDeeksha(){const p=editing._orig;
+  formBox('Add deeksha year',`<label>Year</label><input id="dy" type="number" min="2000" value="${THIS_YEAR}">`,()=>{
+    const y=+$('#dy').value;if(!(y>0)){toast('Enter a valid year');return false}
+    if(DB.deekshas.some(x=>x.phone===p&&x.year===y)){toast('Year already exists');return false}
+    DB.deekshas.push({phone:p,year:y,malai_date:'',end_date:'',mandala_days:41,irumudi_date:''});save();tSpiritual()},'Add')}
 function delDeeksha(p,y){DB.deekshas=DB.deekshas.filter(x=>!(x.phone===p&&x.year===y));save();tSpiritual()}
 
 function tFamily(){
@@ -390,19 +483,25 @@ function tFamily(){
 function tPay(){
   const p=editing._orig,list=DB.payments.map((x,i)=>({x,i})).filter(o=>o.x.phone===p);
   $('#tabbody').innerHTML=(list.length?`<table><tr><th>Type</th><th>Amount</th><th>Status</th><th>Date</th><th></th></tr>${list.map(({x,i})=>`<tr>
-   <td>${esc(x.type)}<div class="muted" style="font-size:12px">${esc(x.note)}</div></td><td>${money(x.amount)}</td>
+   <td>${esc(x.type)}${x.service_date?' <span class="pill gold">'+esc(x.service_date)+(x.session?' · '+esc(x.session):'')+'</span>':''}<div class="muted" style="font-size:12px">${esc(x.note)}</div></td><td>${money(x.amount)}</td>
    <td><span class="pill ${x.status==='Paid'?'ok':'warn'}">${esc(x.status)}</span></td><td>${esc(x.date)}</td>
    <td style="white-space:nowrap">${x.status==='Pending'?`<button class="btn sm" onclick="markPaid(${i})">Mark paid</button> `:''}<button class="btn danger sm" onclick="DB.payments.splice(${i},1);save();tPay()">✕</button></td></tr>`).join('')}</table>`:'<div class="muted">No payments yet.</div>')
   +`<div class="sub" style="margin-top:12px"><b>Add payment</b><div class="grid2" style="margin-top:8px">
-    <div><label>Type</label><select id="pt"><option>Annadanam</option><option>Pooja</option><option>Yatra</option><option>Donation</option><option>Other</option></select></div>
-    <div><label>Amount (₹)</label><input id="pa" type="number" min="0"></div>
+    <div><label>Type</label><select id="pt" onchange="togSvc()"><option>Annadanam</option><option>Alpaharam</option><option>Pooja</option><option>Yatra</option><option>Donation</option><option>Other</option></select></div>
+    <div id="svcWrap"><label id="svcLbl" for="psd">Annadanam date *</label><input id="psd" type="date"></div>
+    <div id="sessWrap"><label for="pse">Session</label><select id="pse"><option>Morning</option><option>Evening</option></select></div>
+    <div><label>Amount (₹) *</label><input id="pa" type="number" min="0" inputmode="decimal"></div>
     <div><label>Status</label><select id="ps"><option>Paid</option><option>Pending</option></select></div>
     <div><label>Mode</label><select id="pm"><option>UPI</option><option>Cash</option><option>Bank</option></select></div>
     <div class="full"><label>Note</label><input id="pn"></div></div>
     <button class="btn" style="margin-top:8px" onclick="addPay()">Add</button></div>`;
+  togSvc();
 }
-function addPay(){const a=+$('#pa').value;if(!a){toast('Enter amount');return}const st=$('#ps').value;
-  DB.payments.push({id:DB.nextId.pay++,phone:editing._orig,type:$('#pt').value,amount:a,date:st==='Paid'?new Date().toISOString().slice(0,10):'',mode:st==='Paid'?$('#pm').value:'',status:st,note:$('#pn').value});save();tPay();toast('Added')}
+const SVC_TYPES=['Annadanam','Alpaharam','Pooja'];
+function togSvc(){const t=$('#pt').value,on=SVC_TYPES.includes(t);$('#svcWrap').classList.toggle('hide',!on);$('#sessWrap').classList.toggle('hide',!on);if(on)$('#svcLbl').textContent=t+' date *'}
+function addPay(){const a=+$('#pa').value;if(!(a>0)){toast('Enter amount');return}const st=$('#ps').value,t=$('#pt').value,sd=SVC_TYPES.includes(t)?$('#psd').value:'',se=SVC_TYPES.includes(t)?$('#pse').value:'';
+  if(SVC_TYPES.includes(t)&&!sd){toast('Pick the '+t.toLowerCase()+' date');$('#psd').focus();return}
+  DB.payments.push({id:DB.nextId.pay++,phone:editing._orig,type:t,service_date:sd,session:se,amount:a,date:st==='Paid'?new Date().toISOString().slice(0,10):'',mode:st==='Paid'?$('#pm').value:'',status:st,note:$('#pn').value});save();tPay();toast('Added')}
 function markPaid(i){const x=DB.payments[i];x.status='Paid';x.date=new Date().toISOString().slice(0,10);x.mode=x.mode||'UPI';save();tPay()}
 
 function tYatra(){
@@ -425,15 +524,29 @@ function vBatches(){
      <div class="muted" style="margin:4px 0 8px">${esc(b.travel_date)} · ${esc(b.vehicle)} ${b.notes?'· '+esc(b.notes):''}</div>
      ${mem.map(d=>`<span class="pill" style="cursor:pointer;margin:2px" onclick="openDevotee('${d.phone}')">${esc(d.full_name)}</span>`).join('')||'<span class="muted">No members yet. Assign from a devotee’s Yatra tab.</span>'}</div>`}).join('')||'<div class="muted">No batches.</div>');
 }
-function addBatch(){const name=prompt('Batch name?','Batch '+(DB.batches.length+1));if(!name)return;
-  DB.batches.push({id:DB.nextId.batch++,year:THIS_YEAR,name,travel_date:'',vehicle:'',capacity:45,notes:''});save();editBatch(DB.batches[DB.batches.length-1].id)}
-function editBatch(id){const b=DB.batches.find(x=>x.id===id);
-  const name=prompt('Name',b.name);if(name===null)return;b.name=name;
-  const td=prompt('Travel date (YYYY-MM-DD)',b.travel_date);if(td!==null)b.travel_date=td;
-  const v=prompt('Vehicle',b.vehicle);if(v!==null)b.vehicle=v;
-  const c=prompt('Capacity',b.capacity);if(c!==null&&+c>0)b.capacity=+c;
-  save();vBatches()}
-function delBatch(id){if(!confirm('Delete batch? Members become unassigned.'))return;DB.batches=DB.batches.filter(b=>b.id!==id);DB.batch_members=DB.batch_members.filter(m=>m.batch_id!==id);save();vBatches()}
+function addBatch(){openBatch()}
+function editBatch(id){openBatch(id)}
+function openBatch(id){
+  const b=id==null?{year:THIS_YEAR,name:'Batch '+(DB.batches.length+1),travel_date:'',vehicle:'',capacity:45,notes:''}:DB.batches.find(x=>x.id===id);
+  $('#sheet').innerHTML=`<div class="hdr"><h2>${id==null?'New':'Edit'} batch</h2><button class="btn sec" onclick="closeDrawer()">Close</button></div>
+  <div class="grid2">
+   <div class="full"><label>Batch name *</label><input id="bn" value="${esc(b.name)}"></div>
+   <div><label>Year</label><input id="by" type="number" min="2000" value="${esc(b.year)}"></div>
+   <div><label>Travel date</label><input id="bd" type="date" value="${esc(b.travel_date)}"></div>
+   <div><label>Vehicle</label><input id="bv" value="${esc(b.vehicle)}" placeholder="Bus A (45 seats)"></div>
+   <div><label>Capacity *</label><input id="bc" type="number" min="1" value="${esc(b.capacity)}"></div>
+   <div class="full"><label>Notes</label><input id="bt" value="${esc(b.notes)}" placeholder="Depart 5 AM from Peetam"></div></div>
+  <div class="actbar"><button class="btn" onclick="saveBatch(${id==null?'null':id})">Save</button><button class="btn sec" onclick="closeDrawer()">Cancel</button></div>`;
+  $('#drawer').classList.remove('hide');focusSheet();
+}
+function saveBatch(id){
+  const name=$('#bn').value.trim(),cap=+$('#bc').value,yr=+$('#by').value;
+  if(!name){toast('Enter batch name');return}if(!(cap>0)){toast('Enter a valid capacity');return}if(!(yr>0)){toast('Enter a valid year');return}
+  const r={year:yr,name,travel_date:$('#bd').value,vehicle:$('#bv').value.trim(),capacity:cap,notes:$('#bt').value.trim()};
+  if(id==null)DB.batches.push({id:DB.nextId.batch++,...r});else Object.assign(DB.batches.find(x=>x.id===id),r);
+  save();closeDrawer();toast('Saved');vBatches();
+}
+function delBatch(id){confirmBox('Delete batch? Members become unassigned.',()=>{DB.batches=DB.batches.filter(b=>b.id!==id);DB.batch_members=DB.batch_members.filter(m=>m.batch_id!==id);save();vBatches()})}
 
 /* ───────── payments view ───────── */
 function vPayments(){
@@ -441,29 +554,76 @@ function vPayments(){
   const tot=s=>rows.filter(r=>r.p.status===s).reduce((a,r)=>a+(+r.p.amount||0),0);
   $('#main').innerHTML=`<div class="top"><h1>Payments</h1></div>
   <div class="cards"><div class="stat"><b>${money(tot('Paid'))}</b><span>Collected</span></div><div class="stat"><b>${money(tot('Pending'))}</b><span>Pending</span></div></div>
-  <div class="tablewrap"><table><thead><tr><th>Devotee</th><th>Type</th><th>Amount</th><th>Status</th><th class="hm">Date</th><th></th></tr></thead><tbody>
-  ${rows.map(({p,i,d})=>`<tr><td><a href="#" onclick="openDevotee('${p.phone}');return false">${esc(d?d.full_name:p.phone)}</a></td><td>${esc(p.type)}</td><td>${money(p.amount)}</td>
+  <div class="tablewrap"><table><thead><tr><th>Devotee</th><th>Type</th><th>Service date</th><th>Amount</th><th>Status</th><th class="hm">Paid on</th><th></th></tr></thead><tbody>
+  ${rows.map(({p,i,d})=>`<tr><td><a href="#" onclick="openDevotee('${p.phone}');return false">${esc(d?d.full_name:p.phone)}</a></td><td>${esc(p.type)}</td><td>${p.service_date?esc(p.service_date)+(p.session?' <span class="pill gold">'+esc(p.session)+'</span>':''):'<span class="muted">—</span>'}</td><td>${money(p.amount)}</td>
    <td><span class="pill ${p.status==='Paid'?'ok':'warn'}">${esc(p.status)}</span></td><td class="hm">${esc(p.date)}</td>
    <td>${p.status==='Pending'?`<button class="btn sm" onclick="markPaid(${i});vPayments()">Mark paid</button>`:''}</td></tr>`).join('')}</tbody></table></div>`;
 }
+
+/* ───────── expenses view ───────── */
+const EXP_CATS=['Annadanam supplies','Pooja items','Yatra / Transport','Utilities','Maintenance','Honorarium / Salaries','Events','Other'];
+let expF={q:'',cat:'',month:''};
+function vExpenses(){
+  const all=DB.expenses,sum=l=>l.reduce((a,e)=>a+(+e.amount||0),0);
+  const mk=new Date().toISOString().slice(0,7);
+  const byCat={};all.forEach(e=>byCat[e.category]=(byCat[e.category]||0)+(+e.amount||0));
+  const months=[...new Set(all.map(e=>String(e.date).slice(0,7)).filter(Boolean))].sort().reverse();
+  const q=expF.q.trim().toLowerCase();
+  const rows=all.map((e,i)=>({e,i})).filter(({e})=>(!expF.cat||e.category===expF.cat)&&(!expF.month||String(e.date).slice(0,7)===expF.month)&&(!q||(e.paid_to+' '+e.note+' '+e.category).toLowerCase().includes(q))).sort((a,b)=>String(b.e.date).localeCompare(String(a.e.date)));
+  const paid=DB.payments.filter(p=>p.status==='Paid').reduce((a,p)=>a+(+p.amount||0),0);
+  $('#main').innerHTML=`<div class="top"><h1>Expenses</h1><button class="btn" onclick="openExpense()">+ Add expense</button></div>
+  <div class="cards"><div class="stat"><b>${money(sum(all))}</b><span>Total expenses</span></div>
+   <div class="stat"><b>${money(sum(all.filter(e=>String(e.date).slice(0,7)===mk)))}</b><span>This month</span></div>
+   <div class="stat"><b>${money(paid-sum(all))}</b><span>Balance (collected − expenses)</span></div></div>
+  <div class="panel"><h3>By category</h3>${Object.keys(byCat).sort((a,b)=>byCat[b]-byCat[a]).map(c=>`<div style="margin-bottom:8px"><span>${esc(c)}</span> <span class="muted">· ${money(byCat[c])}</span><div class="bar"><i style="width:${Math.min(100,byCat[c]/sum(all)*100)}%"></i></div></div>`).join('')||'<span class="muted">No expenses yet.</span>'}</div>
+  <div class="filters"><input id="eq" placeholder="Search paid to, note…" value="${esc(expF.q)}">
+   <select id="ec"><option value="">All categories</option>${EXP_CATS.map(c=>`<option ${expF.cat===c?'selected':''}>${esc(c)}</option>`).join('')}</select>
+   <select id="em"><option value="">All months</option>${months.map(m=>`<option ${expF.month===m?'selected':''}>${m}</option>`).join('')}</select></div>
+  <div class="tablewrap"><table><thead><tr><th>Date</th><th>Category</th><th>Paid to</th><th>Amount</th><th class="hm">Mode</th><th></th></tr></thead><tbody>
+  ${rows.map(({e,i})=>`<tr><td>${esc(e.date)}</td><td>${esc(e.category)}<div class="muted" style="font-size:12px">${esc(e.note)}</div></td><td>${esc(e.paid_to)}</td><td>${money(e.amount)}</td><td class="hm">${esc(e.mode)}</td>
+   <td style="white-space:nowrap"><button class="btn sec sm" onclick="openExpense(${i})">Edit</button> <button class="btn danger sm" onclick="delExpense(${i})">✕</button></td></tr>`).join('')||'<tr><td colspan="6" class="empty">'+(DB.expenses.length?'No expenses match these filters.':'No expenses yet. Click “+ Add expense”.')+'</td></tr>'}</tbody></table></div>`;
+  const rf=()=>{expF={q:$('#eq').value,cat:$('#ec').value,month:$('#em').value};const pos=$('#eq').selectionStart;vExpenses();const n=$('#eq');n.focus();n.setSelectionRange(pos,pos)};
+  $('#eq').oninput=rf;$('#ec').onchange=rf;$('#em').onchange=rf;
+}
+function openExpense(i){
+  const e=i==null?{date:new Date().toISOString().slice(0,10),category:EXP_CATS[0],amount:'',mode:'Cash',paid_to:'',note:''}:DB.expenses[i];
+  $('#sheet').innerHTML=`<div class="hdr"><h2>${i==null?'Add':'Edit'} expense</h2><button class="btn sec" onclick="closeDrawer()">Close</button></div>
+  <div class="grid2">
+   <div><label>Date</label><input id="xd" type="date" value="${esc(e.date)}"></div>
+   <div><label>Amount (₹) *</label><input id="xa" type="number" min="0" value="${esc(e.amount)}"></div>
+   <div><label>Category</label><select id="xc">${EXP_CATS.map(c=>`<option ${e.category===c?'selected':''}>${esc(c)}</option>`).join('')}</select></div>
+   <div><label>Mode</label><select id="xm">${['Cash','UPI','Bank'].map(m=>`<option ${e.mode===m?'selected':''}>${m}</option>`).join('')}</select></div>
+   <div class="full"><label>Paid to</label><input id="xp" value="${esc(e.paid_to)}"></div>
+   <div class="full"><label>Note</label><input id="xn" value="${esc(e.note)}"></div></div>
+  <div class="actbar"><button class="btn" onclick="saveExpense(${i==null?'null':i})">Save</button><button class="btn sec" onclick="closeDrawer()">Cancel</button></div>`;
+  $('#drawer').classList.remove('hide');focusSheet();
+}
+function saveExpense(i){
+  const a=+$('#xa').value,d=$('#xd').value;if(!(a>0)){toast('Enter a valid amount');return}if(!d){toast('Pick a date');return}
+  const r={date:d,category:$('#xc').value,amount:a,mode:$('#xm').value,paid_to:$('#xp').value.trim(),note:$('#xn').value.trim()};
+  if(i==null)DB.expenses.push({id:DB.nextId.exp++,...r});else DB.expenses[i]={...DB.expenses[i],...r};
+  save();closeDrawer();toast('Saved');vExpenses();
+}
+function delExpense(i){confirmBox('Delete this expense?',()=>{DB.expenses.splice(i,1);save();vExpenses()})}
 
 /* ───────── Excel import / export ───────── */
 const SHEETS={Devotees:['phone','full_name','email','address','dob','blood_group','gothram','referred_by','active','notes'],
   Family:['phone','name','relation','member_phone','emergency'],
   Deekshas:['phone','year','malai_date','irumudi_date','mandala_days','end_date'],
-  Payments:['phone','type','amount','date','mode','status','note'],
+  Payments:['phone','type','service_date','session','amount','date','mode','status','note'],
+  Expenses:['id','date','category','amount','mode','paid_to','note'],
   Batches:['id','year','name','travel_date','vehicle','capacity','notes'],
   BatchMembers:['batch_id','phone']};
-const KEYMAP={Devotees:'devotees',Family:'family',Deekshas:'deekshas',Payments:'payments',Batches:'batches',BatchMembers:'batch_members'};
+const KEYMAP={Devotees:'devotees',Family:'family',Deekshas:'deekshas',Payments:'payments',Expenses:'expenses',Batches:'batches',BatchMembers:'batch_members'};
 function vExcel(){
   $('#main').innerHTML=`<div class="top"><h1>Excel Import / Export</h1></div>
   <div class="panel"><h3>1 · Export</h3><p class="muted">One workbook, one sheet per table. Keep it as your master copy.</p>
    <button class="btn" onclick="exportXlsx()">⬇ Download peetam-devotees.xlsx</button>
    <button class="btn sec" onclick="templateXlsx()">⬇ Blank template</button></div>
-  <div class="panel"><h3>2 · Import</h3><p class="muted">Sheets: Devotees, Family, Deekshas, Payments, Batches, BatchMembers. <b>phone</b> column is the ID. Existing phones are updated, new ones added.</p>
+  <div class="panel"><h3>2 · Import</h3><p class="muted">Sheets: Devotees, Family, Deekshas, Payments, Expenses, Batches, BatchMembers. <b>phone</b> column is the ID. Existing phones are updated, new ones added.</p>
    <div class="dropzone" id="dz">Drop .xlsx here or <input type="file" id="xf" accept=".xlsx,.xls,.csv"></div><div id="impLog" style="margin-top:10px"></div></div>
-  <div class="panel"><h3>3 · Reset</h3><button class="btn danger" onclick="if(confirm('Replace everything with demo data?')){DB=seed();toast('Demo data restored');vExcel()}">Reset to demo data</button>
-   <button class="btn danger" onclick="if(confirm('Delete ALL data?')){DB={devotees:[],family:[],deekshas:[],payments:[],batches:[],batch_members:[],nextId:{pay:1,batch:1}};save();toast('Cleared');vExcel()}">Clear all</button></div>`;
+  <div class="panel"><h3>3 · Reset</h3><button class="btn danger" onclick="confirmBox('Replace everything with demo data?',()=>{DB=seed();toast('Demo data restored');vExcel()},'Replace')">Reset to demo data</button>
+   <button class="btn danger" onclick="confirmBox('Delete ALL data?',()=>{DB={devotees:[],family:[],deekshas:[],payments:[],batches:[],batch_members:[],expenses:[],nextId:{pay:1,batch:1,exp:1}};save();toast('Cleared');vExcel()},'Delete all')">Clear all</button></div>`;
   $('#xf').onchange=e=>e.target.files[0]&&importXlsx(e.target.files[0]);
   const dz=$('#dz');dz.ondragover=e=>{e.preventDefault()};dz.ondrop=e=>{e.preventDefault();e.dataTransfer.files[0]&&importXlsx(e.dataTransfer.files[0])};
 }
@@ -498,6 +658,9 @@ function importXlsx(file){
       DB[tk]=DB[tk].filter(x=>!phones.has(x.phone)).concat(out);log.push(sn+': '+out.length+' rows loaded')};
     child('Family','family');child('Deekshas','deekshas');child('Payments','payments');
     DB.payments.forEach(p=>{if(!p.id)p.id=DB.nextId.pay++});
+    const ex=sheet('Expenses');if(ex.length){let n=0;ex.forEach((x,i)=>{const amt=+String(x.amount).replace(/[^\d.]/g,'');if(!(amt>0)||!String(x.date).trim()){log.push('Expenses row '+(i+2)+': date and amount required, skipped');return}
+      const rec={id:0,date:String(x.date).trim(),category:String(x.category||'Other').trim(),amount:amt,mode:String(x.mode||'').trim(),paid_to:String(x.paid_to||'').trim(),note:String(x.note||'').trim()};
+      const ix=+x.id>0?DB.expenses.findIndex(e=>e.id===+x.id):-1;if(ix>=0){rec.id=DB.expenses[ix].id;DB.expenses[ix]=rec}else{rec.id=DB.nextId.exp++;DB.expenses.push(rec)}n++});log.push('Expenses: '+n+' rows loaded')}
     const bs=sheet('Batches');if(bs.length){bs.forEach(b=>{const id=+b.id||DB.nextId.batch++;const rec={id,year:+b.year||THIS_YEAR,name:b.name,travel_date:b.travel_date,vehicle:b.vehicle,capacity:+b.capacity||45,notes:b.notes};
       const ix=DB.batches.findIndex(x=>x.id===id);ix>=0?DB.batches[ix]=rec:DB.batches.push(rec);DB.nextId.batch=Math.max(DB.nextId.batch,id+1)});log.push('Batches: '+bs.length+' rows loaded')}
     const bm=sheet('BatchMembers');if(bm.length){DB.batch_members=bm.map(m=>({batch_id:+m.batch_id,phone:normPhone(m.phone)})).filter(m=>m.phone&&known.has(m.phone));log.push('BatchMembers: '+DB.batch_members.length+' rows loaded')}
