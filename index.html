@@ -418,6 +418,17 @@ section[id] { scroll-margin-top: 68px; }
   margin: 0 auto;
 }
 
+/* ─── TESTIMONIALS (Google Maps reviews) ─── */
+.t-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
+.t-card { background: var(--bg-3); border: 1px solid rgba(201,162,39,.25); border-radius: 12px; padding: 1.4rem; display: flex; flex-direction: column; gap: .7rem; }
+.t-stars { color: var(--gold-hi); letter-spacing: .15em; font-size: 1.05rem; }
+.t-text { font-family: var(--f-body); font-size: 1.05rem; line-height: 1.55; color: var(--cream-2); flex: 1; }
+.t-meta { font-family: var(--f-head); font-size: .85rem; color: var(--gold); letter-spacing: .05em; }
+.t-meta small { display: block; color: var(--cream-3); font-family: var(--f-body); font-size: .85rem; letter-spacing: 0; }
+.t-more { text-align: center; margin-top: 2rem; }
+.t-more a { color: var(--gold-hi); font-family: var(--f-head); letter-spacing: .06em; text-decoration: none; border-bottom: 1px solid var(--gold); }
+
+
 /* ─── ABOUT ─── */
 .about-grid {
   display: grid;
@@ -1375,6 +1386,20 @@ footer {
       </div>
     </div>
     <p class="gal-note">✦ Divine moments from Sree Sastha Anugraha Peetam · More photos coming soon ✦</p>
+  </div>
+</section>
+
+<!-- ──────────────────────────────────── TESTIMONIALS ─── -->
+<section class="section" id="testimonials" aria-label="Devotee reviews from Google Maps" hidden>
+  <div class="container">
+    <header class="sec-head reveal">
+      <span class="sec-icon" aria-hidden="true">🙏</span>
+      <h2 class="sec-en">Devotee Testimonials</h2>
+      <div class="sec-te">భక్తుల అనుభవాలు</div>
+      <div class="sec-rule"></div>
+    </header>
+    <div class="t-grid" id="t-grid"></div>
+    <p class="t-more"><a href="https://maps.app.goo.gl/Xwtto6qcNGQ3YYC57" target="_blank" rel="noopener">Read all reviews on Google Maps →</a></p>
   </div>
 </section>
 
@@ -3018,5 +3043,26 @@ document.addEventListener('click', () => {
     document.getElementById('as-add').hidden = false;
     document.getElementById('as-add-btn').addEventListener('click', () => openForm());
   }
+})();
+
+/* ─── Testimonials: paste real Google Maps reviews here; section stays hidden while empty ─── */
+(function () {
+  const REVIEWS = [
+    // { name: 'Reviewer Name', rating: 5, text: 'Review text…', date: 'Oct 2026' },
+  ];
+  const sec = document.getElementById('testimonials'), grid = document.getElementById('t-grid');
+  if (!sec || !grid || !REVIEWS.length) return;
+  REVIEWS.forEach(r => {
+    const c = document.createElement('article'); c.className = 't-card';
+    const st = document.createElement('div'); st.className = 't-stars'; st.setAttribute('role', 'img');
+    const n = Math.max(0, Math.min(5, +r.rating || 5)); st.setAttribute('aria-label', n + ' out of 5 stars');
+    st.textContent = '★'.repeat(n) + '☆'.repeat(5 - n);
+    const t = document.createElement('p'); t.className = 't-text'; t.textContent = '“' + r.text + '”';
+    const m = document.createElement('div'); m.className = 't-meta'; m.textContent = r.name;
+    if (r.date) { const d = document.createElement('small'); d.textContent = 'Google review · ' + r.date; m.appendChild(d); }
+    c.append(st, t, m); grid.appendChild(c);
+  });
+  sec.hidden = false;
+  sec.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
 })();
 </script>
