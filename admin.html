@@ -122,8 +122,10 @@ tr.row:hover{background:#fff6dc}
 /* ───────── storage ───────── */
 const KEY='ssap_admin_v1';
 const THIS_YEAR=new Date().getFullYear();
+const NEW_TAG='New to SSAP';
+const GOTHRAMS=['Achyuta','Agastya','Angirasa','Atreya','Aupamanyava','Badarayana','Bharadwaja','Bhargava','Bhrigu','Chyavana','Dhananjaya','Garga','Gargeya','Gautama','Haritasa','Jabali','Jamadagni','Kanva','Kapila','Kashyapa','Katyayana','Kaundinya','Kaushika','Krishnatreya','Kutsa','Lohita','Maitreya','Mandavya','Markandeya','Maudgalya','Mudgala','Naidhruva','Paingala','Parashara','Pulaha','Pulastya','Rathitara','Sandilya','Sankriti','Sathyakama','Shaunaka','Srivatsa','Upamanyu','Vadhula','Valmiki','Vamadeva','Vasishta','Vatsa','Vishnuvriddha','Vishwamitra','Vyaghrapada','Yaska'];
 let DB=load();
-function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.devotees)return d}catch(e){}return seed()}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.devotees){d.devotees.forEach(x=>{if(!x.referred_by)x.referred_by=NEW_TAG;delete x.guru_swamy});return d}}catch(e){}return seed()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){toast('Could not save (storage blocked)')}}
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -144,12 +146,12 @@ const money=n=>'₹'+(Number(n)||0).toLocaleString('en-IN');
 
 /* ───────── dummy data ───────── */
 function seed(){
-  const D=(phone,full_name,extra)=>Object.assign({phone,full_name,email:'',address:'',dob:'',blood_group:'',gothram:'',guru_swamy:'Sri Giridhar Swamy',photo:'',notes:'',active:'yes'},extra);
+  const D=(phone,full_name,extra)=>Object.assign({phone,full_name,email:'',address:'',dob:'',blood_group:'',gothram:'',referred_by:NEW_TAG,photo:'',notes:'',active:'yes'},extra);
   const d={
     devotees:[
-      D('+919848011111','Ramesh Kumar',{email:'ramesh@example.com',address:'Hyderabad',dob:'1985-04-12',blood_group:'O+',gothram:'Kashyapa'}),
-      D('+919848022222','Srinivas Rao',{address:'Vijayawada',dob:'1978-09-03',blood_group:'B+',gothram:'Bharadwaja'}),
-      D('+919848033333','Venkata Reddy',{address:'Guntur',dob:'1990-01-21',blood_group:'A+',gothram:'Vasishta'}),
+      D('+919848011111','Ramesh Kumar',{referred_by:'Prasad Sharma',email:'ramesh@example.com',address:'Hyderabad',dob:'1985-04-12',blood_group:'O+',gothram:'Kashyapa'}),
+      D('+919848022222','Srinivas Rao',{referred_by:'Prasad Sharma',address:'Vijayawada',dob:'1978-09-03',blood_group:'B+',gothram:'Bharadwaja'}),
+      D('+919848033333','Venkata Reddy',{referred_by:'Ramesh Kumar',address:'Guntur',dob:'1990-01-21',blood_group:'A+',gothram:'Vasishta'}),
       D('+919848044444','Anil Varma',{address:'Warangal',dob:'1982-11-30',blood_group:'AB+',gothram:'Atreya'}),
       D('+919848055555','Prasad Sharma',{address:'Hyderabad',dob:'1969-06-15',blood_group:'O-',gothram:'Kaushika',notes:'Senior guru swamy'}),
       D('+919848066666','Mahesh Babu',{address:'Nellore',dob:'1995-02-08',blood_group:'B-',gothram:'Gautama'}),
@@ -255,7 +257,7 @@ function vDevotees(){
     <select id="fb"><option value="">All batches</option><option value="none">No batch</option>${DB.batches.map(b=>`<option value="${b.id}">${esc(b.name)} (${b.year})</option>`).join('')}</select>
     <select id="fp"><option value="">Dues: any</option><option value="due">Has pending dues</option></select>
   </div>
-  <div class="tablewrap"><table><thead><tr><th>Devotee</th><th>Phone (ID)</th><th class="hm">Gothram</th><th>Deeksha</th><th class="hm">Batch</th><th>Dues</th></tr></thead><tbody id="tb"></tbody></table></div>
+  <div class="tablewrap"><table><thead><tr><th>Devotee</th><th>Phone (ID)</th><th class="hm">Referred by</th><th>Deeksha</th><th class="hm">Batch</th><th>Dues</th></tr></thead><tbody id="tb"></tbody></table></div>
   <div class="muted" style="margin-top:8px" id="cnt"></div>`;
   $('#fd').value=filt.deeksha;$('#fb').value=filt.batch;$('#fp').value=filt.dues;
   ['fq','fd','fb','fp'].forEach(id=>$('#'+id).oninput=()=>{filt={q:$('#fq').value,deeksha:$('#fd').value,batch:$('#fb').value,dues:$('#fp').value};renderRows()});
@@ -276,7 +278,7 @@ function renderRows(){
   });
   $('#tb').innerHTML=rows.map(d=>{const dues=duesOf(d.phone),b=batchOf(d.phone);return`<tr class="row" onclick="openDevotee('${d.phone}')">
     <td><span class="avatar">${d.photo?`<img src="${esc(d.photo)}" alt="">`:esc(initials(d.full_name))}</span>${esc(d.full_name)}${d.active==='no'?' <span class="pill warn">inactive</span>':''}</td>
-    <td>${esc(fmtPhone(d.phone))}</td><td class="hm">${esc(d.gothram)}</td>
+    <td>${esc(fmtPhone(d.phone))}</td><td class="hm">${d.referred_by&&d.referred_by!==NEW_TAG?esc(d.referred_by):'<span class="pill gold">'+NEW_TAG+'</span>'}</td>
     <td>${deekshaPill(curDeeksha(d.phone))}</td><td class="hm">${b?esc(b.name):'<span class="muted">—</span>'}</td>
     <td>${dues?'<span class="pill warn">'+money(dues)+'</span>':'<span class="pill ok">Clear</span>'}</td></tr>`}).join('')||'<tr><td colspan="6" class="muted">No devotees match.</td></tr>';
   $('#cnt').textContent=rows.length+' of '+DB.devotees.length+' devotees';
@@ -286,7 +288,7 @@ function renderRows(){
 let editing=null,tab='basics',isNew=false;
 function openDevotee(phone){
   isNew=!phone;tab='basics';
-  editing=phone?JSON.parse(JSON.stringify(dev(phone))):{phone:'',full_name:'',email:'',address:'',dob:'',blood_group:'',gothram:'',guru_swamy:'',photo:'',notes:'',active:'yes'};
+  editing=phone?JSON.parse(JSON.stringify(dev(phone))):{phone:'',full_name:'',email:'',address:'',dob:'',blood_group:'',gothram:'',referred_by:NEW_TAG,photo:'',notes:'',active:'yes'};
   editing._orig=phone||'';
   $('#drawer').classList.remove('hide');drawSheet();
 }
@@ -304,18 +306,18 @@ function drawSheet(){
   ({basics:tBasics,spiritual:tSpiritual,family:tFamily,payments:tPay,yatra:tYatra})[tab]();
 }
 function setTab(t){if(tab==='basics')pullBasics();tab=t;drawSheet()}
-function pullBasics(){['full_name','phone','email','address','dob','blood_group','gothram','guru_swamy','notes','active'].forEach(k=>{const el=$('#f_'+k);if(el)editing[k]=el.value})}
+function pullBasics(){['full_name','phone','email','address','dob','blood_group','gothram','referred_by','notes','active'].forEach(k=>{const el=$('#f_'+k);if(el)editing[k]=el.value})}
 
 function tBasics(){
   const e=editing;
   $('#tabbody').innerHTML=`<div class="grid2">
-   <div><label>Full name *</label><input id="f_full_name" value="${esc(e.full_name)}"></div>
+   <div><label>Full name *</label><input id="f_full_name" value="${esc(e.full_name)}"><div class="err hide" id="nmErr"></div></div>
    <div><label>Phone (devotee ID) *</label><input id="f_phone" value="${esc(isNew?e.phone:fmtPhone(e.phone))}" placeholder="98480 11111"><div class="err hide" id="phErr"></div></div>
    <div><label>Email</label><input id="f_email" value="${esc(e.email)}"></div>
    <div><label>Date of birth</label><input id="f_dob" type="date" value="${esc(e.dob)}"></div>
    <div><label>Blood group</label><select id="f_blood_group">${['','A+','A-','B+','B-','AB+','AB-','O+','O-'].map(b=>`<option ${b===e.blood_group?'selected':''}>${b}</option>`).join('')}</select></div>
-   <div><label>Gothram</label><input id="f_gothram" value="${esc(e.gothram)}"></div>
-   <div><label>Guru Swamy</label><input id="f_guru_swamy" value="${esc(e.guru_swamy)}"></div>
+   <div><label>Gothram *</label><input id="f_gothram" list="gothramList" autocomplete="off" placeholder="Pick or type" value="${esc(e.gothram)}"><datalist id="gothramList">${GOTHRAMS.map(g=>`<option value="${g}">`).join('')}</datalist><div class="err hide" id="gtErr"></div></div>
+   <div><label>Referred by</label><input id="f_referred_by" list="swamyList" autocomplete="off" placeholder="Pick a swamy or type a name" value="${esc(e.referred_by)}"><datalist id="swamyList"><option value="${NEW_TAG}">${DB.devotees.filter(d=>d.phone!==e._orig).map(d=>d.full_name).sort((a,b)=>a.localeCompare(b)).map(n=>`<option value="${esc(n)}">`).join('')}</datalist></div>
    <div><label>Status</label><select id="f_active"><option value="yes" ${e.active!=='no'?'selected':''}>Active</option><option value="no" ${e.active==='no'?'selected':''}>Inactive</option></select></div>
    <div class="full"><label>Address</label><textarea id="f_address" rows="2">${esc(e.address)}</textarea></div>
    <div class="full"><label>Photo</label><input type="file" accept="image/*" id="f_photo"><div class="muted" style="font-size:12px">Prototype stores a small resized copy in this browser.</div></div>
@@ -330,11 +332,15 @@ function tBasics(){
 function saveBasics(){
   pullBasics();const e=editing;
   const ph=normPhone(e.phone),err=$('#phErr');
-  if(!e.full_name.trim()){toast('Name required');return}
-  if(!ph){err.textContent='Enter valid 10-digit phone';err.classList.remove('hide');return}
+  ['nmErr','gtErr','phErr'].forEach(i=>$('#'+i).classList.add('hide'));
+  let bad=null;const fail=(id,msg,field)=>{const x=$('#'+id);x.textContent=msg;x.classList.remove('hide');if(!bad)bad=field};
+  if(!e.full_name.trim())fail('nmErr','Name is required','f_full_name');
+  if(!(e.gothram||'').trim())fail('gtErr','Gothram is required (use Achyuta if unknown)','f_gothram');
+  if(!ph)fail('phErr','Enter a valid 10-digit phone','f_phone');
+  if(bad){$('#'+bad).focus();return}
   const clash=DB.devotees.find(d=>d.phone===ph&&d.phone!==e._orig);
   if(clash){err.innerHTML='Already registered as <b>'+esc(clash.full_name)+'</b>. <a href="#" onclick="openDevotee(\''+ph+'\');return false">Open that record</a>';err.classList.remove('hide');return}
-  const rec={phone:ph,full_name:e.full_name.trim(),email:e.email,address:e.address,dob:e.dob,blood_group:e.blood_group,gothram:e.gothram,guru_swamy:e.guru_swamy,photo:e.photo,notes:e.notes,active:e.active};
+  const rec={phone:ph,full_name:e.full_name.trim(),email:e.email,address:e.address,dob:e.dob,blood_group:e.blood_group,gothram:e.gothram,referred_by:(e.referred_by||'').trim()||NEW_TAG,photo:e.photo,notes:e.notes,active:e.active};
   if(isNew){DB.devotees.push(rec)}
   else{
     const i=DB.devotees.findIndex(d=>d.phone===e._orig);DB.devotees[i]=rec;
@@ -358,8 +364,8 @@ function tSpiritual(){
   $('#tabbody').innerHTML=list.map((x,i)=>`<div class="sub"><b>${x.year}</b> ${deekshaPill(x)}
    <div class="grid2" style="margin-top:8px">
     <div><label>Malai date</label><input type="date" value="${esc(x.malai_date)}" onchange="upd('deekshas','${p}',${x.year},'malai_date',this.value)"></div>
-    <div><label>Mandala days</label><select onchange="upd('deekshas','${p}',${x.year},'mandala_days',+this.value)">${[41,48,21,11].map(n=>`<option ${n==x.mandala_days?'selected':''}>${n}</option>`).join('')}</select></div>
     <div><label>Irumudi date</label><input type="date" value="${esc(x.irumudi_date)}" onchange="upd('deekshas','${p}',${x.year},'irumudi_date',this.value)"></div>
+    <div><label>Mandala days</label><select onchange="upd('deekshas','${p}',${x.year},'mandala_days',+this.value)">${[41,48,21,11].map(n=>`<option ${n==x.mandala_days?'selected':''}>${n}</option>`).join('')}</select></div>
     <div><label>Completed on</label><input type="date" value="${esc(x.end_date)}" onchange="upd('deekshas','${p}',${x.year},'end_date',this.value)"></div>
    </div><button class="btn danger sm" style="margin-top:8px" onclick="delDeeksha('${p}',${x.year})">Remove</button></div>`).join('')
    +`<button class="btn sec" onclick="addDeeksha()">+ Add deeksha year</button>`;
@@ -442,9 +448,9 @@ function vPayments(){
 }
 
 /* ───────── Excel import / export ───────── */
-const SHEETS={Devotees:['phone','full_name','email','address','dob','blood_group','gothram','guru_swamy','active','notes'],
+const SHEETS={Devotees:['phone','full_name','email','address','dob','blood_group','gothram','referred_by','active','notes'],
   Family:['phone','name','relation','member_phone','emergency'],
-  Deekshas:['phone','year','malai_date','mandala_days','irumudi_date','end_date'],
+  Deekshas:['phone','year','malai_date','irumudi_date','mandala_days','end_date'],
   Payments:['phone','type','amount','date','mode','status','note'],
   Batches:['id','year','name','travel_date','vehicle','capacity','notes'],
   BatchMembers:['batch_id','phone']};
@@ -473,7 +479,8 @@ function importXlsx(file){
     const w=XLSX.read(r.result,{type:'array',cellDates:false,raw:false});const log=[];let added=0,updated=0,skipped=0;
     const sheet=n=>w.Sheets[n]?XLSX.utils.sheet_to_json(w.Sheets[n],{defval:'',raw:false}):[];
     sheet('Devotees').forEach((row,i)=>{
-      const ph=normPhone(row.phone);if(!ph||!String(row.full_name).trim()){skipped++;log.push('Devotees row '+(i+2)+': bad phone or name, skipped');return}
+      const ph=normPhone(row.phone);if(!ph||!String(row.full_name).trim()||!String(row.gothram).trim()){skipped++;log.push('Devotees row '+(i+2)+': phone, name and gothram are required, skipped');return}
+      if(!row.referred_by&&row.guru_swamy)row.referred_by=row.guru_swamy;if(!String(row.referred_by).trim())row.referred_by=NEW_TAG;
       const rec={phone:ph,photo:'',...Object.fromEntries(SHEETS.Devotees.map(c=>[c,String(row[c]==null?'':row[c]).trim()])),phone:ph};
       if(!rec.active)rec.active='yes';
       const ix=DB.devotees.findIndex(d=>d.phone===ph);
