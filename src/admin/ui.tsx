@@ -18,9 +18,8 @@ export function Field({ label, full, after, children }: { label: string; full?: 
   )
 }
 
-export function Avatar({ photo, name, size, font }: { photo?: string; name?: string; size?: number; font?: number }) {
-  const style = size ? { width: size, height: size, fontSize: font } : undefined
-  return <span className="avatar" style={style}>{photo ? <img src={photo} alt="" /> : initials(name)}</span>
+export function Avatar({ photo, name, large }: { photo?: string; name?: string; large?: boolean }) {
+  return <span className={large ? 'avatar lg' : 'avatar'}>{photo ? <img src={photo} alt="" /> : initials(name)}</span>
 }
 
 export function DeekshaPill({ dk }: { dk?: Deeksha }) {

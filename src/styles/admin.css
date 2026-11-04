@@ -1,7 +1,7 @@
 /* Admin styles, scoped under .admin-root so they cannot leak into / clash with the public site (legacy.css).
    legacy.css has global resets (* {margin:0;padding:0}), body/nav/a/button/img rules and :root vars;
    everything below re-asserts what the admin needs at higher specificity. */
-.admin-root{--gold:#C9A227;--saffron:#D95E0A;--maroon:#5A0000;--cream:#FFF0CC;--bg:#FFF9EC;--card:#fff;--ink:#2a1500;--mute:#7a6a55;--line:#ecdcb8;--ok:#2e7d32;--warn:#c62828;
+.admin-root{--bg:#FFF9EC;--card:#fff;--ink:#2a1500;--mute:#7a6a55;--line:#ecdcb8;--ok:#2e7d32;--warn:#c62828;
   min-height:100vh;margin:0;font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;letter-spacing:normal;text-align:left;background:var(--bg);color:var(--ink)}
 .admin-root,.admin-root *,.admin-root *::before,.admin-root *::after{box-sizing:border-box}
 .admin-root button,.admin-root input,.admin-root select,.admin-root textarea{font:inherit;letter-spacing:normal}
@@ -98,8 +98,10 @@
 .admin-root .a-modal .acts{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
 .admin-root .a-toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));max-width:90vw;left:50%;transform:translateX(-50%);background:var(--maroon);color:#fff;padding:10px 18px;border-radius:99px;z-index:50;opacity:0;transition:.25s;pointer-events:none}
 .admin-root .a-toast.show{opacity:1}
-.admin-root .bar{height:8px;border-radius:99px;background:#eee;overflow:hidden}
-.admin-root .bar i{display:block;height:100%;background:var(--saffron)}
+.admin-root .bar{display:block;width:100%;height:8px;border:0;border-radius:99px;background:#eee;overflow:hidden;appearance:none;-webkit-appearance:none}
+.admin-root .bar::-webkit-progress-bar{background:#eee}
+.admin-root .bar::-webkit-progress-value{background:var(--saffron);border-radius:99px}
+.admin-root .bar::-moz-progress-bar{background:var(--saffron);border-radius:99px}
 
 @media(min-width:761px){.admin-root .m-only{display:none!important}}
 @media(max-width:760px){
@@ -201,3 +203,18 @@ body:has(.admin-root)::before{display:none}
 .admin-root .sel-opt.on{font-weight:700;color:var(--maroon);position:relative;padding-right:30px}
 .admin-root .sel-opt.on::after{content:"";position:absolute;right:12px;top:50%;width:5px;height:10px;margin-top:-7px;border-right:2px solid var(--saffron);border-bottom:2px solid var(--saffron);transform:rotate(45deg)}
 .admin-root .sel-empty{padding:12px;color:var(--mute);text-align:center;font-size:14px}
+
+/* utilities (replace former inline styles) */
+.admin-root .avatar.lg{width:46px;height:46px;font-size:17px}
+.admin-root .tabs button:disabled{opacity:.4;cursor:not-allowed}
+.admin-root .btn-block{width:100%}
+.admin-root .mt8{margin-top:8px}.admin-root .mt10{margin-top:10px}.admin-root .mt12{margin-top:12px}.admin-root .mt14{margin-top:14px}
+.admin-root .mb8{margin-bottom:8px}.admin-root .mb10{margin-bottom:10px}
+.admin-root .fs12{font-size:12px}.admin-root .fs13{font-size:13px}.admin-root .fw4{font-weight:400}
+.admin-root .nowrap{white-space:nowrap}
+.admin-root .link-inline{padding:0;text-decoration:underline;display:inline-flex}
+.admin-root .log-list{margin:8px 0 0 18px;color:var(--mute);font-size:13px}
+.admin-root .batch-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.admin-root .batch-head h3{margin:0;flex:1}
+.admin-root .batch-meta{margin:4px 0 8px}
+.admin-root .pill-link{cursor:pointer;margin:2px}

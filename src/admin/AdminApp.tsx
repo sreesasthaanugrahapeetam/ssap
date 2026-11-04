@@ -1,5 +1,5 @@
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import './admin.css'
+import '../styles/admin.css'
 import { AdminContext } from './AdminContext'
 import { useLocalStore } from './useLocalStore'
 import { ConfirmBox } from './ui'
@@ -141,7 +141,7 @@ export default function AdminApp() {
                   ))}
                 </div>
                 <div className="foot">Data saved in this browser. Use Excel export to back up.<br /><br />
-                  <a href="#" onClick={(e) => { e.preventDefault(); logout() }} style={{ padding: 0, textDecoration: 'underline', display: 'inline-flex' }}>Log out</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); logout() }} className="link-inline">Log out</a>
                 </div>
               </aside>
               <main tabIndex={-1} data-view={view}>{page}</main>

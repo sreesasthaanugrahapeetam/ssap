@@ -132,13 +132,13 @@ export default function DonorForm({ open, pre, onClose, onSaved }: Props) {
                 </div>
               ))}
             </div>
-            <button type="button" className="df-btn" style={{ marginTop: '.6rem' }} onClick={() => setFam(rs => [...rs, { id: ++famId, rel: REL[0][0], en: '', te: '' }])}>+ Add family member</button>
+            <button type="button" className="df-btn df-btn-add" onClick={() => setFam(rs => [...rs, { id: ++famId, rel: REL[0][0], en: '', te: '' }])}>+ Add family member</button>
           </div>
 
           <div className="df-f full">
             <label>Donor photo (optional)</label>
             <div className="df-photo">
-              <img alt="" src={preview || undefined} style={{ display: preview ? 'block' : 'none' }} />
+              <img alt="" src={preview || undefined} className={preview ? 'show' : undefined} />
               <input type="file" autoComplete="off" accept="image/*" ref={fileRef} onChange={e => {
                 const f = e.target.files?.[0]
                 setPreview(prev => { if (prev) URL.revokeObjectURL(prev); return f ? URL.createObjectURL(f) : '' })

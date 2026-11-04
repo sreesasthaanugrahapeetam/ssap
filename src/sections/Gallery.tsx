@@ -101,7 +101,7 @@ export default function Gallery() {
         <div className="gallery-grid reveal">
           {entries.map((e, i) => (
             <div
-              className="gal-item" key={e.thumb + i} style={{ cursor: 'zoom-in' }} tabIndex={0} role="button" aria-label="View full size"
+              className="gal-item" key={e.thumb + i} tabIndex={0} role="button" aria-label="View full size"
               onClick={() => open(i)}
               onKeyDown={ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); open(i) } }}
             >

@@ -1,5 +1,5 @@
-/* Tailwind v4 theme tokens mirroring the legacy CSS variables. Phase 2: convert sections to utilities. */
-@theme {
+/* Single source of truth for design tokens. legacy.css and admin.css alias these. */
+@theme static {
   --color-bg-0: #060200;
   --color-bg-1: #0C0400;
   --color-bg-2: #150700;

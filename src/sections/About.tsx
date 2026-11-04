@@ -19,7 +19,7 @@ export default function About() {
     <section className="section section--alt2" id="about">
       <div className="container">
         <header className="sec-head reveal">
-          <img className="sec-icon" src="/assets/logo.webp" alt="" aria-hidden="true" style={{ width: '2.2rem', height: '2.2rem', borderRadius: '50%', objectFit: 'cover', border: '1px solid rgba(201,162,39,.5)', display: 'inline-block' }} />
+          <img className="sec-icon sec-icon-logo" src="/assets/logo.webp" alt="" aria-hidden="true" />
           <h2 className="sec-en">About the Peetam</h2>
           <div className="sec-te">పీఠం గురించి</div>
           <div className="sec-rule"></div>
@@ -49,7 +49,7 @@ export default function About() {
                 <div className="info-card" key={i}>
                   {t ? <h4 aria-level={3} dangerouslySetInnerHTML={{ __html: t }} /> : <h4 aria-level={3}>{c.t}</h4>}
                   {p ? <p dangerouslySetInnerHTML={{ __html: p }} /> :
-                    i === 2 ? <p style={{ fontFamily: 'var(--f-te)', fontSize: '.96rem', lineHeight: 1.7 }}>{c.p}</p> : <p>{c.p}</p>}
+                    i === 2 ? <p className="te te-para">{c.p}</p> : <p>{c.p}</p>}
                 </div>
               )
             })}

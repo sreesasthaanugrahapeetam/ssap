@@ -77,7 +77,7 @@ export default function DevoteeTable() {
           </tbody>
         </table>
       </div>
-      <div className="muted" style={{ marginTop: 8 }}>{rows.length} of {db.devotees.length} devotees</div>
+      <div className="muted mt8">{rows.length} of {db.devotees.length} devotees</div>
     </>
   )
 }

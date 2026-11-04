@@ -42,7 +42,7 @@ export default function Annadanam() {
 
         <div className="anna-cta reveal">
           <a href="#contact" className="btn-primary">📞 Book an Annadanam Slot</a>
-          <a href="#donate" className="btn-primary" style={{ background: 'linear-gradient(135deg,var(--maroon),var(--saffron))' }}>🙏 Sponsor Annadanam</a>
+          <a href="#donate" className="btn-primary btn-maroon">🙏 Sponsor Annadanam</a>
         </div>
         <p className="anna-note">To sponsor Annadanam on auspicious days, birthdays, anniversaries or any special occasion — contact us to reserve your slot. Every meal offered is a divine blessing.</p>
       </div>

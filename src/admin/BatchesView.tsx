@@ -13,17 +13,17 @@ export default function BatchesView() {
         const mem = db.batch_members.filter((m) => m.batch_id === b.id).map((m) => db.devotees.find((d) => d.phone === m.phone)).filter(Boolean)
         return (
           <div className="panel" key={b.id}>
-            <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-              <h3 style={{ margin: 0, flex: 1 }}>{b.name} <span className="muted" style={{ fontWeight: 400 }}>· {b.year}</span></h3>
+            <div className="batch-head">
+              <h3>{b.name} <span className="muted fw4">· {b.year}</span></h3>
               <span className="pill gold">{mem.length}/{b.capacity}</span>
               <button className="btn sec sm" onClick={() => openBatch(b.id)}>Edit</button>
               <button className="btn danger sm" onClick={() => confirm('Delete batch? Members become unassigned.', () => update((d) => {
                 d.batches = d.batches.filter((x) => x.id !== b.id); d.batch_members = d.batch_members.filter((m) => m.batch_id !== b.id)
               }))}>Delete</button>
             </div>
-            <div className="muted" style={{ margin: '4px 0 8px' }}>{b.travel_date} · {b.vehicle} {b.notes ? '· ' + b.notes : ''}</div>
+            <div className="muted batch-meta">{b.travel_date} · {b.vehicle} {b.notes ? '· ' + b.notes : ''}</div>
             {mem.length ? mem.map((d) => (
-              <span key={d!.phone} className="pill" style={{ cursor: 'pointer', margin: 2 }} onClick={() => openDevotee(d!.phone)}>{d!.full_name}</span>
+              <span key={d!.phone} className="pill pill-link" onClick={() => openDevotee(d!.phone)}>{d!.full_name}</span>
             )) : <span className="muted">No members yet. Assign from a devotee’s Yatra tab.</span>}
           </div>
         )

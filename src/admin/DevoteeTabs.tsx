@@ -22,7 +22,7 @@ export function DeekshaTab({ phone }: { phone: string }) {
       {list.map((x) => (
         <div className="sub" key={x.year}>
           <b>{x.year}</b> <DeekshaPill dk={x} />
-          <div className="grid2" style={{ marginTop: 8 }}>
+          <div className="grid2 mt8">
             <Field label="Malai date"><input type="date" value={x.malai_date} onChange={(e) => upd(x.year, 'malai_date', e.target.value)} /></Field>
             <Field label="Irumudi date"><input type="date" value={x.irumudi_date} onChange={(e) => upd(x.year, 'irumudi_date', e.target.value)} /></Field>
             <Field label="Mandala days">
@@ -32,7 +32,7 @@ export function DeekshaTab({ phone }: { phone: string }) {
             </Field>
             <Field label="Completed on"><input type="date" value={x.end_date} onChange={(e) => upd(x.year, 'end_date', e.target.value)} /></Field>
           </div>
-          <button className="btn danger sm" style={{ marginTop: 8 }}
+          <button className="btn danger sm mt8"
             onClick={() => update((d) => { d.deekshas = d.deekshas.filter((r) => !(r.phone === phone && r.year === x.year)) })}>Remove</button>
         </div>
       ))}
@@ -60,11 +60,11 @@ export function FamilyTab({ phone }: { phone: string }) {
               </Select>
             </Field>
           </div>
-          <button className="btn danger sm" style={{ marginTop: 8 }} onClick={() => update((d) => { d.family.splice(i, 1) })}>Remove</button>
+          <button className="btn danger sm mt8" onClick={() => update((d) => { d.family.splice(i, 1) })}>Remove</button>
         </div>
       ))}
       <button className="btn sec" onClick={() => update((d) => { d.family.push({ phone, name: '', relation: '', member_phone: '', emergency: 'no' }) })}>+ Add family member</button>
-      <div className="muted" style={{ fontSize: 12, marginTop: 8 }}>Kids / elders without own phone live here, under the family head.</div>
+      <div className="muted fs12 mt8">Kids / elders without own phone live here, under the family head.</div>
     </>
   )
 }

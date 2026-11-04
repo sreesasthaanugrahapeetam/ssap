@@ -66,8 +66,8 @@ export default function Nav() {
           <li><a href="#gallery">Gallery</a></li>
           <li><a href="#timings">Timings</a></li>
           <li><a href="#services">Poojas</a></li>
-          <li><a href="#events" style={{ color: 'var(--gold-hi)' }}>Events</a></li>
-          <li><a href="#donate" style={{ color: 'var(--gold-hi)' }}>Donate</a></li>
+          <li><a className="t-gold-hi" href="#events">Events</a></li>
+          <li><a className="t-gold-hi" href="#donate">Donate</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
         <button className="theme-toggle" id="theme-toggle" title="Toggle theme"
@@ -83,8 +83,8 @@ export default function Nav() {
         <li><a href="#gallery" onClick={close}>Gallery</a></li>
         <li><a href="#timings" onClick={close}>Darshan Timings</a></li>
         <li><a href="#services" onClick={close}>Poojas &amp; Sevas</a></li>
-        <li><a href="#events" onClick={close} style={{ color: 'var(--gold-hi)' }}>Upcoming Events</a></li>
-        <li><a href="#donate" onClick={close} style={{ color: 'var(--gold-hi)' }}>Donate</a></li>
+        <li><a className="t-gold-hi" href="#events" onClick={close}>Upcoming Events</a></li>
+        <li><a className="t-gold-hi" href="#donate" onClick={close}>Donate</a></li>
         <li><a href="#contact" onClick={close}>Contact</a></li>
       </ul>
       <div className="ticker" aria-label="Devotional mantra">

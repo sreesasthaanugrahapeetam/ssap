@@ -1,17 +1,17 @@
 [hidden] { display: none !important; }
 /* ─── DESIGN TOKENS ─── Deliberately dark-first: sacred candlelit temple aesthetic ─── */
 :root {
-  --bg-0:      #060200;
-  --bg-1:      #0C0400;
-  --bg-2:      #150700;
-  --bg-3:      #1E0B00;
-  --gold:      #C9A227;
-  --gold-hi:   #F0C040;
+  --bg-0:      var(--color-bg-0);
+  --bg-1:      var(--color-bg-1);
+  --bg-2:      var(--color-bg-2);
+  --bg-3:      var(--color-bg-3);
+  --gold:      var(--color-gold);
+  --gold-hi:   var(--color-gold-hi);
   --gold-glow: rgba(201,162,39,.35);
-  --saffron:   #D95E0A;
-  --saff-hi:   #F07030;
-  --maroon:    #5A0000;
-  --cream:     #FFF0CC;
+  --saffron:   var(--color-saffron);
+  --saff-hi:   var(--color-saff-hi);
+  --maroon:    var(--color-maroon);
+  --cream:     var(--color-cream);
   --cream-2:   rgba(255,240,204,.72);
   --cream-3:   rgba(255,240,204,.6);
 
@@ -1055,3 +1055,34 @@ footer {
   .hero-mantra-te { margin-bottom: 1rem; }
   .scroll-hint { display: none; }
 }
+
+
+/* ─── UTILITIES & COMPONENT STYLES (replace former inline styles) ─── */
+.t-gold-hi { color: var(--gold-hi); }
+.te { font-family: var(--f-te); }
+.te-sm { font-size: .9rem; }
+.te-note { font-size: .92rem; color: var(--cream-2); }
+.te-para { font-size: .96rem; line-height: 1.7; }
+.sec-lead { color: var(--cream-2); max-width: 580px; margin: .8rem auto 0; font-size: 1.05rem; }
+.sec-icon-logo { width: 2.2rem; height: 2.2rem; border-radius: 50%; object-fit: cover; border: 1px solid rgba(201,162,39,.5); display: inline-block; }
+.gal-item { cursor: zoom-in; }
+.tl-label { font-family: var(--f-head); color: var(--gold); font-size: .82rem; letter-spacing: .05em; }
+.tl-text { color: var(--cream-2); font-size: .93rem; margin: .5rem 0 0; line-height: 1.6; }
+.timing-location-note { background: rgba(201,162,39,.07); border: 1px solid rgba(201,162,39,.2); border-radius: 8px; padding: 1rem 1.4rem; margin-bottom: 1.8rem; text-align: center; }
+.maps-btn { display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; }
+.yt-stack { display: flex; flex-direction: column; gap: .6rem; }
+.contact-sep { margin-top: 1.5rem; padding-top: 1.2rem; border-top: 1px solid rgba(201,162,39,.15); }
+.contact-hdr { font-family: var(--f-head); color: var(--gold); font-size: .85rem; letter-spacing: .05em; margin-bottom: .8rem; }
+.social-icons.start { justify-content: flex-start; }
+.pth-label .p-name.p-name-sm { font-size: .85rem; }
+.btn-maroon { background: linear-gradient(135deg, var(--maroon), var(--saffron)); }
+.donate-wrap { max-width: 380px; margin: 2.5rem auto 0; }
+.donate-card h3 { text-align: center; }
+.upi-qr { display: block; width: 210px; height: 210px; object-fit: contain; border-radius: 10px; background: #fff; padding: 10px; margin: 1rem auto; }
+.upi-label { font-family: var(--f-head); color: var(--gold); font-size: .82rem; letter-spacing: .06em; text-transform: uppercase; margin: .6rem 0 .25rem; }
+.upi-id-display { color: var(--cream); font-size: 1rem; margin-bottom: 1.2rem; letter-spacing: .02em; font-weight: 600; }
+.foot-credit { display: flex; align-items: center; justify-content: center; gap: .4rem; opacity: .35; margin-top: .6rem; pointer-events: none; user-select: none; }
+.foot-credit img { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; filter: grayscale(1); }
+.foot-credit span { font-size: .6rem; font-family: var(--f-head); letter-spacing: .06em; color: var(--cream); }
+.df-btn-add { margin-top: .6rem; }
+.df-photo img.show { display: block; }

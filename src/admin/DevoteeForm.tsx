@@ -96,16 +96,16 @@ export default function DevoteeForm({ phone }: { phone?: string }) {
   return (
     <>
       <div className="hdr">
-        <Avatar photo={draft.photo} name={draft.full_name} size={46} font={17} />
+        <Avatar photo={draft.photo} name={draft.full_name} large />
         <h2>{isNew ? 'New devotee' : draft.full_name}
-          <div className="muted" style={{ fontSize: 13, fontWeight: 400 }}>{isNew ? 'Phone number becomes the devotee ID' : <>ID <a href={'tel:+91' + orig.replace(/\D/g, '').slice(-10)}>{fmtPhone(orig)}</a></>}</div>
+          <div className="muted fs13 fw4">{isNew ? 'Phone number becomes the devotee ID' : <>ID <a href={'tel:+91' + orig.replace(/\D/g, '').slice(-10)}>{fmtPhone(orig)}</a></>}</div>
         </h2>
         <button className="btn sec" onClick={closeDrawer}>Close</button>
       </div>
       <div className="tabs">
         {TABS.map(([k, label]) => (
           <button key={k} className={tab === k ? 'on' : ''} disabled={isNew && k !== 'basics'}
-            style={isNew && k !== 'basics' ? { opacity: 0.4, cursor: 'not-allowed' } : undefined} onClick={() => setTab(k)}>{label}</button>
+            onClick={() => setTab(k)}>{label}</button>
         ))}
       </div>
       <div>
@@ -135,7 +135,7 @@ export default function DevoteeForm({ phone }: { phone?: string }) {
                 </Select>
               </Field>
               <Field label="Address" full><textarea rows={2} value={draft.address} onChange={set('address')} /></Field>
-              <Field label="Photo" full after={<div className="muted" style={{ fontSize: 12 }}>Prototype stores a small resized copy in this browser.</div>}>
+              <Field label="Photo" full after={<div className="muted fs12">Prototype stores a small resized copy in this browser.</div>}>
                 <input type="file" accept="image/*" onChange={onPhoto} />
               </Field>
               <Field label="Notes" full><textarea rows={2} value={draft.notes} onChange={set('notes')} /></Field>

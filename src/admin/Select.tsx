@@ -59,12 +59,17 @@ function useOutsideClose(open: boolean, close: () => void, ...refs: React.RefObj
 function Pop({ pos, children, popRef }: { pos: NonNullable<ReturnType<typeof usePopPosition>>; children: ReactNode; popRef: React.RefObject<HTMLDivElement | null> }) {
   // Rendered inside .admin-root so the scoped styles apply, but positioned against the viewport.
   const host = document.querySelector('.admin-root') || document.body
+  useLayoutEffect(() => {
+    const s = popRef.current?.style
+    if (!s) return
+    s.left = pos.left + 'px'
+    s.width = pos.width + 'px'
+    s.maxHeight = pos.maxH + 'px'
+    s.top = pos.up ? '' : pos.top + 'px'
+    s.bottom = pos.up ? window.innerHeight - pos.top + 'px' : ''
+  })
   return createPortal(
-    <div
-      ref={popRef}
-      className="sel-pop"
-      style={{ left: pos.left, width: pos.width, maxHeight: pos.maxH, ...(pos.up ? { bottom: window.innerHeight - pos.top } : { top: pos.top }) }}
-    >{children}</div>,
+    <div ref={popRef} className="sel-pop">{children}</div>,
     host,
   )
 }

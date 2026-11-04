@@ -14,7 +14,7 @@ export default function Login({ onEnter }: { onEnter: () => void }) {
         <label htmlFor="admin-pass">Passcode</label>
         <input id="admin-pass" type="password" placeholder="Enter passcode" autoComplete="current-password" autoFocus value={pass} onChange={(e) => setPass(e.target.value)} />
         {bad && <div className="err" role="alert">Wrong passcode</div>}
-        <button className="btn" style={{ width: '100%', marginTop: 14 }}>Enter</button>
+        <button className="btn btn-block mt14">Enter</button>
         <div className="hint muted">Demo passcode: <b>swamiye</b>. Prototype only, not secure.</div>
       </form>
     </div>

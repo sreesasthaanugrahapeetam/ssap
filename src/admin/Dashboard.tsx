@@ -51,9 +51,9 @@ export default function Dashboard() {
           {batches.length ? batches.map((b) => {
             const n = db.batch_members.filter((m) => m.batch_id === b.id).length
             return (
-              <div key={b.id} style={{ marginBottom: 10 }}>
+              <div key={b.id} className="mb10">
                 <b>{b.name}</b> <span className="muted">· {b.travel_date} · {n}/{b.capacity}</span>
-                <div className="bar"><i style={{ width: Math.min(100, (n / b.capacity) * 100) + '%' }} /></div>
+                <progress className="bar" value={Math.min(n, b.capacity)} max={b.capacity} />
               </div>
             )
           }) : <span className="muted">No batches yet.</span>}

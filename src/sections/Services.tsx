@@ -25,7 +25,7 @@ export default function Services() {
           <h2 className="sec-en">Poojas &amp; Sevas</h2>
           <div className="sec-te">పూజలు మరియు సేవలు</div>
           <div className="sec-rule"></div>
-          <p style={{ color: 'var(--cream-2)', maxWidth: 580, margin: '.8rem auto 0', fontSize: '1.05rem' }}>
+          <p className="sec-lead">
             Sacred rituals performed with full Vedic tradition, devotion and purity for the welfare of every devotee
           </p>
         </header>

@@ -32,7 +32,7 @@ export default function Events() {
           <div className="event-organiser">
             Organised under the divine guidance of<br />
             <strong>Manya Sri Ayyappa Indra Kumar Dev Guru Swamy</strong><br />
-            <span style={{ fontFamily: 'var(--f-te)', fontSize: '.92rem', color: 'var(--cream-2)' }}>
+            <span className="te te-note">
               మాన్య శ్రీ అయ్యప్ప ఇంద్ర కుమార్ దేవ్ గురు స్వామి గారి ఆధ్వర్యంలో ఏర్పాటు చేయు
             </span>
           </div>

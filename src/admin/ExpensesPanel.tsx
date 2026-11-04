@@ -32,9 +32,9 @@ export default function ExpensesPanel() {
       <div className="panel">
         <h3>By category</h3>
         {Object.keys(byCat).length ? Object.keys(byCat).sort((a, b) => byCat[b] - byCat[a]).map((c) => (
-          <div key={c} style={{ marginBottom: 8 }}>
+          <div key={c} className="mb8">
             <span>{c}</span> <span className="muted">· {money(byCat[c])}</span>
-            <div className="bar"><i style={{ width: Math.min(100, (byCat[c] / total) * 100) + '%' }} /></div>
+            <progress className="bar" value={byCat[c]} max={total} />
           </div>
         )) : <span className="muted">No expenses yet.</span>}
       </div>
@@ -54,9 +54,9 @@ export default function ExpensesPanel() {
             {rows.map(({ e, i }) => (
               <tr key={e.id ?? i}>
                 <td>{e.date}</td>
-                <td>{e.category}<div className="muted" style={{ fontSize: 12 }}>{e.note}</div></td>
+                <td>{e.category}<div className="muted fs12">{e.note}</div></td>
                 <td>{e.paid_to}</td><td>{money(e.amount)}</td><td className="hm">{e.mode}</td>
-                <td style={{ whiteSpace: 'nowrap' }}>
+                <td className="nowrap">
                   <button className="btn sec sm" onClick={() => openExpense(i)}>Edit</button>{' '}
                   <button className="btn danger sm" aria-label="Delete expense" onClick={() => confirm('Delete this expense?', () => update((d) => { d.expenses.splice(i, 1) }))}>✕</button>
                 </td>

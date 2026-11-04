@@ -25,10 +25,10 @@ export default function ExcelPanel() {
         <div className="dropzone" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); doImport(e.dataTransfer.files[0]) }}>
           Drop .xlsx here or <input type="file" accept=".xlsx,.xls,.csv" aria-label="Choose Excel file" onChange={(e) => { doImport(e.target.files?.[0]); e.target.value = '' }} />
         </div>
-        <div style={{ marginTop: 10 }}>
+        <div className="mt10">
           {res && <>
             <div className="pill ok">Added {res.added} · Updated {res.updated} · Skipped {res.skipped}</div>
-            <ul style={{ margin: '8px 0 0 18px', color: 'var(--mute)', fontSize: 13 }}>{res.log.map((l, i) => <li key={i}>{l}</li>)}</ul>
+            <ul className="log-list">{res.log.map((l, i) => <li key={i}>{l}</li>)}</ul>
           </>}
         </div>
       </div>

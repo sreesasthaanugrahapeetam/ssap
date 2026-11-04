@@ -36,9 +36,9 @@ function AddPayment({ phone }: { phone: string }) {
   }
 
   return (
-    <div className="sub" style={{ marginTop: 12 }}>
+    <div className="sub mt12">
       <b>Add payment</b>
-      <div className="grid2" style={{ marginTop: 8 }}>
+      <div className="grid2 mt8">
         <Field label="Type">
           <Select value={f.type} onChange={set('type')}>
             {['Annadanam', 'Alpaharam', 'Pooja', 'Yatra', 'Donation', 'Other'].map((t) => <option key={t}>{t}</option>)}
@@ -51,7 +51,7 @@ function AddPayment({ phone }: { phone: string }) {
         <Field label="Mode"><Select value={f.mode} onChange={set('mode')}><option>UPI</option><option>Cash</option><option>Bank</option></Select></Field>
         <Field label="Note" full><input value={f.note} onChange={set('note')} /></Field>
       </div>
-      <button className="btn" style={{ marginTop: 8 }} onClick={add}>Add</button>
+      <button className="btn mt8" onClick={add}>Add</button>
     </div>
   )
 }
@@ -70,11 +70,11 @@ export function DevoteePaymentsTab({ phone }: { phone: string }) {
             {list.map(({ x, i }) => (
               <tr key={x.id ?? i}>
                 <td>{x.type}{x.service_date && <> <span className="pill gold">{x.service_date}{x.session ? ' · ' + x.session : ''}</span></>}
-                  <div className="muted" style={{ fontSize: 12 }}>{x.note}</div></td>
+                  <div className="muted fs12">{x.note}</div></td>
                 <td>{money(x.amount)}</td>
                 <td><span className={'pill ' + (x.status === 'Paid' ? 'ok' : 'warn')}>{x.status}</span></td>
                 <td>{x.date}</td>
-                <td style={{ whiteSpace: 'nowrap' }}>
+                <td className="nowrap">
                   {x.status === 'Pending' && <><button className="btn sm" onClick={() => markPaid(i)}>Mark paid</button> </>}
                   <button className="btn danger sm" aria-label="Delete payment" onClick={() => update((d) => { d.payments.splice(i, 1) })}>✕</button>
                 </td>

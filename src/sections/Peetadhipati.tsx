@@ -26,7 +26,7 @@ export default function Peetadhipati() {
               <img src="/assets/founder.webp" alt="Peetadhipati of Sree Sastha Anugraha Peetam" loading="lazy" />
               <div className="pth-label">
                 <span className="p-title">Peetadhipati</span>
-                <span className="p-name" style={{ fontSize: '.85rem' }}>{name}</span>
+                <span className="p-name p-name-sm">{name}</span>
               </div>
             </div>
           </div>
@@ -36,7 +36,7 @@ export default function Peetadhipati() {
             <div className="p-sub">{(has && s.name_te) || 'మాన్య శ్రీ అయ్యప్ప ఇంద్ర కుమార్ దేవ్ గురు స్వామి'}</div>
 
             {has && s.bio_1 ? <p dangerouslySetInnerHTML={{ __html: s.bio_1 }} /> : (
-              <p>Guru Swamy has been observing the sacred <strong style={{ color: 'var(--gold-hi)' }}>Ayyappa Deeksha for 27 continuous years</strong> — a deeply revered spiritual discipline undertaken in complete surrender and devotion to Lord Hari Hara Putra Ayyappa Swamy. This extraordinary commitment stands as a living testament to his unwavering faith at the Lord's lotus feet.</p>
+              <p>Guru Swamy has been observing the sacred <strong className="t-gold-hi">Ayyappa Deeksha for 27 continuous years</strong> — a deeply revered spiritual discipline undertaken in complete surrender and devotion to Lord Hari Hara Putra Ayyappa Swamy. This extraordinary commitment stands as a living testament to his unwavering faith at the Lord's lotus feet.</p>
             )}
 
             {has && s.bio_2 ? <p dangerouslySetInnerHTML={{ __html: s.bio_2 }} /> : (

@@ -1,8 +1,6 @@
 import { useSheetKV } from '../hooks/useSheet'
 import { SocialIcons, YtButton, useSocial } from '../components/socialLinks'
 
-const hdr = { fontFamily: 'var(--f-head)', color: 'var(--gold)', fontSize: '.85rem', letterSpacing: '.05em', marginBottom: '.8rem' } as const
-const sep = { marginTop: '1.5rem', paddingTop: '1.2rem', borderTop: '1px solid rgba(201,162,39,.15)' } as const
 
 export default function Contact() {
   const c = useSheetKV('contact')
@@ -11,7 +9,7 @@ export default function Contact() {
   const nums = has ? [c.phone_1, c.phone_2].filter(Boolean) : []
   const addrHtml = has && c.address_1
     ? (c.address_1 || '') + '<br>' + (c.address_2 || '') + '<br>' +
-      (c.address_te ? `<span style="font-family:var(--f-te);font-size:.9rem;">${c.address_te}</span><br>` : '') + (c.address_3 || '')
+      (c.address_te ? `<span class="te te-sm">${c.address_te}</span><br>` : '') + (c.address_3 || '')
     : null
   return (
     <section className="section" id="contact">
@@ -34,7 +32,7 @@ export default function Contact() {
                 {addrHtml ? <p className="contact-address" dangerouslySetInnerHTML={{ __html: addrHtml }} /> : (
                   <p className="contact-address">Sree Sastha Anugraha Peetam<br />
                     Sri Srinivas Nagar Park (Shed)<br />
-                    <span style={{ fontFamily: 'var(--f-te)', fontSize: '.9rem' }}>శ్రీ శ్రీనివాస్ నగర్ పార్క్ నందు ఉన్న షెడ్ వద్ద</span><br />
+                    <span className="te te-sm">శ్రీ శ్రీనివాస్ నగర్ పార్క్ నందు ఉన్న షెడ్ వద్ద</span><br />
                     Andhra Pradesh / Telangana, India</p>
                 )}
               </div>
@@ -72,22 +70,22 @@ export default function Contact() {
 
           <div className="contact-box reveal">
             <h3>Find the Peetam</h3>
-            <a href={(has && c.maps_url) || 'https://maps.app.goo.gl/Xwtto6qcNGQ3YYC57'} target="_blank" rel="noopener" className="btn-primary maps-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '.5rem', textDecoration: 'none' }}>
+            <a href={(has && c.maps_url) || 'https://maps.app.goo.gl/Xwtto6qcNGQ3YYC57'} target="_blank" rel="noopener" className="btn-primary maps-btn">
               📍 Get Directions on Google Maps
             </a>
             <p className="map-note">Opens in Google Maps · Works on all devices</p>
 
-            <div style={sep}>
-              <h4 style={hdr}>Follow Us on YouTube</h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '.6rem' }}>
+            <div className="contact-sep">
+              <h4 className="contact-hdr">Follow Us on YouTube</h4>
+              <div className="yt-stack">
                 <YtButton social={social} index={0} />
                 <YtButton social={social} index={1} />
               </div>
             </div>
 
-            <div style={sep}>
-              <h4 style={hdr}>Follow Us on Social Media</h4>
-              <SocialIcons social={social} style={{ justifyContent: 'flex-start' }} />
+            <div className="contact-sep">
+              <h4 className="contact-hdr">Follow Us on Social Media</h4>
+              <SocialIcons social={social} className="start" />
             </div>
           </div>
         </div>
