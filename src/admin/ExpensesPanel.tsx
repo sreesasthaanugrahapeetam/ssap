@@ -3,7 +3,7 @@ import { useAdmin } from './AdminContext'
 import { Field } from './ui'
 import { EXP_CATS } from './types'
 import { money, todayISO } from './utils'
-import { Select } from './Select'
+import { Select, SelectOther } from './Select'
 
 export default function ExpensesPanel() {
   const { db, openExpense, confirm, update } = useAdmin()
@@ -14,6 +14,8 @@ export default function ExpensesPanel() {
   const byCat: Record<string, number> = {}
   all.forEach((e) => { byCat[e.category] = (byCat[e.category] || 0) + (+e.amount || 0) })
   const months = [...new Set(all.map((e) => String(e.date).slice(0, 7)).filter(Boolean))].sort().reverse()
+  // preset categories plus any custom "Other" categories already in use
+  const cats = [...EXP_CATS.filter((c) => c !== 'Other'), ...new Set(all.map((e) => e.category).filter((c) => !EXP_CATS.includes(c)))]
   const q = f.q.trim().toLowerCase()
   const rows = all.map((e, i) => ({ e, i }))
     .filter(({ e }) => (!f.cat || e.category === f.cat) && (!f.month || String(e.date).slice(0, 7) === f.month) && (!q || (e.paid_to + ' ' + e.note + ' ' + e.category).toLowerCase().includes(q)))
@@ -41,7 +43,7 @@ export default function ExpensesPanel() {
       <div className="filters">
         <input placeholder="Search paid to, note…" aria-label="Search expenses" value={f.q} onChange={(e) => setF({ ...f, q: e.target.value })} />
         <Select aria-label="Category filter" value={f.cat} onChange={(e) => setF({ ...f, cat: e.target.value })}>
-          <option value="">All categories</option>{EXP_CATS.map((c) => <option key={c}>{c}</option>)}
+          <option value="">All categories</option>{cats.map((c) => <option key={c}>{c}</option>)}
         </Select>
         <Select aria-label="Month filter" value={f.month} onChange={(e) => setF({ ...f, month: e.target.value })}>
           <option value="">All months</option>{months.map((m) => <option key={m}>{m}</option>)}
@@ -80,9 +82,10 @@ export function ExpenseForm({ index }: { index: number | null }) {
   const set = (k: keyof typeof e) => (ev: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setE({ ...e, [k]: ev.target.value })
   const save = () => {
     const a = +e.amount
+    if (!e.category.trim()) { toast('Enter what the other category is'); return }
     if (!(a > 0)) { toast('Enter a valid amount'); return }
     if (!e.date) { toast('Pick a date'); return }
-    const r = { date: e.date, category: e.category, amount: a, mode: e.mode, paid_to: e.paid_to.trim(), note: e.note.trim() }
+    const r = { date: e.date, category: e.category.trim(), amount: a, mode: e.mode, paid_to: e.paid_to.trim(), note: e.note.trim() }
     update((d) => { if (index == null) d.expenses.push({ id: d.nextId.exp++, ...r }); else d.expenses[index] = { ...d.expenses[index], ...r } })
     closeDrawer(); toast('Saved')
   }
@@ -92,7 +95,7 @@ export function ExpenseForm({ index }: { index: number | null }) {
       <div className="grid2">
         <Field label="Date"><input type="date" value={e.date} onChange={set('date')} /></Field>
         <Field label="Amount (₹) *"><input type="number" min="0" value={e.amount} onChange={set('amount')} /></Field>
-        <Field label="Category"><Select value={e.category} onChange={set('category')}>{EXP_CATS.map((c) => <option key={c}>{c}</option>)}</Select></Field>
+        <Field label="Category"><SelectOther value={e.category} options={EXP_CATS} onChange={(v) => setE((p) => ({ ...p, category: v }))} /></Field>
         <Field label="Mode"><Select value={e.mode} onChange={set('mode')}>{['Cash', 'UPI', 'Bank'].map((m) => <option key={m}>{m}</option>)}</Select></Field>
         <Field label="Paid to" full><input value={e.paid_to} onChange={set('paid_to')} /></Field>
         <Field label="Note" full><input value={e.note} onChange={set('note')} /></Field>

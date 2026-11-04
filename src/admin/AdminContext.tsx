@@ -14,6 +14,7 @@ export interface AdminCtx {
   openDevotee: (phone?: string) => void
   openBatch: (id: number | null) => void
   openExpense: (index: number | null) => void
+  openPooja: (index: number | null) => void
   closeDrawer: () => void
 }
 

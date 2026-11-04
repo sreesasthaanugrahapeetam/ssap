@@ -21,7 +21,7 @@ export default function ExcelPanel() {
         <button className="btn sec" onClick={templateXlsx}>⬇ Blank template</button>
       </div>
       <div className="panel"><h3>2 · Import</h3>
-        <p className="muted">Sheets: Devotees, Family, Deekshas, Payments, Batches, BatchMembers. Expenses are not exported. <b>phone</b> column is the ID. Existing phones are updated, new ones added.</p>
+        <p className="muted">Sheets: Devotees, Family, Deekshas, Payments, Poojas, Batches, BatchMembers. Expenses are not exported. <b>phone</b> column is the ID. Existing phones are updated, new ones added.</p>
         <div className="dropzone" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); doImport(e.dataTransfer.files[0]) }}>
           Drop .xlsx here or <input type="file" accept=".xlsx,.xls,.csv" aria-label="Choose Excel file" onChange={(e) => { doImport(e.target.files?.[0]); e.target.value = '' }} />
         </div>

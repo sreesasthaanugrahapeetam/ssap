@@ -1,14 +1,14 @@
 import { ChangeEvent, ReactNode, useState } from 'react'
 import { useAdmin } from './AdminContext'
 import { Avatar, Field } from './ui'
-import { DeekshaTab, FamilyTab, YatraTab } from './DevoteeTabs'
+import { DeekshaTab, FamilyTab, YatraTab, PoojasTab } from './DevoteeTabs'
 import { DevoteePaymentsTab } from './ServicePayments'
 import { Devotee, GOTHRAMS, NEW_TAG } from './types'
 import { blankDevotee, findDevotee, fmtPhone, normPhone } from './utils'
 import { Select, Combo } from './Select'
 
-type Tab = 'basics' | 'spiritual' | 'family' | 'payments' | 'yatra'
-const TABS: [Tab, string][] = [['basics', 'Basics'], ['spiritual', 'Deeksha'], ['family', 'Family'], ['payments', 'Payments'], ['yatra', 'Yatra']]
+type Tab = 'basics' | 'spiritual' | 'family' | 'payments' | 'poojas' | 'yatra'
+const TABS: [Tab, string][] = [['basics', 'Basics'], ['spiritual', 'Deeksha'], ['family', 'Family'], ['payments', 'Payments'], ['poojas', 'Poojas'], ['yatra', 'Yatra']]
 const BLOOD = ['', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
 
 type Errs = { nm?: string; gt?: string; ph?: ReactNode }
@@ -75,6 +75,7 @@ export default function DevoteeForm({ phone }: { phone?: string }) {
         d.devotees[i] = rec
         if (ph !== orig) { // change-phone cascade
           ;(['family', 'deekshas', 'payments', 'batch_members'] as const).forEach((t) => (d[t] as { phone: string }[]).forEach((r) => { if (r.phone === orig) r.phone = ph }))
+          d.poojas.forEach((p) => { p.phones = p.phones.map((x) => (x === orig ? ph : x)) })
         }
       }
     })
@@ -86,6 +87,7 @@ export default function DevoteeForm({ phone }: { phone?: string }) {
   const del = () => confirm('Delete ' + draft.full_name + ' and all linked records? This cannot be undone.', () => {
     update((d) => {
       d.devotees = d.devotees.filter((x) => x.phone !== orig)
+      d.poojas.forEach((p) => { p.phones = p.phones.filter((x) => x !== orig) })
       ;(['family', 'deekshas', 'payments', 'batch_members'] as const).forEach((t) => { (d as any)[t] = (d[t] as { phone: string }[]).filter((r) => r.phone !== orig) })
     })
     closeDrawer(); toast('Deleted')
@@ -150,6 +152,7 @@ export default function DevoteeForm({ phone }: { phone?: string }) {
         {tab === 'spiritual' && <DeekshaTab phone={orig} />}
         {tab === 'family' && <FamilyTab phone={orig} />}
         {tab === 'payments' && <DevoteePaymentsTab phone={orig} />}
+        {tab === 'poojas' && <PoojasTab phone={orig} />}
         {tab === 'yatra' && <YatraTab phone={orig} />}
         {tab !== 'basics' && <div className="actbar m-only"><button className="btn sec" onClick={closeDrawer}>Close</button></div>}
       </div>

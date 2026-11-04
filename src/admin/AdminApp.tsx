@@ -12,18 +12,19 @@ import BatchesView, { BatchForm } from './BatchesView'
 import PaymentsView from './ServicePayments'
 import ExpensesPanel, { ExpenseForm } from './ExpensesPanel'
 import ExcelPanel from './ExcelPanel'
+import PoojasView, { PoojaForm } from './PoojasView'
 import { DrawerState, SESSION_KEY, View } from './types'
 
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const VIEW_PATH: Record<View, string> = {
-  dash: 'dashboard', devotees: 'devotees', batches: 'batches', payments: 'payments', expenses: 'expenses', excel: 'excel',
+  dash: 'dashboard', devotees: 'devotees', batches: 'batches', payments: 'payments', expenses: 'expenses', poojas: 'poojas', excel: 'excel',
 }
 const PATH_VIEW = Object.fromEntries(Object.entries(VIEW_PATH).map(([v, p]) => [p, v])) as Record<string, View>
 
 const NAV: [View, string][] = [
   ['dash', 'Dashboard'], ['devotees', 'Devotees'], ['batches', 'Batches / Yatra'],
-  ['payments', 'Payments'], ['expenses', 'Expenses'], ['excel', 'Excel Import / Export'],
+  ['payments', 'Payments'], ['poojas', 'Poojas & Seva'], ['expenses', 'Expenses'], ['excel', 'Excel Import / Export'],
 ]
 
 const wasLoggedIn = () => { try { return sessionStorage.getItem(SESSION_KEY) === '1' } catch { return false } }
@@ -72,6 +73,7 @@ export default function AdminApp() {
     openDevotee: (phone?: string) => setDrawer({ kind: 'devotee', phone, nonce: ++nonce.current }),
     openBatch: (id: number | null) => setDrawer({ kind: 'batch', id, nonce: ++nonce.current }),
     openExpense: (index: number | null) => setDrawer({ kind: 'expense', index, nonce: ++nonce.current }),
+    openPooja: (index: number | null) => setDrawer({ kind: 'pooja', index, nonce: ++nonce.current }),
   }), [db, update, replace, toast, view, go, closeDrawer, closeModal])
 
   // Esc closes the topmost layer
@@ -113,6 +115,7 @@ export default function AdminApp() {
     case 'batches': page = <BatchesView />; break
     case 'payments': page = <PaymentsView />; break
     case 'expenses': page = <ExpensesPanel />; break
+    case 'poojas': page = <PoojasView />; break
     case 'excel': page = <ExcelPanel />; break
     default: page = <Dashboard />
   }
@@ -121,6 +124,7 @@ export default function AdminApp() {
   if (drawer?.kind === 'devotee') sheet = <DevoteeForm key={drawer.nonce} phone={drawer.phone} />
   else if (drawer?.kind === 'batch') sheet = <BatchForm key={drawer.nonce} id={drawer.id} />
   else if (drawer?.kind === 'expense') sheet = <ExpenseForm key={drawer.nonce} index={drawer.index} />
+  else if (drawer?.kind === 'pooja') sheet = <PoojaForm key={drawer.nonce} index={drawer.index} />
 
   return (
     <AdminContext.Provider value={ctx}>

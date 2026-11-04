@@ -57,7 +57,8 @@
 .admin-root .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px}
 .admin-root .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
 .admin-root .stat b{display:block;font-size:26px;color:var(--saffron)}
-.admin-root .stat span{color:var(--mute);font-size:13px}
+.admin-root .stat span{display:block;color:var(--mute);font-size:13px}
+.admin-root .stat span.fs12{margin-top:4px}
 .admin-root .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:16px}
 .admin-root .panel h3{margin:0 0 10px;font-size:15px;font-weight:700;color:var(--maroon)}
 .admin-root .filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px}
@@ -152,23 +153,23 @@ body:has(.admin-root)::before{display:none}
 .admin-root .top h1,.admin-root .a-login h1,.admin-root aside h2{font-family:'Cinzel','Palatino Linotype',Palatino,serif;letter-spacing:.03em}
 .admin-root .a-login{
   background:
-    url("./art/sannidhanam-gold.svg") no-repeat center calc(100% - 70px) / min(440px,90vw) auto,
+    url("../admin/art/sannidhanam-gold.svg") no-repeat center calc(100% - 70px) / min(440px,90vw) auto,
     radial-gradient(ellipse at 50% 28%,rgba(201,162,39,.22),transparent 55%),
     linear-gradient(160deg,var(--maroon),#240000)}
 .admin-root .a-login .box{border-top:4px solid var(--gold);box-shadow:0 18px 50px rgba(0,0,0,.45);position:relative;margin-bottom:34vh}
-.admin-root .a-login .box::before{content:"";display:block;height:22px;margin:-14px 0 8px;background:url("./art/arches.svg") repeat-x center bottom / auto 22px}
+.admin-root .a-login .box::before{content:"";display:block;height:22px;margin:-14px 0 8px;background:url("../admin/art/arches.svg") repeat-x center bottom / auto 22px}
 .admin-root aside{
-  background:var(--maroon) url("./art/gopuram-cream.svg") no-repeat center calc(100% - 128px) / 88% auto}
+  background:var(--maroon) url("../admin/art/gopuram-cream.svg") no-repeat center calc(100% - 128px) / 88% auto}
 .admin-root main{
-  --art:url("./art/gopuram-brown.svg");
+  --art:url("../admin/art/gopuram-brown.svg");
   background:
     var(--art) no-repeat right clamp(8px,2vw,32px) bottom 0 / min(440px,60vw) auto,
     radial-gradient(ellipse at 100% 0%,rgba(201,162,39,.10),transparent 55%),
     var(--bg)}
-.admin-root main[data-view="batches"],.admin-root main[data-view="payments"]{--art:url("./art/sannidhanam-brown.svg")}
+.admin-root main[data-view="batches"],.admin-root main[data-view="payments"]{--art:url("../admin/art/sannidhanam-brown.svg")}
 @media(min-width:1001px){
   .admin-root .top{position:relative;margin-bottom:26px}
-  .admin-root .top::after{content:"";position:absolute;left:0;right:0;bottom:-16px;height:14px;background:url("./art/arches.svg") repeat-x left bottom / auto 14px;pointer-events:none}
+  .admin-root .top::after{content:"";position:absolute;left:0;right:0;bottom:-16px;height:14px;background:url("../admin/art/arches.svg") repeat-x left bottom / auto 14px;pointer-events:none}
 }
 @media(max-width:760px){
   .admin-root main{background-size:min(300px,80vw) auto,auto,auto;background-position:right 8px bottom 0,0 0,0 0}
@@ -180,7 +181,7 @@ body:has(.admin-root)::before{display:none}
     place-items:center end;
     padding-right:clamp(48px,9vw,180px);
     background:
-      url("./art/sannidhanam-gold.svg") no-repeat left clamp(40px,9vw,160px) center / min(520px,40vw) auto,
+      url("../admin/art/sannidhanam-gold.svg") no-repeat left clamp(40px,9vw,160px) center / min(520px,40vw) auto,
       radial-gradient(ellipse at 28% 50%,rgba(201,162,39,.20),transparent 55%),
       linear-gradient(160deg,var(--maroon),#240000)}
   .admin-root .a-login .box{margin-bottom:0}
@@ -223,3 +224,10 @@ body:has(.admin-root)::before{display:none}
 .admin-root .a-install{position:fixed;z-index:80;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(380px,92vw);background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:0 12px 32px rgba(60,20,0,.28)}
 .admin-root .a-install p{margin:4px 0 10px;color:var(--mute);font-size:14px}
 .admin-root .a-install .row{display:flex;gap:8px;justify-content:flex-end}
+
+.admin-root .stat .svc-line{cursor:pointer;margin-top:6px;color:var(--ink)}
+.admin-root .stat .svc-line b{display:inline;font-size:inherit;color:inherit}
+.admin-root .scrolllist{max-height:260px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;background:#fff;margin-top:8px}
+.admin-root .srow{padding:9px 12px;border-bottom:1px solid var(--line);cursor:pointer}
+.admin-root .srow:last-child{border-bottom:0}
+.admin-root .srow:hover{background:rgba(217,94,10,.06)}

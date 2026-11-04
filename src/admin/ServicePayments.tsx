@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useAdmin } from './AdminContext'
 import { Field } from './ui'
-import { SVC_TYPES } from './types'
+import { SVC_TYPES, sessionsFor } from './types'
 import { findDevotee, money, todayISO } from './utils'
-import { Select } from './Select'
+import { Select, SelectOther } from './Select'
 
 function useMarkPaid() {
   const { update } = useAdmin()
@@ -13,22 +13,28 @@ function useMarkPaid() {
   })
 }
 
-const BLANK = { type: 'Annadanam', sd: '', se: 'Morning', amount: '', status: 'Paid', mode: 'UPI', note: '' }
+const BLANK = { type: 'Yatra', sd: '', se: 'Morning', amount: '', status: 'Paid', mode: 'UPI', note: '' }
 
-/** "Add payment" form, including the Annadanam/Alpaharam/Pooja service date + session. */
+/** "Add payment" form. Annadanam / Alpaharam / Pooja sponsorships are scheduled on the Poojas & Seva screen. */
 function AddPayment({ phone }: { phone: string }) {
   const { update, toast } = useAdmin()
   const [f, setF] = useState(BLANK)
-  const set = (k: keyof typeof BLANK) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setF({ ...f, [k]: e.target.value })
+  const set = (k: keyof typeof BLANK) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const v = e.target.value
+    // changing type keeps session valid: Annadanam = Afternoon only, others Morning/Evening
+    if (k === 'type') setF({ ...f, type: v, se: sessionsFor(v).includes(f.se) ? f.se : sessionsFor(v)[0] })
+    else setF({ ...f, [k]: v })
+  }
   const svc = SVC_TYPES.includes(f.type)
 
   const add = () => {
     const a = +f.amount
+    if (!f.type.trim()) { toast('Enter what the other payment is for'); return }
     if (!(a > 0)) { toast('Enter amount'); return }
     if (svc && !f.sd) { toast('Pick the ' + f.type.toLowerCase() + ' date'); document.getElementById('psd')?.focus(); return }
     update((d) => {
       d.payments.push({
-        id: d.nextId.pay++, phone, type: f.type, service_date: svc ? f.sd : '', session: svc ? f.se : '', amount: a,
+        id: d.nextId.pay++, phone, type: f.type.trim(), service_date: svc ? f.sd : '', session: svc ? f.se : '', amount: a,
         date: f.status === 'Paid' ? todayISO() : '', mode: f.status === 'Paid' ? f.mode : '', status: f.status, note: f.note,
       })
     })
@@ -40,12 +46,10 @@ function AddPayment({ phone }: { phone: string }) {
       <b>Add payment</b>
       <div className="grid2 mt8">
         <Field label="Type">
-          <Select value={f.type} onChange={set('type')}>
-            {['Annadanam', 'Alpaharam', 'Pooja', 'Yatra', 'Donation', 'Other'].map((t) => <option key={t}>{t}</option>)}
-          </Select>
+          <SelectOther value={f.type} options={['Yatra', 'Donation', 'Other']} onChange={(v) => setF((p) => ({ ...p, type: v }))} />
         </Field>
         {svc && <Field label={f.type + ' date *'}><input id="psd" type="date" value={f.sd} onChange={set('sd')} /></Field>}
-        {svc && <Field label="Session"><Select value={f.se} onChange={set('se')}><option>Morning</option><option>Evening</option></Select></Field>}
+        {svc && <Field label="Session"><Select value={f.se} onChange={set('se')}>{sessionsFor(f.type).map((s) => <option key={s}>{s}</option>)}</Select></Field>}
         <Field label="Amount (₹) *"><input type="number" min="0" inputMode="decimal" value={f.amount} onChange={set('amount')} /></Field>
         <Field label="Status"><Select value={f.status} onChange={set('status')}><option>Paid</option><option>Pending</option></Select></Field>
         <Field label="Mode"><Select value={f.mode} onChange={set('mode')}><option>UPI</option><option>Cash</option><option>Bank</option></Select></Field>

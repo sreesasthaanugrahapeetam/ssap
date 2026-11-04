@@ -251,3 +251,29 @@ export function Combo({ value, onChange, options, id, placeholder, ...aria }: Co
     </>
   )
 }
+
+/**
+ * Select with an "Other" choice. Picking Other reveals a text box; the typed text becomes the stored value.
+ * A stored value that is not in `options` is shown as Other with its text.
+ */
+export function SelectOther({ value, onChange, options, other = 'Other', ...rest }: {
+  value: string; onChange: (v: string) => void; options: string[]; other?: string; 'aria-label'?: string; id?: string
+}) {
+  const named = options.filter((o) => o !== other)
+  const [forced, setForced] = useState(false)
+  const isOther = forced || !named.includes(value)
+  return (
+    <>
+      <Select value={isOther ? other : value} onChange={(e) => {
+        if (e.target.value === other) { setForced(true); onChange('') } else { setForced(false); onChange(e.target.value) }
+      }} {...rest}>
+        {named.map((o) => <option key={o}>{o}</option>)}
+        <option>{other}</option>
+      </Select>
+      {isOther && (
+        <input className="mt8" value={value} placeholder="Please specify" aria-label="Specify other" autoFocus={forced}
+          onChange={(e) => onChange(e.target.value)} />
+      )}
+    </>
+  )
+}

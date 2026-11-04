@@ -1,19 +1,20 @@
 import * as XLSX from 'xlsx'
-import { DB, NEW_TAG, THIS_YEAR } from './types'
-import { normPhone } from './utils'
+import { DB, NEW_TAG, THIS_YEAR, sessionsFor } from './types'
+import { migrateServices, normPhone } from './utils'
 
 export const SHEETS: Record<string, string[]> = {
   Devotees: ['phone', 'full_name', 'email', 'address', 'dob', 'blood_group', 'gothram', 'referred_by', 'active', 'notes'],
   Family: ['phone', 'name', 'relation', 'member_phone', 'emergency'],
   Deekshas: ['phone', 'year', 'malai_date', 'irumudi_date', 'mandala_days', 'end_date'],
-  Payments: ['phone', 'type', 'service_date', 'session', 'amount', 'date', 'mode', 'status', 'note'],
+  Payments: ['phone', 'type', 'service_date', 'session', 'pooja_id', 'amount', 'date', 'mode', 'status', 'note'],
   Expenses: ['id', 'date', 'category', 'amount', 'mode', 'paid_to', 'note'],
+  Poojas: ['id', 'kind', 'date', 'session', 'venue', 'notes', 'phones'],
   Batches: ['id', 'year', 'name', 'travel_date', 'vehicle', 'capacity', 'notes'],
   BatchMembers: ['batch_id', 'phone'],
 }
 const KEYMAP: Record<string, keyof DB> = {
   Devotees: 'devotees', Family: 'family', Deekshas: 'deekshas', Payments: 'payments',
-  Expenses: 'expenses', Batches: 'batches', BatchMembers: 'batch_members',
+  Expenses: 'expenses', Poojas: 'poojas', Batches: 'batches', BatchMembers: 'batch_members',
 }
 
 function scoped(db: DB, phones: Set<string>): DB {
@@ -21,6 +22,7 @@ function scoped(db: DB, phones: Set<string>): DB {
   const batchIds = new Set(members.map((m) => m.batch_id))
   return {
     ...db,
+    poojas: [],
     devotees: db.devotees.filter((d) => phones.has(d.phone)),
     family: db.family.filter((x) => phones.has(x.phone)),
     deekshas: db.deekshas.filter((x) => phones.has(x.phone)),
@@ -34,7 +36,8 @@ function workbook(db: DB | null) {
   const w = XLSX.utils.book_new()
   Object.keys(SHEETS).filter((n) => n !== 'Expenses').forEach((n) => {
     const cols = SHEETS[n]
-    const rows = db ? (db[KEYMAP[n]] as any[]).map((r) => cols.map((c) => (r[c] == null ? '' : r[c]))) : []
+    const cell = (r: any, c: string) => (Array.isArray(r[c]) ? r[c].join(', ') : r[c] == null ? '' : r[c])
+    const rows = db ? (db[KEYMAP[n]] as any[]).map((r) => cols.map((c) => cell(r, c))) : []
     const ws = XLSX.utils.aoa_to_sheet([cols as any[]].concat(rows))
     ws['!cols'] = cols.map(() => ({ wch: 18 }))
     XLSX.utils.book_append_sheet(w, ws, n)
@@ -88,8 +91,9 @@ export function importXlsx(file: File, update: (fn: (d: DB) => void) => void): P
               const rec: any = {}
               SHEETS[sn].forEach((c) => { rec[c] = row[c] == null ? '' : row[c] })
               rec.phone = ph
+              if (sn === 'Payments' && rec.service_date && !sessionsFor(rec.type).includes(rec.session)) rec.session = sessionsFor(rec.type)[0]
               if (rec.member_phone) rec.member_phone = normPhone(rec.member_phone)
-              ;['year', 'mandala_days', 'amount'].forEach((k) => { if (k in rec) rec[k] = +rec[k] || 0 })
+              ;['year', 'mandala_days', 'amount', 'pooja_id'].forEach((k) => { if (k in rec) rec[k] = +rec[k] || 0 })
               out.push(rec)
             })
             const phones = new Set(out.map((o) => o.phone))
@@ -111,6 +115,19 @@ export function importXlsx(file: File, update: (fn: (d: DB) => void) => void): P
             })
             log.push('Expenses: ' + n + ' rows loaded')
           }
+          const ps = sheet('Poojas')
+          if (ps.length) {
+            let n = 0
+            ps.forEach((x, i) => {
+              if (!String(x.date).trim() || !String(x.kind).trim()) { log.push('Poojas row ' + (i + 2) + ': kind and date required, skipped'); return }
+              const rec = { id: 0, kind: String(x.kind).trim(), date: String(x.date).trim(), session: String(x.session || 'Evening').trim(), venue: String(x.venue || '').trim(), notes: String(x.notes || '').trim(), phones: String(x.phones || '').split(/[,;]/).map((t) => normPhone(t)).filter((t) => known.has(t)) }
+              const ix = +x.id > 0 ? DB.poojas.findIndex((p) => p.id === +x.id) : -1
+              if (ix >= 0) { rec.id = DB.poojas[ix].id; DB.poojas[ix] = rec } else { rec.id = DB.nextId.pooja++; DB.poojas.push(rec) }
+              n++
+            })
+            log.push('Poojas: ' + n + ' rows loaded')
+          }
+          migrateServices(DB)
           const bs = sheet('Batches')
           if (bs.length) {
             bs.forEach((b) => {

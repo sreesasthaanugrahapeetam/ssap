@@ -1,7 +1,7 @@
 import { useAdmin } from './AdminContext'
 import { AddDeekshaBox, DeekshaPill, Field } from './ui'
 import { Deeksha, FamilyMember, THIS_YEAR } from './types'
-import { batchOf, fmtPhone, normPhone } from './utils'
+import { batchOf, fmtPhone, normPhone, todayISO } from './utils'
 import { Select } from './Select'
 
 export function DeekshaTab({ phone }: { phone: string }) {
@@ -95,6 +95,39 @@ export function YatraTab({ phone }: { phone: string }) {
       </div>
       <div className="muted">Past batches</div>
       {past.length ? past.map((b) => <div className="sub" key={b!.id}>{b!.name} · {b!.year}</div>) : <div className="muted">None.</div>}
+    </>
+  )
+}
+
+/** Poojas this devotee is tagged to. Tag / untag from here, or from the pooja form. */
+export function PoojasTab({ phone }: { phone: string }) {
+  const { db, update, toast } = useAdmin()
+  const today = todayISO()
+  const mine = db.poojas.filter((p) => p.phones.includes(phone)).sort((a, b) => a.date.localeCompare(b.date))
+  const untagged = db.poojas.filter((p) => !p.phones.includes(phone) && p.date >= today).sort((a, b) => a.date.localeCompare(b.date))
+  const tag = (id: string) => {
+    if (!id) return
+    update((d) => { d.poojas.find((p) => p.id === +id)?.phones.push(phone) })
+    toast('Tagged')
+  }
+  const untag = (id: number) => update((d) => { const p = d.poojas.find((x) => x.id === id); if (p) p.phones = p.phones.filter((x) => x !== phone) })
+  return (
+    <>
+      {mine.length ? mine.map((p) => (
+        <div className="sub" key={p.id}>
+          <b>{p.kind}</b> <span className="pill gold">{p.date} · {p.session}</span>{p.date < today && <> <span className="pill">past</span></>}
+          <div className="muted fs12">{[p.venue, p.notes].filter(Boolean).join(' · ')}</div>
+          <button className="btn danger sm mt8" onClick={() => untag(p.id)}>Remove</button>
+        </div>
+      )) : <div className="muted">Not tagged to any pooja.</div>}
+      <div className="sub mt12">
+        <Field label="Tag to an upcoming pooja">
+          <Select value="" onChange={(e) => tag(e.target.value)}>
+            <option value="">{untagged.length ? 'Choose pooja…' : 'No upcoming poojas to tag'}</option>
+            {untagged.map((p) => <option key={p.id} value={p.id}>{p.kind} · {p.date} · {p.session}</option>)}
+          </Select>
+        </Field>
+      </div>
     </>
   )
 }
