@@ -169,3 +169,15 @@ body:has(.admin-root)::before{display:none}
 @media(max-width:760px){
   .admin-root main{background-size:min(380px,92vw) auto,auto,auto}
 }
+
+/* Login: temple on the left, card on the right (desktop). Phones keep the stacked layout. */
+@media(min-width:900px){
+  .admin-root .a-login{
+    place-items:center end;
+    padding-right:clamp(48px,9vw,180px);
+    background:
+      url("./art/gopuram-gold.svg") no-repeat left clamp(40px,9vw,160px) center / min(560px,42vw) auto,
+      radial-gradient(ellipse at 28% 50%,rgba(201,162,39,.20),transparent 55%),
+      linear-gradient(160deg,var(--maroon),#240000)}
+  .admin-root .a-login .box{margin-bottom:0}
+}
