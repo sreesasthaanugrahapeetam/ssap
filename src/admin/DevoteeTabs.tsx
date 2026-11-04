@@ -3,6 +3,7 @@ import { AddDeekshaBox, DeekshaPill, Field } from './ui'
 import { Deeksha, FamilyMember, THIS_YEAR } from './types'
 import { batchOf, fmtPhone, normPhone, todayISO } from './utils'
 import { Select } from './Select'
+import { shareYatra } from './yatraShare'
 
 export function DeekshaTab({ phone }: { phone: string }) {
   const { db, update, toast, showModal } = useAdmin()
@@ -93,6 +94,15 @@ export function YatraTab({ phone }: { phone: string }) {
           </Select>
         </Field>
       </div>
+      {cur && (
+        <div className="sub">
+          <b>{cur.gurus.length > 1 ? 'Guru Swamys' : 'Guru Swamy'}</b>
+          {cur.gurus.length ? cur.gurus.map((g, i) => (
+            <div key={i}>{g.name}{g.phone && <> · <a href={'tel:+91' + g.phone.replace(/\D/g, '').slice(-10)}>{fmtPhone(g.phone)}</a></>}</div>
+          )) : <div className="muted">None added. Add them on the Batches page.</div>}
+          <button className="btn sec sm mt8" onClick={() => shareYatra(cur).then((r) => toast(r === 'copied' ? 'Details copied' : 'Shared')).catch(() => toast('Could not share'))}>Share yatra details</button>
+        </div>
+      )}
       <div className="muted">Past batches</div>
       {past.length ? past.map((b) => <div className="sub" key={b!.id}>{b!.name} · {b!.year}</div>) : <div className="muted">None.</div>}
     </>

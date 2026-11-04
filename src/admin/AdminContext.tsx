@@ -15,6 +15,7 @@ export interface AdminCtx {
   openBatch: (id: number | null) => void
   openExpense: (index: number | null) => void
   openPooja: (index: number | null) => void
+  openPayment: (index: number) => void
   closeDrawer: () => void
 }
 

@@ -9,7 +9,7 @@ import Dashboard from './Dashboard'
 import DevoteeTable from './DevoteeTable'
 import DevoteeForm from './DevoteeForm'
 import BatchesView, { BatchForm } from './BatchesView'
-import PaymentsView from './ServicePayments'
+import PaymentsView, { PaymentForm } from './ServicePayments'
 import ExpensesPanel, { ExpenseForm } from './ExpensesPanel'
 import ExcelPanel from './ExcelPanel'
 import PoojasView, { PoojaForm } from './PoojasView'
@@ -24,7 +24,7 @@ const PATH_VIEW = Object.fromEntries(Object.entries(VIEW_PATH).map(([v, p]) => [
 
 const NAV: [View, string][] = [
   ['dash', 'Dashboard'], ['devotees', 'Devotees'], ['batches', 'Batches / Yatra'],
-  ['payments', 'Payments'], ['poojas', 'Poojas & Seva'], ['expenses', 'Expenses'], ['excel', 'Excel Import / Export'],
+  ['payments', 'Payments'], ['poojas', 'Poojas & Seva'], ['expenses', 'Expenses'],
 ]
 
 const wasLoggedIn = () => { try { return sessionStorage.getItem(SESSION_KEY) === '1' } catch { return false } }
@@ -74,6 +74,7 @@ export default function AdminApp() {
     openBatch: (id: number | null) => setDrawer({ kind: 'batch', id, nonce: ++nonce.current }),
     openExpense: (index: number | null) => setDrawer({ kind: 'expense', index, nonce: ++nonce.current }),
     openPooja: (index: number | null) => setDrawer({ kind: 'pooja', index, nonce: ++nonce.current }),
+    openPayment: (index: number) => setDrawer({ kind: 'payment', index, nonce: ++nonce.current }),
   }), [db, update, replace, toast, view, go, closeDrawer, closeModal])
 
   // Esc closes the topmost layer
@@ -125,6 +126,7 @@ export default function AdminApp() {
   else if (drawer?.kind === 'batch') sheet = <BatchForm key={drawer.nonce} id={drawer.id} />
   else if (drawer?.kind === 'expense') sheet = <ExpenseForm key={drawer.nonce} index={drawer.index} />
   else if (drawer?.kind === 'pooja') sheet = <PoojaForm key={drawer.nonce} index={drawer.index} />
+  else if (drawer?.kind === 'payment') sheet = <PaymentForm key={drawer.nonce} index={drawer.index} />
 
   return (
     <AdminContext.Provider value={ctx}>

@@ -29,6 +29,7 @@ export default function Dashboard() {
         <div className="stat"><b>{unassigned}</b><span>Not in any batch</span></div>
         <div className="stat"><b>{money(dues)}</b><span>Pending dues</span></div>
       </div>
+      <div className="dgrid tri">
       <div className="panel">
         <h3>Upcoming poojas</h3>
         <div className="cards">
@@ -54,7 +55,6 @@ export default function Dashboard() {
         )}
         <button className="btn sec sm mt8" onClick={() => go('poojas')}>All poojas</button>
       </div>
-      <div className="dgrid">
         {SEVA_KINDS.map((type) => {
           const list = upcomingPoojas(db, type)
           return (

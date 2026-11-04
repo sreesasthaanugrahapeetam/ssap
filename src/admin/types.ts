@@ -25,7 +25,8 @@ export interface Payment {
   id?: number; phone: string; type: string; service_date?: string; session?: string; pooja_id?: number
   amount: number; date: string; mode: string; status: string; note: string
 }
-export interface Batch { id: number; year: number; name: string; travel_date: string; vehicle: string; capacity: number; notes: string }
+export interface Guru { name: string; phone: string }
+export interface Batch { id: number; year: number; name: string; travel_date: string; vehicle: string; capacity: number; notes: string; gurus: Guru[] }
 export interface BatchMember { batch_id: number; phone: string }
 export interface Expense { id: number; date: string; category: string; amount: number; mode: string; paid_to: string; note: string }
 
@@ -50,4 +51,5 @@ export type DrawerState =
   | { kind: 'batch'; id: number | null; nonce: number }
   | { kind: 'expense'; index: number | null; nonce: number }
   | { kind: 'pooja'; index: number | null; nonce: number }
+  | { kind: 'payment'; index: number; nonce: number }
   | null

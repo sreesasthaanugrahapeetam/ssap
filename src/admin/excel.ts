@@ -9,7 +9,7 @@ export const SHEETS: Record<string, string[]> = {
   Payments: ['phone', 'type', 'service_date', 'session', 'pooja_id', 'amount', 'date', 'mode', 'status', 'note'],
   Expenses: ['id', 'date', 'category', 'amount', 'mode', 'paid_to', 'note'],
   Poojas: ['id', 'kind', 'date', 'session', 'venue', 'notes', 'phones'],
-  Batches: ['id', 'year', 'name', 'travel_date', 'vehicle', 'capacity', 'notes'],
+  Batches: ['id', 'year', 'name', 'travel_date', 'vehicle', 'capacity', 'notes', 'gurus'],
   BatchMembers: ['batch_id', 'phone'],
 }
 const KEYMAP: Record<string, keyof DB> = {
@@ -36,7 +36,7 @@ function workbook(db: DB | null) {
   const w = XLSX.utils.book_new()
   Object.keys(SHEETS).filter((n) => n !== 'Expenses').forEach((n) => {
     const cols = SHEETS[n]
-    const cell = (r: any, c: string) => (Array.isArray(r[c]) ? r[c].join(', ') : r[c] == null ? '' : r[c])
+    const cell = (r: any, c: string) => (c === 'gurus' ? (r.gurus || []).map((g: any) => g.name + (g.phone ? ':' + g.phone : '')).join('; ') : Array.isArray(r[c]) ? r[c].join(', ') : r[c] == null ? '' : r[c])
     const rows = db ? (db[KEYMAP[n]] as any[]).map((r) => cols.map((c) => cell(r, c))) : []
     const ws = XLSX.utils.aoa_to_sheet([cols as any[]].concat(rows))
     ws['!cols'] = cols.map(() => ({ wch: 18 }))
@@ -132,7 +132,7 @@ export function importXlsx(file: File, update: (fn: (d: DB) => void) => void): P
           if (bs.length) {
             bs.forEach((b) => {
               const id = +b.id || DB.nextId.batch++
-              const rec = { id, year: +b.year || THIS_YEAR, name: b.name, travel_date: b.travel_date, vehicle: b.vehicle, capacity: +b.capacity || 45, notes: b.notes }
+              const rec = { id, year: +b.year || THIS_YEAR, name: b.name, travel_date: b.travel_date, vehicle: b.vehicle, capacity: +b.capacity || 45, notes: b.notes, gurus: String(b.gurus || '').split(';').map((t) => normPhone(t.split(':')[1] || '')).map((ph) => DB.devotees.find((d) => d.phone === ph)).filter((d): d is NonNullable<typeof d> => !!d).map((d) => ({ name: d.full_name, phone: d.phone })) }
               const ix = DB.batches.findIndex((x) => x.id === id)
               if (ix >= 0) DB.batches[ix] = rec; else DB.batches.push(rec)
               DB.nextId.batch = Math.max(DB.nextId.batch, id + 1)

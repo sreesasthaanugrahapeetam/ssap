@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAdmin } from './AdminContext'
-import { Field } from './ui'
+import { Field, rowOpen } from './ui'
 import { POOJA_KINDS, SESSION_ORDER, sessionsFor } from './types'
 import { daysUntil, devoteeLabel, money, todayISO } from './utils'
 import { Select, SelectOther } from './Select'
@@ -29,13 +29,12 @@ export default function PoojasView() {
           {list.map(({ p, i }) => {
             const pay = db.payments.find((x) => x.pooja_id === p.id)
             return (
-            <tr key={p.id ?? i}>
+            <tr key={p.id ?? i} {...rowOpen(() => openPooja(i))}>
               <td>{p.kind}<div className="muted fs12">{p.notes}</div></td>
               <td>{p.date} <span className="pill gold">{p.session}</span><div className="muted fs12">{whenLabel(p.date)}</div></td>
               <td className="hm">{p.phones.length ? p.phones.map((ph) => devoteeLabel(db, ph)).join(', ') : <span className="muted">—</span>}<div className="muted fs12">{p.venue}</div></td>
               <td className="hm">{pay ? <>{money(pay.amount)} <span className={'pill ' + (pay.status === 'Paid' ? 'ok' : 'warn')}>{pay.status}</span></> : <span className="muted">—</span>}</td>
               <td className="nowrap">
-                <button className="btn sec sm" onClick={() => openPooja(i)}>Edit</button>{' '}
                 <button className="btn danger sm" aria-label="Delete activity" onClick={() => confirm('Delete this activity and its linked payment?', () => update((d) => { const id = d.poojas[i].id; d.poojas.splice(i, 1); d.payments = d.payments.filter((x) => x.pooja_id !== id) }))}>✕</button>
               </td>
             </tr>

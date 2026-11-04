@@ -64,3 +64,11 @@ export function AddDeekshaBox({ onAdd }: { onAdd: (year: number) => boolean }) {
     </form>
   )
 }
+
+/** Props that make a whole table row (or card) open its editor on click / Enter. Clicks on inner buttons, links and pills are ignored. */
+export const rowOpen = (open: () => void, className = 'row') => ({
+  className,
+  tabIndex: 0,
+  onClick: (e: React.MouseEvent) => { if (!(e.target as HTMLElement).closest('button,a,input,select,.pill-link')) open() },
+  onKeyDown: (e: React.KeyboardEvent) => { if (e.key === 'Enter' && e.target === e.currentTarget) open() },
+})

@@ -1,19 +1,12 @@
 import { useState } from 'react'
 import { useAdmin } from './AdminContext'
-import { Avatar, DeekshaPill } from './ui'
+import { Avatar, DeekshaPill, rowOpen } from './ui'
 import { NEW_TAG, THIS_YEAR } from './types'
 import { batchOf, curDeeksha, duesOf, fmtPhone, money } from './utils'
-import { exportXlsx } from './excel'
 import { Select } from './Select'
 
-const rowKey = (open: () => void) => ({
-  tabIndex: 0,
-  onClick: open,
-  onKeyDown: (e: React.KeyboardEvent) => { if (e.key === 'Enter') open() },
-})
-
 export default function DevoteeTable() {
-  const { db, openDevotee, toast } = useAdmin()
+  const { db, openDevotee } = useAdmin()
   const [f, setF] = useState({ q: '', deeksha: '', batch: '', dues: '' })
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setF({ ...f, [k]: e.target.value })
 
@@ -34,7 +27,6 @@ export default function DevoteeTable() {
     <>
       <div className="top">
         <h1>Devotees</h1>
-        <button className="btn sec" onClick={() => exportXlsx(db, toast, new Set(rows.map((d) => d.phone)))}>⬇ Excel ({rows.length})</button>
         <button className="btn" onClick={() => openDevotee()}>+ Add devotee</button>
       </div>
       <div className="filters">
@@ -61,7 +53,7 @@ export default function DevoteeTable() {
             {rows.map((d) => {
               const dues = duesOf(db, d.phone), b = batchOf(db, d.phone)
               return (
-                <tr key={d.phone} className="row" {...rowKey(() => openDevotee(d.phone))}>
+                <tr key={d.phone} {...rowOpen(() => openDevotee(d.phone))}>
                   <td><Avatar photo={d.photo} name={d.full_name} />{d.full_name}{d.active === 'no' && <> <span className="pill warn">inactive</span></>}</td>
                   <td><a href={'tel:+91' + d.phone.replace(/\D/g, '').slice(-10)} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>{fmtPhone(d.phone)}</a></td>
                   <td className="hm">{d.referred_by && d.referred_by !== NEW_TAG ? d.referred_by : <span className="pill gold">{NEW_TAG}</span>}</td>

@@ -77,6 +77,8 @@ export default function DevoteeForm({ phone }: { phone?: string }) {
           ;(['family', 'deekshas', 'payments', 'batch_members'] as const).forEach((t) => (d[t] as { phone: string }[]).forEach((r) => { if (r.phone === orig) r.phone = ph }))
           d.poojas.forEach((p) => { p.phones = p.phones.map((x) => (x === orig ? ph : x)) })
         }
+        // keep Guru Swamy entries in sync with the devotee record (new phone and/or name)
+        d.batches.forEach((b) => b.gurus.forEach((g) => { if (g.phone === orig) { g.phone = ph; g.name = rec.full_name } }))
       }
     })
     if (!isNew && ph !== orig) toast('Phone changed, all linked records updated')
@@ -88,6 +90,7 @@ export default function DevoteeForm({ phone }: { phone?: string }) {
     update((d) => {
       d.devotees = d.devotees.filter((x) => x.phone !== orig)
       d.poojas.forEach((p) => { p.phones = p.phones.filter((x) => x !== orig) })
+      d.batches.forEach((b) => { b.gurus = b.gurus.filter((g) => g.phone !== orig) })
       ;(['family', 'deekshas', 'payments', 'batch_members'] as const).forEach((t) => { (d as any)[t] = (d[t] as { phone: string }[]).filter((r) => r.phone !== orig) })
     })
     closeDrawer(); toast('Deleted')

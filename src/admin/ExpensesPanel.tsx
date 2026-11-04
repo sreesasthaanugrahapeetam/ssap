@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAdmin } from './AdminContext'
-import { Field } from './ui'
+import { Field, rowOpen } from './ui'
 import { EXP_CATS } from './types'
 import { money, todayISO } from './utils'
 import { Select, SelectOther } from './Select'
@@ -54,12 +54,11 @@ export default function ExpensesPanel() {
           <thead><tr><th>Date</th><th>Category</th><th>Paid to</th><th>Amount</th><th className="hm">Mode</th><th></th></tr></thead>
           <tbody>
             {rows.map(({ e, i }) => (
-              <tr key={e.id ?? i}>
+              <tr key={e.id ?? i} {...rowOpen(() => openExpense(i))}>
                 <td>{e.date}</td>
                 <td>{e.category}<div className="muted fs12">{e.note}</div></td>
                 <td>{e.paid_to}</td><td>{money(e.amount)}</td><td className="hm">{e.mode}</td>
                 <td className="nowrap">
-                  <button className="btn sec sm" onClick={() => openExpense(i)}>Edit</button>{' '}
                   <button className="btn danger sm" aria-label="Delete expense" onClick={() => confirm('Delete this expense?', () => update((d) => { d.expenses.splice(i, 1) }))}>✕</button>
                 </td>
               </tr>

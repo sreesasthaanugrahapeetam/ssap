@@ -1,9 +1,85 @@
 import { useState } from 'react'
 import { useAdmin } from './AdminContext'
-import { Field } from './ui'
-import { MAINTENANCE_AMOUNT, SVC_TYPES, sessionsFor } from './types'
+import { Field, rowOpen } from './ui'
+import { MAINTENANCE_AMOUNT, Payment, SVC_TYPES, sessionsFor } from './types'
 import { findDevotee, money, todayISO } from './utils'
 import { Select, SelectOther } from './Select'
+import { downloadReceipt, shareReceipt } from './receipt'
+
+/** PDF + Share buttons for a Paid payment. Share falls back to download where the browser cannot share files. */
+function ReceiptButtons({ p }: { p: Payment }) {
+  const { db, toast } = useAdmin()
+  if (p.status !== 'Paid') return null
+  const run = (fn: () => Promise<void>) => () => fn().catch(() => toast('Could not create receipt'))
+  return (
+    <>
+      <button className="btn sec sm" aria-label="Download receipt PDF" onClick={run(() => downloadReceipt(db, p))}>⬇ Receipt</button>{' '}
+      <button className="btn sec sm" aria-label="Share receipt" onClick={run(async () => { if (!(await shareReceipt(db, p))) { await downloadReceipt(db, p); toast('Sharing not supported here, downloaded instead') } })}>Share</button>{' '}
+    </>
+  )
+}
+
+/** Edit form for one payment (by index). Linked Annadanam / Alpaharam / pooja payments keep their date and session on the activity. */
+export function PaymentEditor({ index, onDone }: { index: number; onDone: () => void }) {
+  const { db, update, toast, confirm, go } = useAdmin()
+  const p = db.payments[index]
+  const [f, setF] = useState(() => ({ type: p?.type ?? '', amount: String(p?.amount ?? ''), status: p?.status ?? 'Paid', mode: p?.mode || 'UPI', date: p?.date || todayISO(), note: p?.note ?? '' }))
+  if (!p) return null
+  const linked = db.poojas.find((x) => x.id === p.pooja_id)
+  const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setF({ ...f, [k]: e.target.value })
+  const save = () => {
+    const a = +f.amount
+    if (!f.type.trim()) { toast('Enter what the payment is for'); return }
+    if (!(a > 0)) { toast('Enter a valid amount'); return }
+    if (f.status === 'Paid' && !f.date) { toast('Pick the paid date'); return }
+    update((d) => {
+      Object.assign(d.payments[index], {
+        type: f.type.trim(), amount: a, status: f.status, note: f.note.trim(),
+        mode: f.status === 'Paid' ? f.mode : '', date: f.status === 'Paid' ? f.date : '',
+      })
+      const act = d.poojas.find((x) => x.id === d.payments[index].pooja_id)
+      if (act) act.kind = f.type.trim()
+    })
+    onDone(); toast('Saved')
+  }
+  const del = () => confirm('Delete this payment?', () => { update((d) => { d.payments.splice(index, 1) }); onDone(); toast('Deleted') }, 'Delete')
+  return (
+    <>
+      <div className="grid2">
+        <Field label="Devotee" full><input value={findDevotee(db, p.phone)?.full_name ?? p.phone} disabled /></Field>
+        <Field label="Type">
+          {linked ? <input value={f.type} onChange={set('type')} /> : <SelectOther value={f.type} options={['Yatra', 'Donation', 'Maintenance', 'Other']} onChange={(v) => setF((q) => ({ ...q, type: v }))} />}
+        </Field>
+        <Field label="Amount (₹) *"><input type="number" min="0" inputMode="decimal" value={f.amount} onChange={set('amount')} /></Field>
+        <Field label="Status"><Select value={f.status} onChange={set('status')}><option>Paid</option><option>Pending</option></Select></Field>
+        {f.status === 'Paid' && <Field label="Paid on"><input type="date" value={f.date} onChange={set('date')} /></Field>}
+        {f.status === 'Paid' && <Field label="Mode"><Select value={f.mode} onChange={set('mode')}><option>UPI</option><option>Cash</option><option>Bank</option></Select></Field>}
+        <Field label="Note" full><input value={f.note} onChange={set('note')} /></Field>
+      </div>
+      {linked && (
+        <div className="muted fs12 mt8">
+          For {linked.kind} on {linked.date} ({linked.session}). Change the date or session on the <a href="#" onClick={(e) => { e.preventDefault(); onDone(); go('poojas') }}>Poojas &amp; Seva</a> screen.
+        </div>
+      )}
+      <div className="actbar">
+        <button className="btn" onClick={save}>Save</button>
+        <button className="btn sec" onClick={onDone}>Cancel</button>
+        <button className="btn danger" onClick={del}>Delete</button>
+      </div>
+    </>
+  )
+}
+
+/** Payment drawer (opened from the Payments page). */
+export function PaymentForm({ index }: { index: number }) {
+  const { closeDrawer } = useAdmin()
+  return (
+    <>
+      <div className="hdr"><h2>Edit payment</h2><button className="btn sec" onClick={closeDrawer}>Close</button></div>
+      <PaymentEditor index={index} onDone={closeDrawer} />
+    </>
+  )
+}
 
 /** Toggle a payment between Paid and Pending. Marking pending clears the paid date. */
 function useSetStatus() {
@@ -69,7 +145,9 @@ function AddPayment({ phone }: { phone: string }) {
 export function DevoteePaymentsTab({ phone }: { phone: string }) {
   const { db, update } = useAdmin()
   const setStatus = useSetStatus()
+  const [editing, setEditing] = useState<number | null>(null)
   const list = db.payments.map((x, i) => ({ x, i })).filter((o) => o.x.phone === phone)
+  if (editing != null) return <PaymentEditor index={editing} onDone={() => setEditing(null)} />
   return (
     <>
       {list.length ? (
@@ -77,13 +155,14 @@ export function DevoteePaymentsTab({ phone }: { phone: string }) {
           <tbody>
             <tr><th>Type</th><th>Amount</th><th>Status</th><th>Date</th><th></th></tr>
             {list.map(({ x, i }) => (
-              <tr key={x.id ?? i}>
+              <tr key={x.id ?? i} {...rowOpen(() => setEditing(i))}>
                 <td>{x.type}{x.service_date && <> <span className="pill gold">{x.service_date}{x.session ? ' · ' + x.session : ''}</span></>}
                   <div className="muted fs12">{x.note}</div></td>
                 <td>{money(x.amount)}</td>
                 <td><span className={'pill ' + (x.status === 'Paid' ? 'ok' : 'warn')}>{x.status}</span></td>
                 <td>{x.date}</td>
                 <td className="nowrap">
+                  <ReceiptButtons p={x} />
                   <button className="btn sec sm" onClick={() => setStatus(i, x.status === 'Paid' ? 'Pending' : 'Paid')}>{x.status === 'Paid' ? 'Mark pending' : 'Mark paid'}</button>{' '}
                   <button className="btn danger sm" aria-label="Delete payment" onClick={() => update((d) => { d.payments.splice(i, 1) })}>✕</button>
                 </td>
@@ -99,7 +178,7 @@ export function DevoteePaymentsTab({ phone }: { phone: string }) {
 
 /** All-devotees payments view. */
 export default function PaymentsView() {
-  const { db, openDevotee } = useAdmin()
+  const { db, openDevotee, openPayment } = useAdmin()
   const setStatus = useSetStatus()
   const rows = db.payments.map((p, i) => ({ p, i, d: findDevotee(db, p.phone) }))
   const tot = (s: string) => rows.filter((r) => r.p.status === s).reduce((a, r) => a + (+r.p.amount || 0), 0)
@@ -115,14 +194,14 @@ export default function PaymentsView() {
           <thead><tr><th>Devotee</th><th>Type</th><th>Service date</th><th>Amount</th><th>Status</th><th className="hm">Paid on</th><th></th></tr></thead>
           <tbody>
             {rows.map(({ p, i, d }) => (
-              <tr key={p.id ?? i}>
+              <tr key={p.id ?? i} {...rowOpen(() => openPayment(i))}>
                 <td><a href="#" onClick={(e) => { e.preventDefault(); openDevotee(p.phone) }}>{d ? d.full_name : p.phone}</a></td>
                 <td>{p.type}</td>
                 <td>{p.service_date ? <>{p.service_date}{p.session && <> <span className="pill gold">{p.session}</span></>}</> : <span className="muted">—</span>}</td>
                 <td>{money(p.amount)}</td>
                 <td><span className={'pill ' + (p.status === 'Paid' ? 'ok' : 'warn')}>{p.status}</span></td>
                 <td className="hm">{p.date}</td>
-                <td><button className="btn sec sm" onClick={() => setStatus(i, p.status === 'Paid' ? 'Pending' : 'Paid')}>{p.status === 'Paid' ? 'Mark pending' : 'Mark paid'}</button></td>
+                <td className="nowrap"><ReceiptButtons p={p} /><button className="btn sec sm" onClick={() => setStatus(i, p.status === 'Paid' ? 'Pending' : 'Paid')}>{p.status === 'Paid' ? 'Mark pending' : 'Mark paid'}</button></td>
               </tr>
             ))}
           </tbody>

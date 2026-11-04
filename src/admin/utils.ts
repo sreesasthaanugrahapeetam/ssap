@@ -104,8 +104,8 @@ export function seed(): DB {
       { id: 13, phone: '+919848044444', type: 'Alpaharam', service_date: inDays(22), session: 'Morning', amount: 2000, date: '', mode: '', status: 'Pending', note: '' },
     ],
     batches: [
-      { id: 1, year: Y, name: 'Batch 1 – Bus A', travel_date: Y + '-12-26', vehicle: 'Bus A (45 seats)', capacity: 45, notes: 'Depart 5 AM from Peetam' },
-      { id: 2, year: Y, name: 'Batch 2 – Tempo', travel_date: Y + '-12-28', vehicle: 'Tempo Traveller', capacity: 14, notes: '' },
+      { id: 1, year: Y, name: 'Batch 1 – Bus A', travel_date: Y + '-12-26', vehicle: 'Bus A (45 seats)', capacity: 45, notes: 'Depart 5 AM from Peetam', gurus: [{ name: 'Prasad Sharma', phone: '+919848055555' }, { name: 'Ramesh Kumar', phone: '+919848011111' }] },
+      { id: 2, year: Y, name: 'Batch 2 – Tempo', travel_date: Y + '-12-28', vehicle: 'Tempo Traveller', capacity: 14, notes: '', gurus: [{ name: 'Srinivas Rao', phone: '+919848022222' }] },
     ],
     batch_members: [
       { batch_id: 1, phone: '+919848011111' }, { batch_id: 1, phone: '+919848022222' },
@@ -146,6 +146,7 @@ export function loadDB(): DB {
       d.devotees.forEach((x: any) => { if (!x.referred_by) x.referred_by = NEW_TAG; delete x.guru_swamy })
       if (!d.expenses) d.expenses = []
       if (!d.poojas) d.poojas = []
+      d.batches.forEach((b: any) => { if (!Array.isArray(b.gurus)) b.gurus = [] })
       d.poojas.forEach((p: any) => { if (!Array.isArray(p.phones)) p.phones = [] })
       d.payments.forEach((p: any) => { if (p.type === 'Annadanam' && p.service_date) p.session = 'Afternoon' })
       d.nextId = d.nextId || {}
