@@ -12,8 +12,6 @@ export const TRUST_REG = 'Trust Reg. No. 11/2026'
 
 export const receiptNo = (p: Payment) => 'SSAP-' + (p.date || '').slice(0, 4) + '-' + String(p.id ?? 0).padStart(4, '0')
 
-const rupees = (n: number) => 'Rs. ' + (Number(n) || 0).toLocaleString('en-IN') + '/-'
-
 async function logoData(): Promise<string | null> {
   try {
     const r = await fetch('/assets/pwa-192.png')
@@ -30,58 +28,94 @@ export function receiptData(db: DB, p: Payment): ReceiptData {
   }
 }
 
-/** Builds the receipt PDF (jsPDF is loaded on demand). */
+const ONES = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen']
+const TENS = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety']
+const below100 = (n: number) => (n < 20 ? ONES[n] : TENS[Math.floor(n / 10)] + (n % 10 ? ' ' + ONES[n % 10] : ''))
+const below1000 = (n: number) => (n >= 100 ? ONES[Math.floor(n / 100)] + ' Hundred' + (n % 100 ? ' ' + below100(n % 100) : '') : below100(n))
+
+/** Amount in words, Indian grouping: "Twelve Thousand Three Hundred Forty Five". */
+export function amountWords(n: number): string {
+  let x = Math.floor(Math.abs(Number(n) || 0))
+  if (!x) return 'Zero'
+  const parts: string[] = []
+  for (const [div, name] of [[10000000, 'Crore'], [100000, 'Lakh'], [1000, 'Thousand']] as [number, string][]) {
+    if (x >= div) { parts.push(below1000(Math.floor(x / div)) + ' ' + name); x %= div }
+  }
+  if (x) parts.push(below1000(x))
+  return parts.join(' ')
+}
+
+/** 2026-11-04 -> 04/11/2026 */
+export const dmy = (d: string) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d || ''); return m ? m[3] + '/' + m[2] + '/' + m[1] : d || '' }
+
+export const receiptTitle = (r: ReceiptData) => (r.type === 'Donation' ? 'Donation Receipt' : 'Payment Receipt')
+
+/** Form-style lines shown on the receipt (page and PDF). */
+export function receiptFields(r: ReceiptData): [string, string][] {
+  const towards = r.type + (r.serviceDate ? ' on ' + dmy(r.serviceDate) + (r.session ? ' (' + r.session + ')' : '') : '')
+  return [
+    ['Received with thanks from', 'Sri ' + r.name],
+    ...(r.gothram ? [['Gothram', r.gothram] as [string, string]] : []),
+    ...(r.phone ? [['Phone', r.phone] as [string, string]] : []),
+    ['Sum of Rupees', amountWords(r.amount) + ' Only'],
+    ['Towards', towards + (r.note ? ' - ' + r.note : '')],
+    ['Mode of payment', r.mode || '-'],
+  ]
+}
+
+/** Builds the receipt PDF: A5 landscape, laid out like a receipt-book page (jsPDF is loaded on demand). */
 export async function buildReceiptPdf(r: ReceiptData): Promise<Blob> {
   const { jsPDF } = await import('jspdf')
-  const doc = new jsPDF({ unit: 'mm', format: 'a5' })
+  const doc = new jsPDF({ unit: 'mm', format: 'a5', orientation: 'landscape' })
   const W = doc.internal.pageSize.getWidth()
   const H = doc.internal.pageSize.getHeight()
   const logo = await logoData()
+  const INK: [number, number, number] = [35, 25, 20], MAROON: [number, number, number] = [110, 20, 20], GREY: [number, number, number] = [105, 95, 85]
 
-  doc.setDrawColor(201, 162, 39); doc.setLineWidth(0.8); doc.rect(6, 6, W - 12, H - 12)
-  if (logo) doc.addImage(logo, 'PNG', W / 2 - 10, 11, 20, 20)
-  doc.setTextColor(90, 0, 0); doc.setFont('times', 'bold'); doc.setFontSize(17)
-  doc.text(ORG, W / 2, 38, { align: 'center' })
-  doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(110, 90, 70)
-  doc.text(TRUST_REG, W / 2, 43.5, { align: 'center' })
+  doc.setDrawColor(...MAROON); doc.setLineWidth(0.7); doc.rect(6, 6, W - 12, H - 12)
+  doc.setLineWidth(0.2); doc.rect(7.6, 7.6, W - 15.2, H - 15.2)
+
+  if (logo) doc.addImage(logo, 'PNG', 13, 12, 20, 20)
+  doc.setTextColor(...MAROON); doc.setFont('times', 'bold'); doc.setFontSize(21)
+  doc.text(ORG.toUpperCase(), W / 2 + 8, 21, { align: 'center' })
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...GREY)
+  doc.text('(' + TRUST_REG + ')', W / 2 + 8, 27.5, { align: 'center' })
+  doc.setDrawColor(...MAROON); doc.setLineWidth(0.4); doc.line(13, 35, W - 13, 35)
+
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(...INK)
+  doc.text(receiptTitle(r).toUpperCase(), W / 2, 42, { align: 'center', charSpace: 0.6 })
   doc.setFontSize(10)
-  doc.text('PAYMENT RECEIPT', W / 2, 49.5, { align: 'center' })
-  doc.setDrawColor(236, 220, 184); doc.line(14, 53, W - 14, 53)
+  doc.text('No.  ', 13, 42); doc.setTextColor(...MAROON); doc.text(r.no, 22, 42)
+  doc.setTextColor(...INK); doc.text('Date  ' + dmy(r.date), W - 13, 42, { align: 'right' })
+  doc.setDrawColor(...GREY); doc.setLineWidth(0.15); doc.line(13, 45, W - 13, 45)
 
-  const rows = receiptRows(r)
-  let y = 63
-  doc.setFontSize(11)
-  rows.forEach(([k, v]) => {
-    doc.setTextColor(110, 90, 70); doc.setFont('helvetica', 'normal'); doc.text(k, 16, y)
-    doc.setTextColor(42, 21, 0); doc.setFont('helvetica', 'bold')
-    const lines = doc.splitTextToSize(v, W - 80) as string[]
-    doc.text(lines, 56, y)
-    y += 7 * lines.length
+  let y = 55
+  receiptFields(r).forEach(([k, v]) => {
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(...GREY); doc.text(k + ' :', 13, y)
+    const x = 13 + doc.getTextWidth(k + ' :') + 3
+    doc.setFont('times', 'bold'); doc.setFontSize(12); doc.setTextColor(...INK)
+    const lines = doc.splitTextToSize(v, W - 13 - x) as string[]
+    doc.text(lines, x, y)
+    const bottom = y + 1.6 + (lines.length - 1) * 5
+    doc.setDrawColor(...GREY); doc.setLineWidth(0.1); doc.setLineDashPattern([0.6, 0.8], 0)
+    doc.line(x, bottom, W - 13, bottom); doc.setLineDashPattern([], 0)
+    y = bottom + 7.5
   })
 
-  y += 4
-  doc.setFillColor(251, 239, 198); doc.roundedRect(16, y, W - 32, 16, 2, 2, 'F')
-  doc.setTextColor(90, 0, 0); doc.setFontSize(13); doc.text('Amount received', 22, y + 10)
-  doc.setFontSize(16); doc.text(rupees(r.amount), W - 22, y + 10.5, { align: 'right' })
+  const by = Math.max(y + 2, H - 40)
+  doc.setDrawColor(...INK); doc.setLineWidth(0.5); doc.rect(13, by, 52, 13)
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(...GREY); doc.text('Rs.', 16, by + 8.2)
+  doc.setFont('times', 'bold'); doc.setFontSize(18); doc.setTextColor(...INK)
+  doc.text((Number(r.amount) || 0).toLocaleString('en-IN') + '/-', 62, by + 9, { align: 'right' })
 
-  doc.setFont('helvetica', 'italic'); doc.setFontSize(10); doc.setTextColor(110, 90, 70)
-  doc.text('Thank you. Swamiye Saranam Ayyappa.', W / 2, y + 32, { align: 'center' })
-  doc.setFontSize(8); doc.text('This is a computer generated receipt.', W / 2, H - 12, { align: 'center' })
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(...MAROON)
+  doc.text('For ' + ORG, W - 13, by + 3, { align: 'right' })
+  doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(...GREY)
+  doc.text('This is a computer generated receipt and does not require a signature.', W - 13, by + 10, { align: 'right', maxWidth: 110 })
+
+  doc.setFont('times', 'italic'); doc.setFontSize(9)
+  doc.text('Swamiye Saranam Ayyappa', W / 2, H - 11.5, { align: 'center' })
   return doc.output('blob')
-}
-
-/** Label/value rows shown on the receipt (page and PDF). */
-export function receiptRows(r: ReceiptData): [string, string][] {
-  return [
-    ['Receipt no.', r.no],
-    ['Date', r.date],
-    ['Received from', r.name],
-    ...(r.gothram ? [['Gothram', r.gothram] as [string, string]] : []),
-    ...(r.phone ? [['Phone', r.phone] as [string, string]] : []),
-    ['Towards', r.type + (r.serviceDate ? ' on ' + r.serviceDate + (r.session ? ' (' + r.session + ')' : '') : '')],
-    ['Mode', r.mode || '-'],
-    ...(r.note ? [['Note', r.note] as [string, string]] : []),
-  ]
 }
 
 export async function downloadReceiptPdf(r: ReceiptData) {
@@ -97,12 +131,28 @@ const b64 = {
   enc: (s: string) => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''),
   dec: (s: string) => decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/')))),
 }
-const maskPhone = (p: string) => (p ? p.slice(0, -4).replace(/\d/g, '•') + p.slice(-4) : '')
 
-/** Link anyone can open to view and download this receipt. The phone number is masked in the link. */
+/** Compact link: positional fields, no JSON keys, dates without dashes, phone reduced to its last 4 digits. */
+const sq = (v: string) => (v || '').replace(/\|/g, ' ')
+const day = (d: string) => (d || '').replace(/-/g, '')
+const unday = (d: string) => (/^\d{8}$/.test(d) ? d.slice(0, 4) + '-' + d.slice(4, 6) + '-' + d.slice(6) : d)
+
+/** Link anyone can open to view and download this receipt. Link path = receipt number (e.g. SSAP-2026-0001); the data after # carries only the last 4 phone digits. */
 export function receiptLink(r: ReceiptData): string {
-  const { phone, ...rest } = r
-  return location.origin + '/receipt#r=' + b64.enc(JSON.stringify({ ...rest, phone: maskPhone(phone) }))
+  const f = [r.no.replace(/^SSAP-/, ''), day(r.date), r.name, r.gothram, r.phone.replace(/\D/g, '').slice(-4), r.type, day(r.serviceDate), r.session, String(r.amount), r.mode, r.note].map(sq)
+  while (f.length > 9 && !f[f.length - 1]) f.pop()
+  return location.origin + '/receipt/' + r.no + '#c=' + b64.enc(f.join('|'))
+}
+
+function fromCompact(t: string): ReceiptData | null {
+  const f = b64.dec(t).split('|')
+  const amount = Number(f[8])
+  if (f.length < 9 || !f[0] || !f[2] || !isFinite(amount) || amount <= 0) return null
+  const s = (i: number) => (f[i] || '').slice(0, 200)
+  return {
+    no: 'SSAP-' + s(0), date: unday(s(1)), name: s(2), gothram: s(3), phone: s(4) ? '••••••' + s(4) : '', type: s(5),
+    serviceDate: unday(s(6)), session: s(7), amount, mode: s(9), note: s(10),
+  }
 }
 
 const STR: (keyof ReceiptData)[] = ['no', 'date', 'name', 'gothram', 'phone', 'type', 'serviceDate', 'session', 'mode', 'note']
@@ -113,6 +163,15 @@ export type LinkProblem = 'missing' | 'unreadable' | 'incomplete'
  * rewrote the link. Returns the receipt, or the reason it could not be read.
  */
 export function readReceiptLinkDetailed(hash: string, search = ''): { data: ReceiptData } | { problem: LinkProblem } {
+  const c = /(?:^[#?]|&)c=([^&\s]+)/.exec(hash) || /(?:^\?|&)c=([^&\s]+)/.exec(search)
+  if (c) {
+    try {
+      let t = decodeURIComponent(c[1]).replace(/[^A-Za-z0-9_\-+/]/g, '')
+      while (t.length % 4) t += '='
+      const d = fromCompact(t.replace(/=+$/, ''))
+      return d ? { data: d } : { problem: 'incomplete' }
+    } catch { return { problem: 'unreadable' } }
+  }
   const m = /(?:^[#?]|&)r=([^&\s]+)/.exec(hash) || /(?:^\?|&)r=([^&\s]+)/.exec(search)
   if (!m) return { problem: 'missing' }
   let o: Record<string, unknown>
@@ -132,4 +191,21 @@ export const readReceiptLink = (hash: string, search = ''): ReceiptData | null =
   return 'data' in r ? r.data : null
 }
 
-export const receiptShare = (r: ReceiptData) => ({ title: 'Payment receipt ' + r.no, text: ORG + ' payment receipt', url: receiptLink(r) })
+/** Ready-to-send WhatsApp message. WhatsApp styling: *bold*, _italic_, `monospace`. */
+export function receiptMessage(r: ReceiptData): string {
+  const what = r.type === 'Donation' ? 'donation' : r.type.toLowerCase() + ' payment'
+  return [
+    'Dear Sri *' + r.name + '*,',
+    '',
+    'Thank you for your ' + what + ' of *₹' + r.amount.toLocaleString('en-IN') + '/-* to *' + ORG.toUpperCase() + '*.',
+    '',
+    'Your payment has been received successfully.',
+    '',
+    'Please click the link below to download your ' + (r.type === 'Donation' ? 'donation' : 'payment') + ' receipt.',
+    '`' + receiptLink(r) + '`',
+    '',
+    '_Swamiye Saranam Ayyappa_',
+  ].join('\n')
+}
+
+export const receiptShare = (r: ReceiptData) => ({ title: 'Payment receipt ' + r.no, text: receiptMessage(r) })

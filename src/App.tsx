@@ -13,6 +13,7 @@ export default function App() {
         <Route path="/admin/*" element={<AdminApp />} />
         <Route path="/styleguide" element={<StyleGuide />} />
         <Route path="/receipt" element={<Receipt />} />
+        <Route path="/receipt/:slug" element={<Receipt />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
     </Suspense>

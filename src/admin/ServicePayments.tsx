@@ -13,10 +13,17 @@ function ReceiptButtons({ p }: { p: Payment }) {
   const share = useShare()
   if (p.status !== 'Paid') return null
   const fail = () => toast('Could not create receipt')
+  /** Opens WhatsApp chat with the devotee's number and the message filled in; falls back to the share sheet without a number. */
+  const sendWhatsApp = (x: Payment) => {
+    const msg = receiptShare(receiptData(db, x))
+    const num = (x.phone || '').replace(/\D/g, '')
+    if (num.length >= 11) window.open('https://wa.me/' + num + '?text=' + encodeURIComponent(msg.text), '_blank', 'noopener')
+    else share(msg, 'Receipt message copied')
+  }
   return (
     <>
       <button className="btn sec sm" aria-label="Download receipt PDF" onClick={() => downloadReceiptPdf(receiptData(db, p)).catch(fail)}>⬇ Receipt</button>{' '}
-      <button className="btn sec sm" aria-label="Share receipt link" onClick={() => share(receiptShare(receiptData(db, p)), 'Receipt link copied')}>Share link</button>{' '}
+      <button className="btn sec sm" aria-label="Share receipt message" onClick={() => sendWhatsApp(p)}>Share</button>{' '}
     </>
   )
 }
