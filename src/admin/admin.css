@@ -134,3 +134,5 @@
 }
 @media(max-width:420px){.admin-root .filters{grid-template-columns:1fr}.admin-root .cards{grid-template-columns:1fr 1fr}}
 .admin-root a[href^="tel:"]{color:var(--maroon);text-decoration:underline;text-underline-offset:2px;font-weight:600}
+/* The public site paints a fixed safe-area band on body::before; the admin top bar already pads for the notch, so drop the band here to avoid doubling the inset. */
+body:has(.admin-root)::before{display:none}
