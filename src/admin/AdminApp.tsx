@@ -4,6 +4,7 @@ import { AdminContext } from './AdminContext'
 import { useLocalStore } from './useLocalStore'
 import { ConfirmBox } from './ui'
 import Login from './Login'
+import InstallPrompt from './InstallPrompt'
 import Dashboard from './Dashboard'
 import DevoteeTable from './DevoteeTable'
 import DevoteeForm from './DevoteeForm'
@@ -62,7 +63,7 @@ export default function AdminApp() {
     if (on) setTimeout(() => side.current?.querySelector<HTMLElement>('a.on')?.focus(), 0)
     else if (side.current?.contains(document.activeElement)) burger.current?.focus()
   }, [])
-  const go = useCallback((v: View) => { toggleNav(false); setView(v) }, [toggleNav, setView])
+  const go = useCallback((v: View) => { toggleNav(false); setDrawer(null); setView(v) }, [toggleNav, setView])
 
   const ctx = useMemo(() => ({
     db, update, replace, toast, view, go, closeDrawer, closeModal,
@@ -154,6 +155,7 @@ export default function AdminApp() {
             {modal && <div className="a-modal">{modal}</div>}
           </>
         )}
+        <InstallPrompt />
         <div className={'a-toast' + (toastOn ? ' show' : '')} role="status" aria-live="polite">{toastMsg}</div>
       </div>
     </AdminContext.Provider>

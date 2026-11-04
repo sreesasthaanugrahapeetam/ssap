@@ -218,3 +218,8 @@ body:has(.admin-root)::before{display:none}
 .admin-root .batch-head h3{margin:0;flex:1}
 .admin-root .batch-meta{margin:4px 0 8px}
 .admin-root .pill-link{cursor:pointer;margin:2px}
+
+/* PWA install popup */
+.admin-root .a-install{position:fixed;z-index:80;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(380px,92vw);background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:0 12px 32px rgba(60,20,0,.28)}
+.admin-root .a-install p{margin:4px 0 10px;color:var(--mute);font-size:14px}
+.admin-root .a-install .row{display:flex;gap:8px;justify-content:flex-end}
