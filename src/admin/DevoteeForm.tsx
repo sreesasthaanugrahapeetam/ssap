@@ -144,6 +144,7 @@ export default function DevoteeForm({ phone }: { phone?: string }) {
             </div>
             <div className="actbar">
               <button className="btn" onClick={save}>{isNew ? 'Create devotee' : 'Save changes'}</button>
+              <button className="btn sec m-only" onClick={closeDrawer}>Cancel</button>
               {!isNew && <button className="btn danger push" onClick={del}>Delete</button>}
             </div>
           </>
@@ -152,6 +153,7 @@ export default function DevoteeForm({ phone }: { phone?: string }) {
         {tab === 'family' && <FamilyTab phone={orig} />}
         {tab === 'payments' && <DevoteePaymentsTab phone={orig} />}
         {tab === 'yatra' && <YatraTab phone={orig} />}
+        {tab !== 'basics' && <div className="actbar m-only"><button className="btn sec" onClick={closeDrawer}>Close</button></div>}
       </div>
     </>
   )

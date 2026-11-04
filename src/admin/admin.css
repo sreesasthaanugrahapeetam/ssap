@@ -101,6 +101,7 @@
 .admin-root .bar{height:8px;border-radius:99px;background:#eee;overflow:hidden}
 .admin-root .bar i{display:block;height:100%;background:var(--saffron)}
 
+@media(min-width:761px){.admin-root .m-only{display:none!important}}
 @media(max-width:760px){
  .admin-root .a-app{grid-template-columns:1fr}
  .admin-root .filters{grid-template-columns:1fr 1fr}
@@ -115,6 +116,8 @@
  .admin-root input,.admin-root select,.admin-root textarea{font-size:16px}
  .admin-root .a-drawer .sheet{width:100vw;padding:16px 14px;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
  .admin-root .a-drawer .sheet{padding-top:calc(16px + env(safe-area-inset-top))}
+ .admin-root .a-drawer .hdr .btn{display:none}
+ .admin-root .m-only{display:inline-flex}
  .admin-root .a-drawer .hdr{top:calc(-16px - env(safe-area-inset-top));margin-top:calc(-16px - env(safe-area-inset-top));padding-top:calc(16px + env(safe-area-inset-top))}
  .admin-root .actbar{bottom:-16px}
  .admin-root .actbar .btn{flex:1}
