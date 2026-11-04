@@ -118,10 +118,8 @@
  .admin-root .stat b{font-size:22px}
  .admin-root input,.admin-root select,.admin-root textarea{font-size:16px}
  .admin-root .a-drawer .sheet{width:100vw;padding:16px 14px;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
- .admin-root .a-drawer .sheet{padding-top:calc(16px + env(safe-area-inset-top))}
  .admin-root .a-drawer .hdr .btn{display:none}
  .admin-root .m-only{display:inline-flex}
- .admin-root .a-drawer .hdr{top:calc(-16px - env(safe-area-inset-top));margin-top:calc(-16px - env(safe-area-inset-top));padding-top:calc(16px + env(safe-area-inset-top))}
  .admin-root .actbar{bottom:-16px}
  .admin-root .actbar{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 0 calc(14px + env(safe-area-inset-bottom))}
  .admin-root .actbar .btn{width:100%;min-height:46px;justify-content:center;font-size:15px}
@@ -136,3 +134,12 @@
 .admin-root a[href^="tel:"]{color:var(--maroon);text-decoration:underline;text-underline-offset:2px;font-weight:600}
 /* The public site paints a fixed safe-area band on body::before; the admin top bar already pads for the notch, so drop the band here to avoid doubling the inset. */
 body:has(.admin-root)::before{display:none}
+
+/* Keep the app top bar visible above create/edit forms on mobile (must come after the base drawer rules). */
+@media(max-width:1000px){
+ .admin-root .a-drawer{top:calc(60px + env(safe-area-inset-top))}
+ .admin-root .a-drawer .sheet{padding-top:16px}
+ .admin-root .a-drawer .hdr{top:-16px;margin-top:-16px;padding-top:16px}
+ .admin-root .scrim{z-index:40}
+ .admin-root aside{z-index:45}
+}
