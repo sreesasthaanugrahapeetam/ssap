@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { amountWords, dmy, downloadReceiptPdf, readReceiptLinkDetailed, receiptFields, receiptTitle, TRUST_REG } from '../admin/receipt'
+import { amountWords, dmy, downloadReceiptPdf, readReceiptLinkDetailed, receiptRows, receiptTitle, TRUST_REG } from '../admin/receipt'
 import '../styles/receipt.css'
 
 /** Public receipt page. Everything it shows comes from the link itself (URL fragment); nothing is looked up or stored. */
@@ -29,6 +29,7 @@ export default function Receipt() {
   return (
     <div className="rc-page">
       <div className="rc-sheet">
+        <p className="rc-invoc">|| Swamiye Saranam Ayyappa ||</p>
         <header className="rc-head">
           <img className="rc-logo" src="/assets/logo.webp" alt="" />
           <div>
@@ -42,16 +43,20 @@ export default function Receipt() {
           <span>Date <b>{dmy(r.date)}</b></span>
         </div>
         <div className="rc-lines">
-          {receiptFields(r).map(([k, v]) => (<div key={k} className="rc-line"><span className="rc-k">{k} :</span><span className="rc-v">{v}</span></div>))}
+          {receiptRows(r).map((row) => (
+            <div key={row[0][0]} className={'rc-row' + (row.length > 1 ? ' two' : '')}>
+              {row.map(([k, v]) => (<div key={k} className="rc-line"><span className="rc-k">{k} :</span><span className="rc-v">{v}</span></div>))}
+            </div>
+          ))}
         </div>
         <div className="rc-foot">
           <div className="rc-amt" aria-label={'Rupees ' + amountWords(r.amount)}><small>Rs.</small><b>{r.amount.toLocaleString('en-IN')}/-</b></div>
           <div className="rc-for">
+          <div className="rc-seal" aria-hidden="true"><small>SSAP</small><b>PAID</b><small>{dmy(r.date)}</small></div>
             <b>For Sree Sastha Anugraha Peetam</b>
             <i>This is a computer generated receipt and does not require a signature.</i>
           </div>
         </div>
-        <p className="rc-saranam">Swamiye Saranam Ayyappa</p>
       </div>
       <button className="rc-btn" onClick={download} disabled={busy}>{busy ? 'Preparing…' : 'Download PDF'}</button>
       {err && <p className="rc-err" role="alert">Could not create the PDF. Please try again.</p>}

@@ -1,9 +1,11 @@
 /* Public receipt page (/receipt). A plain paper receipt on a neutral background; prints cleanly. */
 .rc-page { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px 14px; background: #e9e5de; color: #231914; font-family: Georgia, 'Times New Roman', serif; }
-.rc-sheet { width: min(780px, 100%); background: #fffefb; border: 2px solid #6e1414; outline: 1px solid #6e1414; outline-offset: -6px; padding: 22px 24px 18px; box-shadow: 0 2px 10px rgba(0, 0, 0, .18); }
+.rc-sheet { width: min(780px, 100%); background: #fffefb; border: 2px solid #6e1414; outline: 1px solid #6e1414; outline-offset: -6px; padding: 16px 28px 22px; position: relative; isolation: isolate; box-shadow: 0 2px 10px rgba(0, 0, 0, .18); }
+.rc-sheet::before { content: ''; position: absolute; left: 50%; top: 50%; width: 260px; height: 260px; margin: -130px 0 0 -130px; z-index: -1; background: url('/assets/logo.webp') center / cover; opacity: .07; border-radius: 50%; }
+.rc-invoc { margin: 0 0 10px; text-align: center; font-style: italic; font-size: 13px; color: #695f55; }
 .rc-center { text-align: center; }
 .rc-nf { margin: 0 0 8px; font-size: 20px; color: #6e1414; }
-.rc-head { display: flex; align-items: center; gap: 14px; padding-bottom: 12px; border-bottom: 2px solid #6e1414; }
+.rc-head { display: flex; align-items: center; gap: 14px; padding-bottom: 12px; border-bottom: 3px double #6e1414; }
 .rc-logo { width: 58px; height: 58px; border-radius: 50%; object-fit: cover; flex: none; }
 .rc-head h1 { margin: 0; font-size: 19px; line-height: 1.25; letter-spacing: .02em; text-transform: uppercase; color: #6e1414; }
 .rc-reg { margin-top: 3px; font: 12px system-ui, sans-serif; color: #695f55; }
@@ -11,20 +13,23 @@
 .rc-titlebar b { font-family: Georgia, serif; }
 .rc-title { font-weight: 700; letter-spacing: .12em; text-transform: uppercase; font-size: 13px; text-align: center; }
 .rc-lines { padding: 8px 0 4px; }
+.rc-row.two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; }
 .rc-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; padding: 9px 0 3px; border-bottom: 1px dotted #8c8277; }
 .rc-k { font: 12.5px system-ui, sans-serif; color: #695f55; }
 .rc-v { font-weight: 700; font-size: 16px; overflow-wrap: anywhere; }
-.rc-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; margin-top: 18px; }
-.rc-amt { display: flex; align-items: baseline; gap: 8px; border: 2px solid #231914; padding: 8px 14px; min-width: 150px; }
+.rc-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; margin-top: 4px; }
+.rc-amt { display: flex; align-items: baseline; gap: 8px; border: 2px solid #231914; background: #faf6ec; padding: 8px 14px; min-width: 160px; }
+.rc-seal { display: grid; place-items: center; align-content: center; width: 78px; height: 78px; border-radius: 50%; border: 2px solid #6e1414; outline: 1px solid #6e1414; outline-offset: -6px; color: #6e1414; opacity: .75; transform: rotate(-10deg); margin-bottom: 0; font-family: system-ui, sans-serif; line-height: 1.15; flex: none; }
+.rc-seal b { font-size: 17px; letter-spacing: .12em; }
+.rc-seal small { font-size: 8px; letter-spacing: .1em; }
 .rc-amt small { font: 700 13px system-ui, sans-serif; color: #695f55; }
 .rc-amt b { margin-left: auto; font-size: 22px; }
-.rc-for { display: grid; gap: 4px; text-align: right; font: 12px system-ui, sans-serif; color: #695f55; }
+.rc-for { display: grid; justify-items: end; gap: 4px; text-align: right; font: 12px system-ui, sans-serif; color: #695f55; }
 .rc-for b { color: #6e1414; font-size: 12.5px; }
-.rc-saranam { margin: 14px 0 0; text-align: center; font-style: italic; font-size: 13px; color: #695f55; }
 .rc-btn { width: min(780px, 100%); min-height: 46px; border: 0; background: #231914; color: #fff; font: 700 15px system-ui, sans-serif; cursor: pointer; }
 .rc-btn:disabled { opacity: .6; cursor: wait; }
 .rc-err { margin: 0; color: #b3261e; font: 14px system-ui, sans-serif; }
 .rc-muted { color: #695f55; }
 .rc-hint { font: 12px system-ui, sans-serif; color: #8c8277; }
-@media (max-width: 460px) { .rc-sheet { padding: 18px 16px 14px; } .rc-foot { flex-direction: column; align-items: stretch; } .rc-for { text-align: left; } .rc-titlebar { flex-wrap: wrap; } .rc-title { order: -1; width: 100%; } }
+@media (max-width: 460px) { .rc-row.two { grid-template-columns: 1fr; } .rc-seal { margin: 0 auto; } .rc-sheet { padding: 18px 16px 14px; } .rc-foot { flex-direction: column; align-items: stretch; } .rc-for { text-align: left; } .rc-titlebar { flex-wrap: wrap; } .rc-title { order: -1; width: 100%; } }
 @media print { .rc-btn { display: none; } .rc-page { background: #fff; padding: 0; } .rc-sheet { box-shadow: none; } }
