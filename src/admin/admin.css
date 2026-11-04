@@ -120,7 +120,10 @@
  .admin-root .m-only{display:inline-flex}
  .admin-root .a-drawer .hdr{top:calc(-16px - env(safe-area-inset-top));margin-top:calc(-16px - env(safe-area-inset-top));padding-top:calc(16px + env(safe-area-inset-top))}
  .admin-root .actbar{bottom:-16px}
- .admin-root .actbar .btn{flex:1}
+ .admin-root .actbar{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 0 calc(14px + env(safe-area-inset-bottom))}
+ .admin-root .actbar .btn{width:100%;min-height:46px;justify-content:center;font-size:15px}
+ .admin-root .actbar .btn.sec{border:1.5px solid var(--maroon);color:var(--maroon);font-weight:700}
+ .admin-root .actbar .btn.danger,.admin-root .actbar .btn:only-child{grid-column:1/-1}
  .admin-root .actbar .push{margin-left:0}
  .admin-root .a-modal{align-items:flex-end;padding:0}
  .admin-root .a-modal .box{width:100%;border-radius:16px 16px 0 0;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
