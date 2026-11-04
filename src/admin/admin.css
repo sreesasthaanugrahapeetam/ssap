@@ -76,7 +76,7 @@
 .admin-root .muted{color:var(--mute)}
 
 /* drawer */
-.admin-root .a-drawer{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:10;display:flex;justify-content:flex-end}
+.admin-root .a-drawer{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:35;display:flex;justify-content:flex-end}
 .admin-root .a-drawer .sheet{background:var(--bg);width:min(760px,100vw);height:100%;overflow:auto;padding:20px 22px}
 .admin-root .a-drawer .hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px;position:sticky;top:-20px;margin-top:-20px;padding:20px 0 8px;background:var(--bg);z-index:2}
 .admin-root .a-drawer .hdr h2{margin:0;flex:1;color:var(--maroon);font-size:19px;font-weight:700;line-height:1.3}
@@ -114,7 +114,8 @@
  .admin-root .stat b{font-size:22px}
  .admin-root input,.admin-root select,.admin-root textarea{font-size:16px}
  .admin-root .a-drawer .sheet{width:100vw;padding:16px 14px;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
- .admin-root .a-drawer .hdr{top:-16px;margin-top:-16px;padding-top:16px}
+ .admin-root .a-drawer .sheet{padding-top:calc(16px + env(safe-area-inset-top))}
+ .admin-root .a-drawer .hdr{top:calc(-16px - env(safe-area-inset-top));margin-top:calc(-16px - env(safe-area-inset-top));padding-top:calc(16px + env(safe-area-inset-top))}
  .admin-root .actbar{bottom:-16px}
  .admin-root .actbar .btn{flex:1}
  .admin-root .actbar .push{margin-left:0}
