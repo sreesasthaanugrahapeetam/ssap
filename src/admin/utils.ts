@@ -33,6 +33,9 @@ export const devoteeLabel = (db: DB, p: string) => {
   return d ? d.full_name + (d.gothram ? ' (' + d.gothram + ')' : '') : p
 }
 export const curDeeksha = (db: DB, p: string) => db.deekshas.filter((x) => x.phone === p).sort((a, b) => b.year - a.year)[0]
+/** Total of all Paid payments made by a devotee. */
+export const donatedBy = (db: DB, p: string) =>
+  db.payments.filter((x) => x.phone === p && x.status === 'Paid').reduce((s, x) => s + (+x.amount || 0), 0)
 export const duesOf = (db: DB, p: string) =>
   db.payments.filter((x) => x.phone === p && x.status === 'Pending').reduce((s, x) => s + (+x.amount || 0), 0)
 export function daysLeft(dk?: Deeksha): number | null {

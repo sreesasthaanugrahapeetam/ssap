@@ -1,16 +1,21 @@
 import { useState } from 'react'
 import { useAdmin } from './AdminContext'
 import { Field } from './ui'
-import { SVC_TYPES, sessionsFor } from './types'
+import { MAINTENANCE_AMOUNT, SVC_TYPES, sessionsFor } from './types'
 import { findDevotee, money, todayISO } from './utils'
 import { Select, SelectOther } from './Select'
 
-function useMarkPaid() {
-  const { update } = useAdmin()
-  return (i: number) => update((d) => {
-    const x = d.payments[i]
-    x.status = 'Paid'; x.date = todayISO(); x.mode = x.mode || 'UPI'
-  })
+/** Toggle a payment between Paid and Pending. Marking pending clears the paid date. */
+function useSetStatus() {
+  const { update, toast } = useAdmin()
+  return (i: number, status: 'Paid' | 'Pending') => {
+    update((d) => {
+      const x = d.payments[i]
+      x.status = status
+      if (status === 'Paid') { x.date = todayISO(); x.mode = x.mode || 'UPI' } else { x.date = '' }
+    })
+    toast(status === 'Paid' ? 'Marked paid' : 'Marked pending')
+  }
 }
 
 const BLANK = { type: 'Yatra', sd: '', se: 'Morning', amount: '', status: 'Paid', mode: 'UPI', note: '' }
@@ -46,7 +51,7 @@ function AddPayment({ phone }: { phone: string }) {
       <b>Add payment</b>
       <div className="grid2 mt8">
         <Field label="Type">
-          <SelectOther value={f.type} options={['Yatra', 'Donation', 'Other']} onChange={(v) => setF((p) => ({ ...p, type: v }))} />
+          <SelectOther value={f.type} options={['Yatra', 'Donation', 'Maintenance', 'Other']} onChange={(v) => setF((p) => ({ ...p, type: v, amount: v === 'Maintenance' && !p.amount ? String(MAINTENANCE_AMOUNT) : p.type === 'Maintenance' && p.amount === String(MAINTENANCE_AMOUNT) ? '' : p.amount }))} />
         </Field>
         {svc && <Field label={f.type + ' date *'}><input id="psd" type="date" value={f.sd} onChange={set('sd')} /></Field>}
         {svc && <Field label="Session"><Select value={f.se} onChange={set('se')}>{sessionsFor(f.type).map((s) => <option key={s}>{s}</option>)}</Select></Field>}
@@ -63,7 +68,7 @@ function AddPayment({ phone }: { phone: string }) {
 /** Payments tab inside the devotee drawer. */
 export function DevoteePaymentsTab({ phone }: { phone: string }) {
   const { db, update } = useAdmin()
-  const markPaid = useMarkPaid()
+  const setStatus = useSetStatus()
   const list = db.payments.map((x, i) => ({ x, i })).filter((o) => o.x.phone === phone)
   return (
     <>
@@ -79,7 +84,7 @@ export function DevoteePaymentsTab({ phone }: { phone: string }) {
                 <td><span className={'pill ' + (x.status === 'Paid' ? 'ok' : 'warn')}>{x.status}</span></td>
                 <td>{x.date}</td>
                 <td className="nowrap">
-                  {x.status === 'Pending' && <><button className="btn sm" onClick={() => markPaid(i)}>Mark paid</button> </>}
+                  <button className="btn sec sm" onClick={() => setStatus(i, x.status === 'Paid' ? 'Pending' : 'Paid')}>{x.status === 'Paid' ? 'Mark pending' : 'Mark paid'}</button>{' '}
                   <button className="btn danger sm" aria-label="Delete payment" onClick={() => update((d) => { d.payments.splice(i, 1) })}>✕</button>
                 </td>
               </tr>
@@ -95,7 +100,7 @@ export function DevoteePaymentsTab({ phone }: { phone: string }) {
 /** All-devotees payments view. */
 export default function PaymentsView() {
   const { db, openDevotee } = useAdmin()
-  const markPaid = useMarkPaid()
+  const setStatus = useSetStatus()
   const rows = db.payments.map((p, i) => ({ p, i, d: findDevotee(db, p.phone) }))
   const tot = (s: string) => rows.filter((r) => r.p.status === s).reduce((a, r) => a + (+r.p.amount || 0), 0)
   return (
@@ -117,7 +122,7 @@ export default function PaymentsView() {
                 <td>{money(p.amount)}</td>
                 <td><span className={'pill ' + (p.status === 'Paid' ? 'ok' : 'warn')}>{p.status}</span></td>
                 <td className="hm">{p.date}</td>
-                <td>{p.status === 'Pending' && <button className="btn sm" onClick={() => markPaid(i)}>Mark paid</button>}</td>
+                <td><button className="btn sec sm" onClick={() => setStatus(i, p.status === 'Paid' ? 'Pending' : 'Paid')}>{p.status === 'Paid' ? 'Mark pending' : 'Mark paid'}</button></td>
               </tr>
             ))}
           </tbody>

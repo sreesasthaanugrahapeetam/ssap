@@ -4,7 +4,7 @@ import { Avatar, Field } from './ui'
 import { DeekshaTab, FamilyTab, YatraTab, PoojasTab } from './DevoteeTabs'
 import { DevoteePaymentsTab } from './ServicePayments'
 import { Devotee, GOTHRAMS, NEW_TAG } from './types'
-import { blankDevotee, findDevotee, fmtPhone, normPhone } from './utils'
+import { blankDevotee, donatedBy, duesOf, findDevotee, fmtPhone, money, normPhone } from './utils'
 import { Select, Combo } from './Select'
 
 type Tab = 'basics' | 'spiritual' | 'family' | 'payments' | 'poojas' | 'yatra'
@@ -104,6 +104,12 @@ export default function DevoteeForm({ phone }: { phone?: string }) {
         </h2>
         <button className="btn sec" onClick={closeDrawer}>Close</button>
       </div>
+      {!isNew && (
+        <div className="donated">
+          <span>Total donated <b>{money(donatedBy(db, orig))}</b></span>
+          <span className={duesOf(db, orig) ? 'due' : undefined}>Due <b>{money(duesOf(db, orig))}</b></span>
+        </div>
+      )}
       <div className="tabs">
         {TABS.map(([k, label]) => (
           <button key={k} className={tab === k ? 'on' : ''} disabled={isNew && k !== 'basics'}

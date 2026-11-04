@@ -231,3 +231,6 @@ body:has(.admin-root)::before{display:none}
 .admin-root .srow{padding:9px 12px;border-bottom:1px solid var(--line);cursor:pointer}
 .admin-root .srow:last-child{border-bottom:0}
 .admin-root .srow:hover{background:rgba(217,94,10,.06)}
+.admin-root .donated{display:flex;flex-wrap:wrap;gap:6px 24px;margin:-4px 0 12px;padding:8px 12px;border-radius:8px;background:#fbefc6;color:#7a5c0a;font-size:14px}
+.admin-root .donated .due{color:var(--warn)}
+.admin-root .donated b{font-size:18px;margin-left:6px}

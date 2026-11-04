@@ -7,6 +7,8 @@ export const SVC_TYPES = ['Annadanam', 'Alpaharam', 'Pooja']
 /** Allowed sessions per service: Annadanam is afternoon only; Alpaharam and Pooja are morning or evening. */
 export const sessionsFor = (type: string) => (type === 'Annadanam' ? ['Afternoon'] : ['Morning', 'Evening'])
 /** Seva kinds shown in their own dashboard panel. */
+/** Default amount filled in when the Maintenance payment type is chosen. */
+export const MAINTENANCE_AMOUNT = 10116
 export const SEVA_KINDS = ['Annadanam', 'Alpaharam']
 export const SESSION_ORDER = ['Morning', 'Afternoon', 'Evening']
 export const POOJA_KINDS = ['Padi Pooja', 'Abhishekam', 'Annadanam', 'Alpaharam', 'Mandala Pooja', 'Ashta Kalasa Pooja', 'Other']
