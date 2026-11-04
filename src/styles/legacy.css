@@ -95,7 +95,7 @@ nav {
 .nav-links a { font-family: var(--f-head); font-size: .78rem; letter-spacing: .08em; color: var(--cream-2); text-transform: uppercase; transition: color .25s; }
 .nav-links a:hover { color: var(--gold-hi); }
 .nav-ham { display: none; color: var(--gold); font-size: 1.4rem; padding: .3rem; min-width: 44px; min-height: 44px; }
-.nav-logo-img { width: 54px; height: 54px; object-fit: contain; border: 0; flex-shrink: 0; }
+.nav-logo-img { width: 54px; height: 54px; object-fit: cover; border-radius: 50%; border: 0; flex-shrink: 0; }
 .nav-drawer { display: none; }
 
 /* ─── SCROLLING MANTRA TICKER ─── */
