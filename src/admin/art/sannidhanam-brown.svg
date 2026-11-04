@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none" stroke="#8A4B14" stroke-opacity="0.12" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M0 262Q50 228 110 250T230 244T330 236T400 252"/>
+<path d="M300 260q10-30 20-4M20 250q8-24 16-4"/>
+<path d="M100.0 288.0H300.0"/>
+<path d="M101.9 284.5H298.1"/>
+<path d="M103.8 281.0H296.2"/>
+<path d="M105.7 277.5H294.3"/>
+<path d="M107.6 274.0H292.4"/>
+<path d="M109.5 270.5H290.5"/>
+<path d="M111.4 267.0H288.6"/>
+<path d="M113.3 263.5H286.7"/>
+<path d="M115.2 260.0H284.8"/>
+<path d="M117.1 256.5H282.9"/>
+<path d="M119.0 253.0H281.0"/>
+<path d="M120.9 249.5H279.1"/>
+<path d="M122.8 246.0H277.2"/>
+<path d="M124.7 242.5H275.3"/>
+<path d="M126.6 239.0H273.4"/>
+<path d="M128.5 235.5H271.5"/>
+<path d="M130.4 232.0H269.6"/>
+<path d="M132.3 228.5H267.7"/>
+<path d="M100 288L166 226M300 288L234 226"/><path d="M96 292H304"/>
+<path d="M140 226V190H260V226"/><path d="M186 226v-18a14 14 0 0 1 28 0v18"/><path d="M150 226V196M165 226V196M235 226V196M250 226V196"/>
+<path d="M92 192H308L276 152H124Z"/><path d="M104 184H296"/>
+<path d="M130 152H270L244 118H156Z"/><path d="M140 144H260"/>
+<path d="M160 118H240L216 88H184Z"/><path d="M168 112H232"/>
+<path d="M200 88V74"/>
+<path d="M176 118v-6"/><ellipse cx="176" cy="108" rx="3.6" ry="5"/>
+<path d="M200 118v-6"/><ellipse cx="200" cy="108" rx="3.6" ry="5"/>
+<path d="M224 118v-6"/><ellipse cx="224" cy="108" rx="3.6" ry="5"/>
+<ellipse cx="200" cy="68" rx="4.5" ry="6.5"/><path d="M200 62v-9"/><circle cx="200" cy="50" r="2.2"/>
+<circle cx="110" cy="196" r="1.1"/>
+<circle cx="128" cy="196" r="1.1"/>
+<circle cx="146" cy="196" r="1.1"/>
+<circle cx="164" cy="196" r="1.1"/>
+<circle cx="182" cy="196" r="1.1"/>
+<circle cx="200" cy="196" r="1.1"/>
+<circle cx="218" cy="196" r="1.1"/>
+<circle cx="236" cy="196" r="1.1"/>
+<circle cx="254" cy="196" r="1.1"/>
+<circle cx="272" cy="196" r="1.1"/>
+<circle cx="290" cy="196" r="1.1"/>
+<path d="M338 288V138"/><path d="M332 138h12M334 168h8M334 198h8M334 228h8M334 258h8"/><path d="M338 138v-12"/><circle cx="338" cy="122" r="3"/>
+<path d="M64 288v-22M58 266h12M336 288z"/>
+</svg>

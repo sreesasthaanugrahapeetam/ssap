@@ -144,7 +144,7 @@ export default function AdminApp() {
                   <a href="#" onClick={(e) => { e.preventDefault(); logout() }} style={{ padding: 0, textDecoration: 'underline', display: 'inline-flex' }}>Log out</a>
                 </div>
               </aside>
-              <main tabIndex={-1}>{page}</main>
+              <main tabIndex={-1} data-view={view}>{page}</main>
             </div>
             {drawer && (
               <div className="a-drawer" onMouseDown={(e) => { if (e.target === e.currentTarget) closeDrawer() }}>
