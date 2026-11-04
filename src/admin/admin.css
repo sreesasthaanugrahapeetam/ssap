@@ -132,3 +132,4 @@
  .admin-root .a-modal .acts .btn{flex:1}
 }
 @media(max-width:420px){.admin-root .filters{grid-template-columns:1fr}.admin-root .cards{grid-template-columns:1fr 1fr}}
+.admin-root a[href^="tel:"]{color:var(--maroon);text-decoration:underline;text-underline-offset:2px;font-weight:600}

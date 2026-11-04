@@ -97,7 +97,7 @@ export default function DevoteeForm({ phone }: { phone?: string }) {
       <div className="hdr">
         <Avatar photo={draft.photo} name={draft.full_name} size={46} font={17} />
         <h2>{isNew ? 'New devotee' : draft.full_name}
-          <div className="muted" style={{ fontSize: 13, fontWeight: 400 }}>{isNew ? 'Phone number becomes the devotee ID' : 'ID ' + fmtPhone(orig)}</div>
+          <div className="muted" style={{ fontSize: 13, fontWeight: 400 }}>{isNew ? 'Phone number becomes the devotee ID' : <>ID <a href={'tel:+91' + orig.replace(/\D/g, '').slice(-10)}>{fmtPhone(orig)}</a></>}</div>
         </h2>
         <button className="btn sec" onClick={closeDrawer}>Close</button>
       </div>

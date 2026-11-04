@@ -62,7 +62,7 @@ export default function DevoteeTable() {
               return (
                 <tr key={d.phone} className="row" {...rowKey(() => openDevotee(d.phone))}>
                   <td><Avatar photo={d.photo} name={d.full_name} />{d.full_name}{d.active === 'no' && <> <span className="pill warn">inactive</span></>}</td>
-                  <td>{fmtPhone(d.phone)}</td>
+                  <td><a href={'tel:+91' + d.phone.replace(/\D/g, '').slice(-10)} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>{fmtPhone(d.phone)}</a></td>
                   <td className="hm">{d.referred_by && d.referred_by !== NEW_TAG ? d.referred_by : <span className="pill gold">{NEW_TAG}</span>}</td>
                   <td><DeekshaPill dk={curDeeksha(db, d.phone)} /></td>
                   <td className="hm">{b ? b.name : <span className="muted">—</span>}</td>
