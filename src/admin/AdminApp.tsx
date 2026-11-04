@@ -13,6 +13,13 @@ import ExpensesPanel, { ExpenseForm } from './ExpensesPanel'
 import ExcelPanel from './ExcelPanel'
 import { DrawerState, SESSION_KEY, View } from './types'
 
+import { useLocation, useNavigate } from 'react-router-dom'
+
+const VIEW_PATH: Record<View, string> = {
+  dash: 'dashboard', devotees: 'devotees', batches: 'batches', payments: 'payments', expenses: 'expenses', excel: 'excel',
+}
+const PATH_VIEW = Object.fromEntries(Object.entries(VIEW_PATH).map(([v, p]) => [p, v])) as Record<string, View>
+
 const NAV: [View, string][] = [
   ['dash', 'Dashboard'], ['devotees', 'Devotees'], ['batches', 'Batches / Yatra'],
   ['payments', 'Payments'], ['expenses', 'Expenses'], ['excel', 'Excel Import / Export'],
@@ -22,7 +29,12 @@ const wasLoggedIn = () => { try { return sessionStorage.getItem(SESSION_KEY) ===
 
 export default function AdminApp() {
   const [authed, setAuthed] = useState(wasLoggedIn)
-  const [view, setView] = useState<View>('dash')
+  const location = useLocation()
+  const navigate = useNavigate()
+  const seg = location.pathname.replace(/^\/admin\/?/, '').split('/')[0]
+  const view: View = PATH_VIEW[seg] ?? 'dash'
+  const setView = useCallback((v: View) => navigate('/admin/' + VIEW_PATH[v]), [navigate])
+  useEffect(() => { if (!PATH_VIEW[seg]) navigate('/admin/dashboard', { replace: true }) }, [seg, navigate])
   const [navOpen, setNavOpen] = useState(false)
   const [drawer, setDrawer] = useState<DrawerState>(null)
   const [modal, setModal] = useState<ReactNode>(null)
@@ -50,7 +62,7 @@ export default function AdminApp() {
     if (on) setTimeout(() => side.current?.querySelector<HTMLElement>('a.on')?.focus(), 0)
     else if (side.current?.contains(document.activeElement)) burger.current?.focus()
   }, [])
-  const go = useCallback((v: View) => { toggleNav(false); setView(v) }, [toggleNav])
+  const go = useCallback((v: View) => { toggleNav(false); setView(v) }, [toggleNav, setView])
 
   const ctx = useMemo(() => ({
     db, update, replace, toast, view, go, closeDrawer, closeModal,
@@ -90,7 +102,7 @@ export default function AdminApp() {
   }, [drawer?.nonce]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const logout = () => { try { sessionStorage.removeItem(SESSION_KEY) } catch { /* ignore */ } setDrawer(null); setModal(null); setNavOpen(false); setView('dash'); setAuthed(false) }
-  const enter = () => { try { sessionStorage.setItem(SESSION_KEY, '1') } catch { /* ignore */ } setAuthed(true); setView('dash') }
+  const enter = () => { try { sessionStorage.setItem(SESSION_KEY, '1') } catch { /* ignore */ } setAuthed(true) }
 
   const navKey = (v: View) => (e: React.KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(v) } }
 
