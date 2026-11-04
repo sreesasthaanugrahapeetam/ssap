@@ -14,13 +14,3 @@ export function yatraText(b: Batch): string {
   lines.push('', 'Swamiye Saranam Ayyappa 🙏')
   return lines.join('\n')
 }
-
-/** Share through the device sheet; copy to clipboard where sharing is unavailable. Returns what happened. */
-export async function shareYatra(b: Batch): Promise<'shared' | 'copied'> {
-  const text = yatraText(b)
-  if (navigator.share) {
-    try { await navigator.share({ title: 'Yatra ' + b.name, text }); return 'shared' } catch (e) { if ((e as Error).name === 'AbortError') return 'shared' }
-  }
-  await navigator.clipboard.writeText(text)
-  return 'copied'
-}

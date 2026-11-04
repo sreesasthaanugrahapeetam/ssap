@@ -2,13 +2,15 @@ import { useState } from 'react'
 import { useAdmin } from './AdminContext'
 import { Field, rowOpen } from './ui'
 import { Guru } from './types'
-import { shareYatra } from './yatraShare'
+import { yatraText } from './yatraShare'
+import { useShare } from './useShare'
 import { Select } from './Select'
 import { fmtPhone } from './utils'
 import { THIS_YEAR } from './types'
 
 export default function BatchesView() {
-  const { db, openBatch, openDevotee, confirm, update, toast } = useAdmin()
+  const { db, openBatch, openDevotee, confirm, update } = useAdmin()
+  const share = useShare()
   const batches = db.batches.slice().sort((a, b) => b.year - a.year)
   return (
     <>
@@ -20,7 +22,7 @@ export default function BatchesView() {
             <div className="batch-head">
               <h3>{b.name} <span className="muted fw4">· {b.year}</span></h3>
               <span className="pill gold">{mem.length}/{b.capacity}</span>
-              <button className="btn sec sm" onClick={() => shareYatra(b).then((r) => toast(r === 'copied' ? 'Details copied' : 'Shared')).catch(() => toast('Could not share'))}>Share</button>
+              <button className="btn sec sm" onClick={() => share({ title: 'Yatra ' + b.name, text: yatraText(b) }, 'Details copied')}>Share</button>
               <button className="btn danger sm" onClick={() => confirm('Delete batch? Members become unassigned.', () => update((d) => {
                 d.batches = d.batches.filter((x) => x.id !== b.id); d.batch_members = d.batch_members.filter((m) => m.batch_id !== b.id)
               }))}>Delete</button>

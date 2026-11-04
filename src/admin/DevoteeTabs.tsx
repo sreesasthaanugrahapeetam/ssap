@@ -3,7 +3,8 @@ import { AddDeekshaBox, DeekshaPill, Field } from './ui'
 import { Deeksha, FamilyMember, THIS_YEAR } from './types'
 import { batchOf, fmtPhone, normPhone, todayISO } from './utils'
 import { Select } from './Select'
-import { shareYatra } from './yatraShare'
+import { yatraText } from './yatraShare'
+import { useShare } from './useShare'
 
 export function DeekshaTab({ phone }: { phone: string }) {
   const { db, update, toast, showModal } = useAdmin()
@@ -72,6 +73,7 @@ export function FamilyTab({ phone }: { phone: string }) {
 
 export function YatraTab({ phone }: { phone: string }) {
   const { db, update, toast } = useAdmin()
+  const share = useShare()
   const cur = batchOf(db, phone), bs = db.batches.filter((b) => b.year === THIS_YEAR)
   const past = db.batch_members.filter((m) => m.phone === phone).map((m) => db.batches.find((b) => b.id === m.batch_id)).filter((b) => b && b.year !== THIS_YEAR)
   const setBatch = (id: string) => {
@@ -100,7 +102,7 @@ export function YatraTab({ phone }: { phone: string }) {
           {cur.gurus.length ? cur.gurus.map((g, i) => (
             <div key={i}>{g.name}{g.phone && <> · <a href={'tel:+91' + g.phone.replace(/\D/g, '').slice(-10)}>{fmtPhone(g.phone)}</a></>}</div>
           )) : <div className="muted">None added. Add them on the Batches page.</div>}
-          <button className="btn sec sm mt8" onClick={() => shareYatra(cur).then((r) => toast(r === 'copied' ? 'Details copied' : 'Shared')).catch(() => toast('Could not share'))}>Share yatra details</button>
+          <button className="btn sec sm mt8" onClick={() => share({ title: 'Yatra ' + cur.name, text: yatraText(cur) }, 'Details copied')}>Share yatra details</button>
         </div>
       )}
       <div className="muted">Past batches</div>

@@ -1,7 +1,27 @@
+import { ReactNode } from 'react'
 import { useAdmin } from './AdminContext'
 import { SEVA_KINDS, THIS_YEAR } from './types'
-import { batchOf, curDeeksha, daysLeft, devoteeLabel, money, upcomingPoojas } from './utils'
+import { batchOf, curDeeksha, daysLeft, daysUntil, devoteeLabel, money, upcomingPoojas } from './utils'
 import { whenLabel } from './PoojasView'
+
+/** Scrollable list split into Today / Tomorrow / Later groups. Each group has its own heading; empty groups are skipped. */
+function Grouped<T extends { date: string }>({ list, label, row }: { list: T[]; label: string; row: (item: T) => ReactNode }) {
+  const groups: [string, string, T[]][] = [
+    ['today', 'Today', list.filter((x) => daysUntil(x.date) === 0)],
+    ['tomorrow', 'Tomorrow', list.filter((x) => daysUntil(x.date) === 1)],
+    ['later', 'Later', list.filter((x) => daysUntil(x.date) > 1)],
+  ]
+  return (
+    <div className="scrolllist" tabIndex={0} aria-label={label}>
+      {groups.filter(([, , items]) => items.length).map(([key, title, items]) => (
+        <div key={key} className={'sgroup ' + key}>
+          <div className="sgroup-h">{title} <span>{items.length}</span></div>
+          {items.map(row)}
+        </div>
+      ))}
+    </div>
+  )
+}
 
 export default function Dashboard() {
   const { db, openDevotee, openPooja, go } = useAdmin()
@@ -18,7 +38,8 @@ export default function Dashboard() {
   const batches = db.batches.filter((b) => b.year === THIS_YEAR)
   const nextPadi = upcomingPoojas(db, 'Padi Pooja')[0]
   const nextAbhi = upcomingPoojas(db, 'Abhishekam')[0]
-  const nextOthers = upcomingPoojas(db).filter((p) => p !== nextPadi && p !== nextAbhi && !SEVA_KINDS.includes(p.kind))
+  // one chronological list (today first, then tomorrow…); the next Padi Pooja and next Abhishekam get a "Next" tag
+  const poojaList = upcomingPoojas(db).filter((p) => !SEVA_KINDS.includes(p.kind))
   const idx = (p: typeof nextPadi) => db.poojas.indexOf(p)
 
   return (
@@ -32,27 +53,16 @@ export default function Dashboard() {
       <div className="dgrid tri">
       <div className="panel">
         <h3>Upcoming poojas</h3>
-        <div className="cards">
-          {([['Next Padi Pooja', nextPadi], ['Next Abhishekam', nextAbhi]] as const).map(([label, p]) => (
-            <div key={label} className="stat" role={p ? 'button' : undefined} tabIndex={p ? 0 : undefined}
-              onClick={() => p && openPooja(idx(p))} onKeyDown={(e) => { if (p && e.key === 'Enter') openPooja(idx(p)) }}>
-              <b>{p ? p.date : '—'}</b>
-              <span>{label}{p ? ` · ${p.session} · ${whenLabel(p.date)}` : ' · none scheduled'}</span>
-              {p && p.phones.length > 0 && <span className="fs12">{p.phones.map((ph) => devoteeLabel(db, ph)).join(', ')}</span>}
+        {poojaList.length ? (
+          <Grouped list={poojaList} label="Upcoming poojas" row={(p) => (
+            <div key={p.id} className="srow" role="button" tabIndex={0}
+              onClick={() => openPooja(idx(p))} onKeyDown={(e) => { if (e.key === 'Enter') openPooja(idx(p)) }}>
+              <div><b>{p.date}</b> <span className="pill gold">{p.session}</span> <span className="when">{whenLabel(p.date)}</span></div>
+              <div>{p.kind}{(p === nextPadi || p === nextAbhi) && <> <span className="pill ok">Next</span></>}</div>
+              {p.phones.length > 0 && <div className="muted fs12">{p.phones.map((ph) => devoteeLabel(db, ph)).join(', ')}</div>}
             </div>
-          ))}
-        </div>
-        {nextOthers.length > 0 && (
-          <div className="scrolllist" tabIndex={0} aria-label="More upcoming poojas">
-            {nextOthers.map((p) => (
-              <div key={p.id} className="srow" role="button" tabIndex={0}
-                onClick={() => openPooja(idx(p))} onKeyDown={(e) => { if (e.key === 'Enter') openPooja(idx(p)) }}>
-                <div><b>{p.kind}</b> · {p.date} <span className="pill gold">{p.session}</span> <span className="muted fs12">{whenLabel(p.date)}</span></div>
-                {p.phones.length > 0 && <div className="muted fs12">{p.phones.map((ph) => devoteeLabel(db, ph)).join(', ')}</div>}
-              </div>
-            ))}
-          </div>
-        )}
+          )} />
+        ) : <span className="muted">None scheduled.</span>}
         <button className="btn sec sm mt8" onClick={() => go('poojas')}>All poojas</button>
       </div>
         {SEVA_KINDS.map((type) => {
@@ -60,17 +70,15 @@ export default function Dashboard() {
           return (
             <div key={type} className="panel">
               <h3>Upcoming {type}</h3>
+              <div className="muted fs12">All devotees are invited to attend and bless the donors.</div>
               {list.length ? (
-                <div className="scrolllist" tabIndex={0} aria-label={'Upcoming ' + type}>
-                  {list.map((p) => (
-                    <div key={p.id} className="srow" role="button" tabIndex={0}
-                      onClick={() => openPooja(idx(p))} onKeyDown={(e) => { if (e.key === 'Enter') openPooja(idx(p)) }}>
-                      <div><b>{p.date}</b> <span className="pill gold">{p.session}</span> <span className="muted fs12">{whenLabel(p.date)}</span></div>
-                      <div>{'Donor' + (p.phones.length > 1 ? 's' : '')}: <b>{p.phones.length ? p.phones.map((ph) => devoteeLabel(db, ph)).join(', ') : 'To be announced'}</b>{p.notes && <span className="muted"> · {p.notes}</span>}</div>
-                      <div className="muted fs12">All devotees are invited to attend and bless the donor{p.phones.length > 1 ? 's' : ''}.</div>
-                    </div>
-                  ))}
-                </div>
+                <Grouped list={list} label={'Upcoming ' + type} row={(p) => (
+                  <div key={p.id} className="srow" role="button" tabIndex={0}
+                    onClick={() => openPooja(idx(p))} onKeyDown={(e) => { if (e.key === 'Enter') openPooja(idx(p)) }}>
+                    <div><b>{p.date}</b> <span className="pill gold">{p.session}</span> <span className="when">{whenLabel(p.date)}</span></div>
+                    <div>{'Donor' + (p.phones.length > 1 ? 's' : '')}: <b>{p.phones.length ? p.phones.map((ph) => devoteeLabel(db, ph)).join(', ') : 'To be announced'}</b>{p.notes && <span className="muted"> · {p.notes}</span>}</div>
+                  </div>
+                )} />
               ) : <span className="muted">None scheduled.</span>}
             </div>
           )

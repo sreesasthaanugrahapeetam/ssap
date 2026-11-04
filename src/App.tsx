@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage'
 
 const AdminApp = lazy(() => import('./admin/AdminApp'))
 const StyleGuide = lazy(() => import('./pages/StyleGuide'))
+const Receipt = lazy(() => import('./pages/Receipt'))
 
 export default function App() {
   return (
@@ -11,6 +12,7 @@ export default function App() {
       <Routes>
         <Route path="/admin/*" element={<AdminApp />} />
         <Route path="/styleguide" element={<StyleGuide />} />
+        <Route path="/receipt" element={<Receipt />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
     </Suspense>

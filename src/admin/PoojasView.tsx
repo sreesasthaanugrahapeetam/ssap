@@ -29,7 +29,7 @@ export default function PoojasView() {
           {list.map(({ p, i }) => {
             const pay = db.payments.find((x) => x.pooja_id === p.id)
             return (
-            <tr key={p.id ?? i} {...rowOpen(() => openPooja(i))}>
+            <tr key={p.id ?? i} {...rowOpen(() => openPooja(i), p.date === today ? 'row today' : 'row')}>
               <td>{p.kind}<div className="muted fs12">{p.notes}</div></td>
               <td>{p.date} <span className="pill gold">{p.session}</span><div className="muted fs12">{whenLabel(p.date)}</div></td>
               <td className="hm">{p.phones.length ? p.phones.map((ph) => devoteeLabel(db, ph)).join(', ') : <span className="muted">—</span>}<div className="muted fs12">{p.venue}</div></td>

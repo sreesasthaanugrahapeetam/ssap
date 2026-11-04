@@ -245,3 +245,17 @@ body:has(.admin-root)::before{display:none}
 .admin-root .guru-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--line)}
 .admin-root .guru-row .btn{min-height:32px;width:32px;padding:0}
 .admin-root .dgrid+.dgrid{margin-top:16px}
+.admin-root .srow .when{font-size:12px;color:var(--mute)}
+.admin-root tr.row.today{background:#fff1d6}
+/* Today / Tomorrow / Later groups in dashboard lists */
+.admin-root .sgroup-h{position:sticky;top:0;z-index:1;display:flex;justify-content:space-between;padding:6px 12px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid var(--line)}
+.admin-root .sgroup-h span{opacity:.8}
+.admin-root .sgroup.today .sgroup-h{background:var(--saffron);color:#fff}
+.admin-root .sgroup.today .srow{background:#fff1d6}
+.admin-root .sgroup.today .when{color:var(--saffron);font-weight:700}
+.admin-root .sgroup.tomorrow .sgroup-h{background:var(--gold);color:#fff}
+.admin-root .sgroup.tomorrow .srow{background:#fffaf0}
+.admin-root .sgroup.tomorrow .when{color:#7a5c0a;font-weight:600}
+.admin-root .sgroup.later .sgroup-h{background:#f1e8d2;color:var(--mute)}
+.admin-root .a-modal textarea{width:100%;margin:8px 0;resize:none;font-size:13px}
+.copy-scratch{position:fixed;left:-9999px;top:0;opacity:0}

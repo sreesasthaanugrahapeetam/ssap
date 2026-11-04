@@ -1,4 +1,4 @@
-import { DB, Deeksha, Devotee, NEW_TAG, THIS_YEAR, STORAGE_KEY, SESSION_ORDER, sessionsFor } from './types'
+import { DB, Deeksha, Devotee, NEW_TAG, THIS_YEAR, STORAGE_KEY, SESSION_ORDER, sessionsFor, POOJA_KINDS, Payment } from './types'
 
 /* phone = devotee id, normalised to +91XXXXXXXXXX */
 export function normPhone(p: unknown): string {
@@ -55,81 +55,163 @@ export function migrateServices(d: DB) {
   d.payments.forEach((p) => {
     if (!p.service_date || p.pooja_id) return
     const id = d.nextId.pooja++
-    const kind = ['Annadanam', 'Alpaharam'].includes(p.type) ? p.type : 'Pooja'
+    const kind = POOJA_KINDS.includes(p.type) ? p.type : 'Pooja'
     d.poojas.push({ id, kind, date: p.service_date as string, session: p.session || sessionsFor(kind)[0], venue: '', notes: p.note, phones: [p.phone] })
     p.pooja_id = id
   })
 }
 
 export function seed(): DB {
+  const Y = THIS_YEAR
   const D = (phone: string, full_name: string, extra: Partial<Devotee>): Devotee =>
     Object.assign({ phone, full_name, email: '', address: '', dob: '', blood_group: '', gothram: '', referred_by: NEW_TAG, photo: '', notes: '', active: 'yes' }, extra)
-  const Y = THIS_YEAR
+  const ph = (n: number) => '+9198480' + String(70000 + n)
+  const P0 = ['+919848011111', '+919848022222', '+919848033333', '+919848044444', '+919848055555', '+919848066666']
+
+  const devotees: Devotee[] = [
+    D(P0[0], 'Ramesh Kumar', { referred_by: 'Prasad Sharma', email: 'ramesh@example.com', address: 'Hyderabad', dob: '1985-04-12', blood_group: 'O+', gothram: 'Kashyapa' }),
+    D(P0[1], 'Srinivas Rao', { referred_by: 'Prasad Sharma', address: 'Vijayawada', dob: '1978-09-03', blood_group: 'B+', gothram: 'Bharadwaja' }),
+    D(P0[2], 'Venkata Reddy', { referred_by: 'Ramesh Kumar', address: 'Guntur', dob: '1990-01-21', blood_group: 'A+', gothram: 'Vasishta' }),
+    D(P0[3], 'Anil Varma', { address: 'Warangal', dob: '1982-11-30', blood_group: 'AB+', gothram: 'Atreya' }),
+    D(P0[4], 'Prasad Sharma', { address: 'Hyderabad', dob: '1969-06-15', blood_group: 'O-', gothram: 'Kaushika', notes: 'Senior guru swamy' }),
+    D(P0[5], 'Mahesh Babu', { address: 'Nellore', dob: '1995-02-08', blood_group: 'B-', gothram: 'Gautama' }),
+    D(ph(1), 'Krishna Murthy', { referred_by: 'Prasad Sharma', address: 'Secunderabad', dob: '1972-03-18', blood_group: 'O+', gothram: 'Srivatsa', notes: 'Guru swamy, 25 years of deeksha' }),
+    D(ph(2), 'Raghava Rao', { referred_by: 'Krishna Murthy', address: 'Kukatpally', dob: '1980-07-25', blood_group: 'A+', gothram: 'Harita' }),
+    D(ph(3), 'Sudhakar Reddy', { referred_by: 'Ramesh Kumar', address: 'Kurnool', dob: '1976-12-02', blood_group: 'B+', gothram: 'Kausika' }),
+    D(ph(4), 'Naresh Goud', { address: 'Karimnagar', dob: '1988-05-14', blood_group: 'O+', gothram: 'Maudgalya' }),
+    D(ph(5), 'Satish Kumar', { referred_by: 'Srinivas Rao', address: 'Eluru', dob: '1991-09-09', blood_group: 'AB-', gothram: 'Kutsa' }),
+    D(ph(6), 'Balaji Naidu', { referred_by: 'Prasad Sharma', address: 'Tirupati', dob: '1983-01-30', blood_group: 'A-', gothram: 'Agastya' }),
+    D(ph(7), 'Chandra Sekhar', { referred_by: 'Krishna Murthy', address: 'Visakhapatnam', dob: '1974-10-11', blood_group: 'B+', gothram: 'Jamadagni', notes: 'Annadanam regular donor' }),
+    D(ph(8), 'Durga Prasad', { address: 'Rajahmundry', dob: '1986-08-21', blood_group: 'O+', gothram: 'Parashara' }),
+    D(ph(9), 'Eswar Rao', { referred_by: 'Raghava Rao', address: 'Kakinada', dob: '1993-04-04', blood_group: 'A+', gothram: 'Shandilya' }),
+    D(ph(10), 'Gopal Krishna', { referred_by: 'Venkata Reddy', address: 'Nizamabad', dob: '1979-06-27', blood_group: 'B-', gothram: 'Upamanyu' }),
+    D(ph(11), 'Hari Prasad', { referred_by: 'Prasad Sharma', address: 'Ongole', dob: '1968-02-16', blood_group: 'O+', gothram: 'Vishwamitra', notes: 'Senior guru swamy' }),
+    D(ph(12), 'Jagadeesh Babu', { address: 'Khammam', dob: '1990-11-05', blood_group: 'AB+', gothram: 'Bhrigu' }),
+    D(ph(13), 'Kiran Kumar', { referred_by: 'Ramesh Kumar', address: 'Anantapur', dob: '1997-03-23', blood_group: 'A+', gothram: 'Gargeya', active: 'no', notes: 'Moved abroad' }),
+    D(ph(14), 'Lakshmi Narayana', { referred_by: 'Hari Prasad', address: 'Machilipatnam', dob: '1971-12-19', blood_group: 'B+', gothram: 'Dhananjaya' }),
+  ]
+  const fam = (phone: string, name: string, relation: string, member_phone = '', emergency = 'no') => ({ phone, name, relation, member_phone, emergency })
+  const family = [
+    fam(P0[0], 'Lakshmi Kumar', 'Wife', '+919848077777', 'yes'), fam(P0[0], 'Arjun Kumar', 'Son'),
+    fam(P0[1], 'Padma Rao', 'Wife', '+919848088888', 'yes'), fam(P0[2], 'Suresh Reddy', 'Brother', '+919848099999', 'yes'),
+    fam(ph(1), 'Sarada Murthy', 'Wife', '+919848071001', 'yes'), fam(ph(1), 'Vamsi Murthy', 'Son'),
+    fam(ph(3), 'Rajeswari Reddy', 'Wife', '+919848071003', 'yes'), fam(ph(7), 'Kamala Sekhar', 'Wife', '+919848071007', 'yes'),
+    fam(ph(11), 'Annapurna Prasad', 'Wife', '+919848071011', 'yes'), fam(ph(14), 'Sita Narayana', 'Wife', '+919848071014', 'yes'),
+  ]
+  const dk = (phone: string, malai: string, days = 41, extra: Partial<Deeksha> = {}): Deeksha =>
+    ({ phone, year: Y, malai_date: malai, end_date: '', mandala_days: days, irumudi_date: '', ...extra })
+  const deekshas: Deeksha[] = [
+    dk(P0[0], inDays(-5)), dk(P0[1], inDays(-5)), dk(P0[2], inDays(3), 48), dk(P0[4], inDays(-5)),
+    dk(ph(1), inDays(-12)), dk(ph(2), inDays(-5)), dk(ph(3), inDays(3)), dk(ph(5), inDays(8), 21),
+    dk(ph(7), inDays(-12)), dk(ph(9), inDays(3)), dk(ph(11), inDays(-12)), dk(ph(14), inDays(8), 48),
+    { phone: P0[0], year: Y - 1, malai_date: (Y - 1) + '-11-17', end_date: (Y - 1) + '-12-28', mandala_days: 41, irumudi_date: (Y - 1) + '-12-27' },
+    { phone: P0[3], year: Y - 1, malai_date: (Y - 1) + '-11-17', end_date: (Y - 1) + '-12-28', mandala_days: 41, irumudi_date: (Y - 1) + '-12-27' },
+    { phone: ph(4), year: Y - 1, malai_date: (Y - 1) + '-11-20', end_date: (Y - 1) + '-12-30', mandala_days: 41, irumudi_date: (Y - 1) + '-12-29' },
+  ]
+
+  // ── payments (money records) ──
+  let pid = 1
+  type Extra = Partial<Payment>
+  const pay = (phone: string, type: string, amount: number, status: 'Paid' | 'Pending', extra: Extra = {}): Payment => ({
+    id: pid++, phone, type, amount, status, date: status === 'Paid' ? inDays(-((pid * 3) % 20) - 1) : '', mode: status === 'Paid' ? (pid % 3 ? 'UPI' : 'Cash') : '', note: '', ...extra,
+  })
+  // service-dated payments become Poojas & Seva activities (migrateServices); kind = payment type
+  const svc = (phone: string, type: string, day: number, session: string, amount: number, status: 'Paid' | 'Pending', note = '') =>
+    pay(phone, type, amount, status, { service_date: inDays(day), session, note })
+  const payments: Payment[] = [
+    // Annadanam – afternoon only
+    svc(ph(7), 'Annadanam', 0, 'Afternoon', 15000, 'Paid', 'Wedding anniversary'),
+    svc(P0[0], 'Annadanam', 1, 'Afternoon', 5000, 'Paid', 'Lunch'),
+    svc(P0[4], 'Annadanam', 2, 'Afternoon', 10000, 'Paid', 'Full day'),
+    svc(ph(3), 'Annadanam', 4, 'Afternoon', 7500, 'Paid', 'Birthday seva'),
+    svc(P0[3], 'Annadanam', 6, 'Afternoon', 5000, 'Pending', 'In memory of father'),
+    svc(ph(14), 'Annadanam', 8, 'Afternoon', 12000, 'Paid', 'House warming'),
+    svc(P0[5], 'Annadanam', 11, 'Afternoon', 7500, 'Paid', 'Birthday seva'),
+    svc(ph(1), 'Annadanam', 14, 'Afternoon', 20000, 'Paid', 'Guru swamy mandala seva'),
+    svc(ph(11), 'Annadanam', 18, 'Afternoon', 15000, 'Pending', ''),
+    svc(P0[2], 'Annadanam', 22, 'Afternoon', 5000, 'Paid', ''),
+    svc(ph(9), 'Annadanam', 27, 'Afternoon', 6000, 'Paid', 'Thanksgiving'),
+    // Alpaharam – morning or evening
+    svc(P0[1], 'Alpaharam', 0, 'Morning', 2000, 'Paid', 'Tiffin for devotees'),
+    svc(ph(2), 'Alpaharam', 1, 'Evening', 2500, 'Paid', 'Fruits and milk'),
+    svc(P0[4], 'Alpaharam', 3, 'Morning', 2000, 'Paid', ''),
+    svc(ph(5), 'Alpaharam', 5, 'Evening', 3000, 'Pending', 'Sweet pongal'),
+    svc(ph(8), 'Alpaharam', 7, 'Morning', 2000, 'Paid', ''),
+    svc(P0[0], 'Alpaharam', 10, 'Evening', 2500, 'Paid', 'Kesari and tea'),
+    svc(ph(10), 'Alpaharam', 13, 'Morning', 2000, 'Pending', ''),
+    svc(ph(12), 'Alpaharam', 17, 'Evening', 3000, 'Paid', 'Fruits'),
+    svc(ph(6), 'Alpaharam', 21, 'Morning', 2000, 'Paid', ''),
+    svc(P0[3], 'Alpaharam', 25, 'Evening', 2500, 'Paid', ''),
+    // Poojas sponsored by devotees
+    svc(P0[5], 'Abhishekam', 0, 'Evening', 1500, 'Paid', 'Ksheerabhishekam'),
+    svc(ph(4), 'Abhishekam', 3, 'Morning', 1500, 'Paid', 'Panchamrita abhishekam'),
+    svc(ph(2), 'Abhishekam', 6, 'Evening', 1500, 'Paid', 'Pushpabhishekam'),
+    svc(ph(7), 'Abhishekam', 12, 'Morning', 1500, 'Pending', ''),
+    svc(P0[1], 'Abhishekam', 19, 'Evening', 1500, 'Paid', 'Honey abhishekam'),
+    svc(ph(1), 'Padi Pooja', 1, 'Evening', 3000, 'Paid', '18 steps, bhajans, Harivarasanam'),
+    svc(P0[4], 'Padi Pooja', 9, 'Evening', 3000, 'Paid', 'Saturday padi pooja'),
+    svc(ph(11), 'Padi Pooja', 16, 'Evening', 3000, 'Paid', ''),
+    svc(P0[0], 'Padi Pooja', 23, 'Evening', 3000, 'Pending', ''),
+    svc(ph(14), 'Padi Pooja', 30, 'Evening', 3000, 'Paid', ''),
+    svc(P0[2], 'Mandala Pooja', 13, 'Evening', 1500, 'Paid', 'Mandala season start'),
+    svc(ph(3), 'Ashta Kalasa Pooja', 21, 'Morning', 2500, 'Paid', ''),
+    // Maintenance (default 10116)
+    ...[P0[0], P0[1], P0[4], ph(1), ph(7), ph(11)].map((x) => pay(x, 'Maintenance', 10116, 'Paid', { note: 'Annual maintenance' })),
+    ...[P0[2], ph(3), ph(14)].map((x) => pay(x, 'Maintenance', 10116, 'Pending', { note: 'Annual maintenance' })),
+    // Yatra seats
+    ...[P0[0], P0[1], P0[4], ph(1), ph(2), ph(7), ph(11)].map((x) => pay(x, 'Yatra', 6000, 'Paid', { note: 'Bus seat' })),
+    ...[P0[2], ph(3), ph(5), ph(9), ph(14)].map((x) => pay(x, 'Yatra', 6000, 'Pending', { note: 'Bus seat' })),
+    // Donations
+    pay(ph(7), 'Donation', 25000, 'Paid', { note: 'Temple fund' }), pay(ph(12), 'Donation', 5000, 'Paid', { note: 'Annadanam fund' }),
+    pay(ph(6), 'Donation', 2000, 'Paid', { note: '' }),
+  ]
+
+  // ── poojas without a payment record, incl. custom "Other" kinds ──
+  let oid = 1
+  const act = (kind: string, day: number, session: string, notes: string, phones: string[] = []) =>
+    ({ id: oid++, kind, date: inDays(day), session, venue: 'Peetam hall', notes, phones })
+  const poojas = [
+    act('Padi Pooja', 37, 'Evening', 'Karthika masam padi pooja', [ph(1), ph(2)]),
+    act('Abhishekam', 26, 'Morning', 'Pushpabhishekam', []),
+    act('Abhishekam', 33, 'Evening', '', [ph(8)]),
+    act('Satyanarayana Vratham', 15, 'Morning', 'Monthly vratham', [ph(3), ph(10)]),
+    act('Ganapathi Homam', 5, 'Morning', 'Before mandala season', [P0[4], ph(11)]),
+    act('Sahasranama Archana', 2, 'Evening', 'Harihara sahasranama', [ph(2)]),
+  ]
+
+  // ── batches ──
+  const batches = [
+    { id: 1, year: Y, name: 'Batch 1 – Bus A', travel_date: Y + '-12-26', vehicle: 'Bus A (45 seats)', capacity: 45, notes: 'Depart 5 AM from Peetam', gurus: [{ name: 'Prasad Sharma', phone: P0[4] }, { name: 'Krishna Murthy', phone: ph(1) }] },
+    { id: 2, year: Y, name: 'Batch 2 – Tempo', travel_date: Y + '-12-28', vehicle: 'Tempo Traveller', capacity: 14, notes: 'Depart 6 AM from Peetam', gurus: [{ name: 'Hari Prasad', phone: ph(11) }] },
+    { id: 3, year: Y, name: 'Batch 3 – Bus B', travel_date: (Y + 1) + '-01-04', vehicle: 'Bus B (45 seats)', capacity: 45, notes: 'Makara Jyothi darshan batch', gurus: [{ name: 'Ramesh Kumar', phone: P0[0] }, { name: 'Chandra Sekhar', phone: ph(7) }] },
+  ]
+  const members: [number, string[]][] = [
+    [1, [P0[0], P0[1], P0[4], ph(1), ph(2), ph(7)]],
+    [2, [P0[2], ph(3), ph(9), ph(14)]],
+    [3, [ph(5), ph(11), ph(12)]],
+  ]
+  const batch_members = members.flatMap(([batch_id, list]) => list.map((phone) => ({ batch_id, phone })))
+
+  const ex = (day: number, category: string, amount: number, mode: string, paid_to: string, note: string, id: number) =>
+    ({ id, date: inDays(day), category, amount, mode, paid_to, note })
+  const expenses = [
+    ex(-30, 'Annadanam supplies', 8200, 'Cash', 'Sri Lakshmi Provisions', 'Rice, dal, oil', 1),
+    ex(-27, 'Pooja items', 2400, 'UPI', 'Flower market', 'Garlands, camphor, ghee', 2),
+    ex(-21, 'Utilities', 3100, 'Bank', 'TSSPDCL', 'Electricity bill', 3),
+    ex(-14, 'Yatra / Transport', 12000, 'UPI', 'Bus operator', 'Advance for Bus A', 4),
+    ex(-12, 'Annadanam supplies', 6400, 'Cash', 'Sri Lakshmi Provisions', 'Vegetables and milk', 5),
+    ex(-10, 'Maintenance', 4500, 'Cash', 'Ravi Electricals', 'Hall lights repair', 6),
+    ex(-8, 'Honorarium / Salaries', 9000, 'Bank', 'Pujari', 'Monthly honorarium', 7),
+    ex(-6, 'Pooja items', 3200, 'UPI', 'Ayyappa Stores', 'Abhishekam materials', 8),
+    ex(-4, 'Events', 5500, 'Cash', 'Sound and lighting', 'Padi pooja arrangements', 9),
+    ex(-2, 'Utilities', 1200, 'UPI', 'Water board', 'Water bill', 10),
+    ex(-1, 'Annadanam supplies', 7300, 'Cash', 'Sri Lakshmi Provisions', 'Rice and groceries', 11),
+    ex(-1, 'Prasadam printing', 1800, 'UPI', 'Print shop', 'Booklets', 12),
+  ]
+
   const db: DB = {
-    devotees: [
-      D('+919848011111', 'Ramesh Kumar', { referred_by: 'Prasad Sharma', email: 'ramesh@example.com', address: 'Hyderabad', dob: '1985-04-12', blood_group: 'O+', gothram: 'Kashyapa' }),
-      D('+919848022222', 'Srinivas Rao', { referred_by: 'Prasad Sharma', address: 'Vijayawada', dob: '1978-09-03', blood_group: 'B+', gothram: 'Bharadwaja' }),
-      D('+919848033333', 'Venkata Reddy', { referred_by: 'Ramesh Kumar', address: 'Guntur', dob: '1990-01-21', blood_group: 'A+', gothram: 'Vasishta' }),
-      D('+919848044444', 'Anil Varma', { address: 'Warangal', dob: '1982-11-30', blood_group: 'AB+', gothram: 'Atreya' }),
-      D('+919848055555', 'Prasad Sharma', { address: 'Hyderabad', dob: '1969-06-15', blood_group: 'O-', gothram: 'Kaushika', notes: 'Senior guru swamy' }),
-      D('+919848066666', 'Mahesh Babu', { address: 'Nellore', dob: '1995-02-08', blood_group: 'B-', gothram: 'Gautama' }),
-    ],
-    family: [
-      { phone: '+919848011111', name: 'Lakshmi Kumar', relation: 'Wife', member_phone: '+919848077777', emergency: 'yes' },
-      { phone: '+919848011111', name: 'Arjun Kumar', relation: 'Son', member_phone: '', emergency: 'no' },
-      { phone: '+919848022222', name: 'Padma Rao', relation: 'Wife', member_phone: '+919848088888', emergency: 'yes' },
-      { phone: '+919848033333', name: 'Suresh Reddy', relation: 'Brother', member_phone: '+919848099999', emergency: 'yes' },
-    ],
-    deekshas: [
-      { phone: '+919848011111', year: Y, malai_date: Y + '-11-17', end_date: '', mandala_days: 41, irumudi_date: '' },
-      { phone: '+919848022222', year: Y, malai_date: Y + '-11-17', end_date: '', mandala_days: 41, irumudi_date: '' },
-      { phone: '+919848033333', year: Y, malai_date: Y + '-11-20', end_date: '', mandala_days: 48, irumudi_date: '' },
-      { phone: '+919848055555', year: Y, malai_date: Y + '-11-17', end_date: '', mandala_days: 41, irumudi_date: '' },
-      { phone: '+919848011111', year: Y - 1, malai_date: (Y - 1) + '-11-17', end_date: (Y - 1) + '-12-28', mandala_days: 41, irumudi_date: (Y - 1) + '-12-27' },
-      { phone: '+919848044444', year: Y - 1, malai_date: (Y - 1) + '-11-17', end_date: (Y - 1) + '-12-28', mandala_days: 41, irumudi_date: (Y - 1) + '-12-27' },
-    ],
-    payments: [
-      { id: 1, phone: '+919848011111', type: 'Annadanam', service_date: inDays(2), session: 'Afternoon', amount: 5000, date: Y + '-10-02', mode: 'UPI', status: 'Paid', note: 'Lunch' },
-      { id: 2, phone: '+919848022222', type: 'Pooja', service_date: inDays(9), session: 'Evening', amount: 1500, date: Y + '-10-05', mode: 'Cash', status: 'Paid', note: 'Mandala pooja' },
-      { id: 3, phone: '+919848033333', type: 'Yatra', amount: 6000, date: '', mode: '', status: 'Pending', note: 'Bus seat' },
-      { id: 4, phone: '+919848055555', type: 'Annadanam', service_date: inDays(7), session: 'Afternoon', amount: 10000, date: Y + '-10-10', mode: 'UPI', status: 'Paid', note: 'Full day' },
-      { id: 5, phone: '+919848011111', type: 'Yatra', amount: 6000, date: '', mode: '', status: 'Pending', note: 'Bus seat' },
-      { id: 6, phone: '+919848044444', type: 'Annadanam', service_date: inDays(12), session: 'Afternoon', amount: 5000, date: '', mode: '', status: 'Pending', note: 'In memory of father' },
-      { id: 7, phone: '+919848066666', type: 'Annadanam', service_date: inDays(19), session: 'Afternoon', amount: 7500, date: Y + '-10-20', mode: 'UPI', status: 'Paid', note: 'Birthday seva' },
-      { id: 8, phone: '+919848033333', type: 'Annadanam', service_date: inDays(26), session: 'Afternoon', amount: 5000, date: Y + '-10-22', mode: 'Cash', status: 'Paid', note: '' },
-      { id: 9, phone: '+919848022222', type: 'Alpaharam', service_date: inDays(1), session: 'Morning', amount: 2000, date: Y + '-10-25', mode: 'UPI', status: 'Paid', note: 'Tiffin for devotees' },
-      { id: 10, phone: '+919848055555', type: 'Alpaharam', service_date: inDays(5), session: 'Evening', amount: 2500, date: Y + '-10-28', mode: 'Cash', status: 'Paid', note: 'Fruits and milk' },
-      { id: 11, phone: '+919848011111', type: 'Alpaharam', service_date: inDays(10), session: 'Morning', amount: 2000, date: '', mode: '', status: 'Pending', note: '' },
-      { id: 12, phone: '+919848066666', type: 'Alpaharam', service_date: inDays(15), session: 'Evening', amount: 3000, date: Y + '-11-01', mode: 'UPI', status: 'Paid', note: 'Sweet pongal' },
-      { id: 13, phone: '+919848044444', type: 'Alpaharam', service_date: inDays(22), session: 'Morning', amount: 2000, date: '', mode: '', status: 'Pending', note: '' },
-    ],
-    batches: [
-      { id: 1, year: Y, name: 'Batch 1 – Bus A', travel_date: Y + '-12-26', vehicle: 'Bus A (45 seats)', capacity: 45, notes: 'Depart 5 AM from Peetam', gurus: [{ name: 'Prasad Sharma', phone: '+919848055555' }, { name: 'Ramesh Kumar', phone: '+919848011111' }] },
-      { id: 2, year: Y, name: 'Batch 2 – Tempo', travel_date: Y + '-12-28', vehicle: 'Tempo Traveller', capacity: 14, notes: '', gurus: [{ name: 'Srinivas Rao', phone: '+919848022222' }] },
-    ],
-    batch_members: [
-      { batch_id: 1, phone: '+919848011111' }, { batch_id: 1, phone: '+919848022222' },
-      { batch_id: 1, phone: '+919848055555' }, { batch_id: 2, phone: '+919848033333' },
-    ],
-    expenses: [
-      { id: 1, date: Y + '-10-03', category: 'Annadanam supplies', amount: 8200, mode: 'Cash', paid_to: 'Sri Lakshmi Provisions', note: 'Rice, dal, oil' },
-      { id: 2, date: Y + '-10-06', category: 'Pooja items', amount: 2400, mode: 'UPI', paid_to: 'Flower market', note: 'Garlands, camphor, ghee' },
-      { id: 3, date: Y + '-10-12', category: 'Utilities', amount: 3100, mode: 'Bank', paid_to: 'TSSPDCL', note: 'Electricity bill' },
-      { id: 4, date: Y + '-10-20', category: 'Yatra / Transport', amount: 12000, mode: 'UPI', paid_to: 'Bus operator', note: 'Advance for Bus A' },
-    ],
-    poojas: [
-      { id: 1, kind: 'Padi Pooja', date: inDays(9), session: 'Evening', venue: 'Peetam hall', notes: '18 steps, bhajans, Harivarasanam', phones: ['+919848011111', '+919848055555'] },
-      { id: 2, kind: 'Abhishekam', date: inDays(3), session: 'Morning', venue: 'Peetam hall', notes: 'Panchamrita abhishekam', phones: ['+919848022222'] },
-      { id: 3, kind: 'Padi Pooja', date: inDays(30), session: 'Evening', venue: 'Peetam hall', notes: '', phones: ['+919848033333'] },
-      { id: 4, kind: 'Abhishekam', date: inDays(16), session: 'Morning', venue: 'Peetam hall', notes: '', phones: ['+919848011111'] },
-      { id: 5, kind: 'Padi Pooja', date: inDays(16), session: 'Evening', venue: 'Peetam hall', notes: 'Saturday padi pooja', phones: ['+919848022222', '+919848044444'] },
-      { id: 6, kind: 'Abhishekam', date: inDays(6), session: 'Evening', venue: 'Peetam hall', notes: 'Ksheerabhishekam', phones: ['+919848055555', '+919848066666'] },
-      { id: 7, kind: 'Abhishekam', date: inDays(23), session: 'Morning', venue: 'Peetam hall', notes: 'Pushpabhishekam', phones: [] },
-      { id: 8, kind: 'Mandala Pooja', date: inDays(13), session: 'Evening', venue: 'Peetam hall', notes: 'Mandala season start', phones: ['+919848011111', '+919848022222', '+919848033333'] },
-      { id: 9, kind: 'Ashta Kalasa Pooja', date: inDays(21), session: 'Morning', venue: 'Peetam hall', notes: '', phones: ['+919848044444'] },
-      { id: 10, kind: 'Padi Pooja', date: inDays(37), session: 'Evening', venue: 'Peetam hall', notes: '', phones: [] },
-    ],
-    nextId: { pay: 14, batch: 3, exp: 5, pooja: 11 },
+    devotees, family, deekshas, payments, batches, batch_members, expenses, poojas,
+    nextId: { pay: pid, batch: 4, exp: 13, pooja: oid },
   }
   migrateServices(db)
   return db

@@ -4,17 +4,19 @@ import { Field, rowOpen } from './ui'
 import { MAINTENANCE_AMOUNT, Payment, SVC_TYPES, sessionsFor } from './types'
 import { findDevotee, money, todayISO } from './utils'
 import { Select, SelectOther } from './Select'
-import { downloadReceipt, shareReceipt } from './receipt'
+import { downloadReceiptPdf, receiptData, receiptShare } from './receipt'
+import { useShare } from './useShare'
 
-/** PDF + Share buttons for a Paid payment. Share falls back to download where the browser cannot share files. */
+/** Receipt buttons for a Paid payment: download the PDF, or share a link anyone can open to view / download it. */
 function ReceiptButtons({ p }: { p: Payment }) {
   const { db, toast } = useAdmin()
+  const share = useShare()
   if (p.status !== 'Paid') return null
-  const run = (fn: () => Promise<void>) => () => fn().catch(() => toast('Could not create receipt'))
+  const fail = () => toast('Could not create receipt')
   return (
     <>
-      <button className="btn sec sm" aria-label="Download receipt PDF" onClick={run(() => downloadReceipt(db, p))}>⬇ Receipt</button>{' '}
-      <button className="btn sec sm" aria-label="Share receipt" onClick={run(async () => { if (!(await shareReceipt(db, p))) { await downloadReceipt(db, p); toast('Sharing not supported here, downloaded instead') } })}>Share</button>{' '}
+      <button className="btn sec sm" aria-label="Download receipt PDF" onClick={() => downloadReceiptPdf(receiptData(db, p)).catch(fail)}>⬇ Receipt</button>{' '}
+      <button className="btn sec sm" aria-label="Share receipt link" onClick={() => share(receiptShare(receiptData(db, p)), 'Receipt link copied')}>Share link</button>{' '}
     </>
   )
 }

@@ -20,7 +20,11 @@ import { useLocation, useNavigate } from 'react-router-dom'
 const VIEW_PATH: Record<View, string> = {
   dash: 'dashboard', devotees: 'devotees', batches: 'batches', payments: 'payments', expenses: 'expenses', poojas: 'poojas', excel: 'excel',
 }
-const PATH_VIEW = Object.fromEntries(Object.entries(VIEW_PATH).map(([v, p]) => [p, v])) as Record<string, View>
+const PATH_VIEW = {
+  ...(Object.fromEntries(Object.entries(VIEW_PATH).map(([v, p]) => [p, v])) as Record<string, View>),
+  // extra URLs that open the Excel screen
+  export: 'excel', import: 'excel',
+} as Record<string, View>
 
 const NAV: [View, string][] = [
   ['dash', 'Dashboard'], ['devotees', 'Devotees'], ['batches', 'Batches / Yatra'],
