@@ -95,7 +95,7 @@ nav {
 .nav-links a { font-family: var(--f-head); font-size: .78rem; letter-spacing: .08em; color: var(--cream-2); text-transform: uppercase; transition: color .25s; }
 .nav-links a:hover { color: var(--gold-hi); }
 .nav-ham { display: none; color: var(--gold); font-size: 1.4rem; padding: .3rem; min-width: 44px; min-height: 44px; }
-.nav-logo-img { width: 38px; height: 38px; object-fit: cover; border-radius: 50%; border: 1.5px solid rgba(201,162,39,.5); flex-shrink: 0; }
+.nav-logo-img { width: 54px; height: 54px; object-fit: cover; border-radius: 50%; border: 1.5px solid rgba(201,162,39,.5); flex-shrink: 0; }
 .nav-drawer { display: none; }
 
 /* ─── SCROLLING MANTRA TICKER ─── */
@@ -105,7 +105,7 @@ nav {
   border-bottom: 1px solid rgba(201,162,39,.25);
   overflow: hidden;
   padding: 10px 0;
-  margin-top: calc(env(safe-area-inset-top, 0px) + 58px);
+  margin-top: calc(env(safe-area-inset-top, 0px) + 78px);
 }
 .ticker-inner {
   display: flex;
@@ -330,7 +330,7 @@ nav {
 
 /* ─── SECTION SHELL ─── */
 .section { padding: 80px 0; }
-section[id] { scroll-margin-top: 68px; }
+section[id] { scroll-margin-top: 84px; }
 .section--alt { background: var(--bg-2); }
 .section--alt2 { background: var(--bg-0); }
 .container {
@@ -959,6 +959,8 @@ footer {
   .section { padding: 60px 0; }
 }
 @media (max-width: 480px) {
+  .nav-logo-img { width: 46px; height: 46px; }
+  .ticker { margin-top: calc(env(safe-area-inset-top, 0px) + 70px); }
   .hero-cta { flex-direction: column; align-items: center; }
   .deity-wrap { width: min(240px, 65vw); }
   .nav-links a { font-size: .72rem; }
@@ -970,7 +972,8 @@ footer {
   .nav-names { min-width: 0; }
   .nav-en { font-size: .6rem; letter-spacing: .03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .nav-te { display: none; }
-  .nav-logo-img { width: 32px; height: 32px; }
+  .nav-logo-img { width: 40px; height: 40px; }
+  .ticker { margin-top: calc(env(safe-area-inset-top, 0px) + 68px); }
   .theme-toggle { flex-shrink: 0; }
 }
 /* ─── LIGHT MODE ─── */
