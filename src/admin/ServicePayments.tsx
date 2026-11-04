@@ -63,7 +63,7 @@ export function DevoteePaymentsTab({ phone }: { phone: string }) {
   return (
     <>
       {list.length ? (
-        <table>
+        <div className="tablewrap"><table>
           <tbody>
             <tr><th>Type</th><th>Amount</th><th>Status</th><th>Date</th><th></th></tr>
             {list.map(({ x, i }) => (
@@ -80,7 +80,7 @@ export function DevoteePaymentsTab({ phone }: { phone: string }) {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       ) : <div className="muted">No payments yet.</div>}
       <AddPayment phone={phone} />
     </>

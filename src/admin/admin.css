@@ -108,8 +108,10 @@
  .admin-root .filters input:first-child{grid-column:1/-1}
  .admin-root .grid2{grid-template-columns:1fr}
  .admin-root main{padding:14px 14px calc(14px + env(safe-area-inset-bottom))}
- .admin-root .hm{display:none}
- .admin-root .tablewrap{max-height:none}
+ .admin-root .tablewrap table{min-width:640px}
+ .admin-root .tablewrap th,.admin-root .tablewrap td{white-space:nowrap;padding:10px 12px}
+ .admin-root .tablewrap td:nth-child(2){min-width:120px}
+ .admin-root .tablewrap{max-height:none;overflow-x:auto;-webkit-overflow-scrolling:touch}
  .admin-root .top h1{flex-basis:100%}
  .admin-root .top .btn{flex:1}
  .admin-root .stat b{font-size:22px}

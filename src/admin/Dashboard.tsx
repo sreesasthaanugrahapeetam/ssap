@@ -34,7 +34,7 @@ export default function Dashboard() {
         <div className="panel">
           <h3>Deeksha ending soonest</h3>
           {upcoming.length ? (
-            <table>
+            <div className="tablewrap"><table>
               <tbody>
                 <tr><th>Devotee</th><th>Mandala</th><th>Days left</th></tr>
                 {upcoming.map((x) => (
@@ -43,7 +43,7 @@ export default function Dashboard() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           ) : <span className="muted">None running right now.</span>}
         </div>
         <div className="panel">
