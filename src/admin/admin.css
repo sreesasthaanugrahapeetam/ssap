@@ -145,3 +145,27 @@ body:has(.admin-root)::before{display:none}
  .admin-root .scrim{z-index:40}
  .admin-root aside{z-index:45}
 }
+
+/* ── Temple look: line-art backdrops, serif headings, warm paper ── */
+.admin-root .top h1,.admin-root .a-login h1,.admin-root aside h2{font-family:'Cinzel','Palatino Linotype',Palatino,serif;letter-spacing:.03em}
+.admin-root .a-login{
+  background:
+    url("./art/gopuram-gold.svg") no-repeat center bottom / min(520px,92vw) auto,
+    radial-gradient(ellipse at 50% 28%,rgba(201,162,39,.22),transparent 55%),
+    linear-gradient(160deg,var(--maroon),#240000)}
+.admin-root .a-login .box{border-top:4px solid var(--gold);box-shadow:0 18px 50px rgba(0,0,0,.45);position:relative;margin-bottom:34vh}
+.admin-root .a-login .box::before{content:"";display:block;height:22px;margin:-14px 0 8px;background:url("./art/arches.svg") repeat-x center bottom / auto 22px}
+.admin-root aside{
+  background:var(--maroon) url("./art/gopuram-cream.svg") no-repeat center calc(100% - 128px) / 88% auto}
+.admin-root main{
+  background:
+    url("./art/gopuram-brown.svg") no-repeat right clamp(8px,2vw,32px) bottom 0 / min(520px,70vw) auto,
+    radial-gradient(ellipse at 100% 0%,rgba(201,162,39,.10),transparent 55%),
+    var(--bg)}
+@media(min-width:1001px){
+  .admin-root .top{position:relative;margin-bottom:26px}
+  .admin-root .top::after{content:"";position:absolute;left:0;right:0;bottom:-16px;height:14px;background:url("./art/arches.svg") repeat-x left bottom / auto 14px;pointer-events:none}
+}
+@media(max-width:760px){
+  .admin-root main{background-size:min(380px,92vw) auto,auto,auto}
+}
