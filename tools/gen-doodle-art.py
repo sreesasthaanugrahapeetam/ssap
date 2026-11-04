@@ -36,7 +36,7 @@ def line(pts, j=0.9, closed=False, fill=None):
     return f'<path d="{smooth(q, closed)}"{f}/>'
 
 
-def poly(pts, j=0.8, closed=True, fill=None):
+def poly(pts, j=0.8, closed=True, fill=None, nostroke=False):
     """Angular hand-drawn polygon: straight edges with a slightly wobbly midpoint."""
     q = [(x + r(j), y + r(j)) for x, y in pts]
     n = len(q)
@@ -47,6 +47,8 @@ def poly(pts, j=0.8, closed=True, fill=None):
         m = ((a[0] + b[0]) / 2 + r(j), (a[1] + b[1]) / 2 + r(j))
         d += f'Q{m[0]:.1f} {m[1]:.1f} {b[0]:.1f} {b[1]:.1f}'
     f = f' fill="currentColor" fill-opacity="{fill}"' if fill else ''
+    if nostroke:
+        f += ' stroke="none"'
     return f'<path d="{d}{"Z" if closed else ""}"{f}/>'
 
 
@@ -98,103 +100,6 @@ def svg(vb, stroke, op, sw, body, fillop=1):
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{vb}" fill="none" stroke="{stroke}" '
             f'opacity="{op}" stroke-width="{sw}" stroke-linecap="round" stroke-linejoin="round" '
             f'color="{stroke}">\n{body}\n</svg>')
-
-
-# ───────────────────────────── Ayyappa, seated in the yogic pose ─────────────────────────────
-def ayyappa():
-    p = []
-    a = p.append
-    # sun-ray strokes around the halo
-    for ang in range(-80, 81, 16):
-        t = math.radians(ang - 90)
-        a(line([(110 + 100 * math.cos(t), 104 + 100 * math.sin(t)), (110 + 112 * math.cos(t), 104 + 112 * math.sin(t))], 0.4))
-    # prabhavali arch
-    a(line([(30, 240), (26, 150), (44, 74), (110, 12), (176, 74), (194, 150), (190, 240)], 1.0))
-    a(line([(44, 238), (42, 152), (56, 88), (110, 30), (164, 88), (178, 152), (176, 238)], 1.0))
-    # crown
-    a(line([(86, 72), (90, 52), (98, 40), (110, 26), (122, 40), (130, 52), (134, 72)], 0.7, fill=0.15))
-    a(line([(86, 72), (110, 76), (134, 72)], 0.5))
-    a(ring(110, 54, 4) + ring(98, 64, 2.6) + ring(122, 64, 2.6) + ring(110, 18, 3.2))
-    # ears + kundalas
-    a(blob(84, 102, 5, 10, 7, 0.5) + blob(136, 102, 5, 10, 7, 0.5) + ring(83, 118, 3.6) + ring(137, 118, 3.6))
-    # head
-    a(blob(110, 100, 25, 29, 10, 0.9, fill=0.12))
-    a(line([(98, 98), (102, 94), (107, 98)], 0.3) + line([(113, 98), (118, 94), (122, 98)], 0.3))
-    a(line([(102, 113), (110, 119), (118, 113)], 0.3))
-    a(line([(110, 76), (110, 86)], 0.3) + dot(110, 92, 1.6))
-    a(ring(94, 108, 2.4) + ring(126, 108, 2.4))
-    # torso
-    a(blob(110, 164, 36, 34, 10, 1.0, fill=0.1))
-    # mala
-    a(beads(78, 142, 134, 28, 10, 2.2))
-    a(blob(110, 164, 6, 7, 7, 0.4, fill=0.2) + dot(110, 164, 1.4))
-    # arms into chinmudra
-    a(line([(78, 138), (60, 164), (54, 192)], 1.0) + line([(142, 138), (160, 164), (166, 192)], 1.0))
-    a(blob(52, 198, 7, 7, 7, 0.5) + ring(52, 198, 2.6) + blob(168, 198, 7, 7, 7, 0.5) + ring(168, 198, 2.6))
-    # folded legs + belt
-    a(blob(110, 206, 62, 17, 11, 1.0, fill=0.1))
-    a(line([(58, 198), (68, 190), (78, 198), (88, 190), (98, 198), (108, 190), (118, 198), (128, 190), (138, 198), (148, 190), (158, 198)], 0.5))
-    a(blob(66, 218, 9, 5, 6, 0.4) + blob(154, 218, 9, 5, 6, 0.4))
-    # lotus pedestal
-    for cx in range(48, 190, 16):
-        a(blob(cx, 232, 8, 12, 7, 0.6, fill=0.08))
-    a(line([(30, 246), (110, 250), (190, 246)], 0.8))
-    for x in range(44, 190, 22):
-        a(dot(x, 255, 1.3))
-    for sx, sy in ((20, 60), (200, 70), (22, 190), (200, 176), (110, 6)):
-        a(sparkle(sx, sy))
-    return '\n'.join(p)
-
-
-# ───────────────────────────── devotee walking with irumudi ─────────────────────────────
-def walker():
-    p = []
-    a = p.append
-    # irumudi: two cloth pouches tied on the head
-    a(blob(46, 32, 17, 15, 8, 0.8, fill=0.14) + blob(78, 32, 17, 15, 8, 0.8, fill=0.14))
-    a(line([(28, 42), (62, 50), (96, 42)], 0.6))
-    a(line([(40, 28), (44, 38)], 0.3) + line([(50, 26), (54, 36)], 0.3) + line([(72, 26), (76, 36)], 0.3) + line([(82, 28), (86, 38)], 0.3))
-    a(blob(62, 13, 8, 6, 7, 0.5) + line([(58, 17), (50, 25)], 0.4) + line([(66, 17), (74, 25)], 0.4))
-    # head
-    a(blob(62, 66, 14, 14, 9, 0.6, fill=0.12))
-    a(dot(57, 64, 1.5) + dot(67, 64, 1.5) + line([(56, 71), (62, 75), (68, 71)], 0.2) + dot(62, 56, 1.3))
-    # mala
-    a(beads(46, 78, 80, 9, 7, 1.8) + blob(62, 94, 3.2, 3.6, 6, 0.3, fill=0.3))
-    # body (black upper cloth) with hatch
-    a(line([(40, 88), (84, 88), (90, 140), (34, 140)], 1.0, closed=True, fill=0.22))
-    for hx, hy in ((48, 104), (60, 112), (72, 104), (54, 126), (68, 124)):
-        a(line([(hx, hy), (hx + 5, hy + 7)], 0.2))
-    # arms + hands
-    a(line([(42, 94), (28, 118), (26, 140)], 0.8) + ring(26, 145, 4))
-    a(line([(84, 94), (98, 114), (100, 136)], 0.8) + ring(100, 141, 4))
-    # staff
-    a(line([(100, 38), (101, 120), (100, 204)], 0.8) + ring(100, 33, 4.5))
-    # dhoti
-    a(line([(34, 140), (90, 140), (86, 176), (40, 176)], 1.0, closed=True, fill=0.1))
-    a(line([(48, 146), (52, 170)], 0.3) + line([(62, 146), (63, 172)], 0.3) + line([(76, 146), (74, 170)], 0.3))
-    # legs, mid-stride, with feet
-    a(line([(50, 176), (44, 194), (34, 204)], 0.6) + line([(28, 204), (46, 204)], 0.4))
-    a(line([(74, 176), (82, 192), (94, 200)], 0.6) + line([(90, 200), (110, 200)], 0.4))
-    # motion dashes + dust puffs
-    a(line([(22, 192), (12, 192)], 0.3) + line([(24, 199), (14, 199)], 0.3) + ring(10, 205, 3.2) + ring(18, 208, 2.2))
-    return '\n'.join(p)
-
-
-def strip(H=200):
-    p = []
-    a = p.append
-    ground = H - 4
-    a(line([(0, ground), (200, ground + 1), (420, ground - 1), (620, ground + 1), (800, ground)], 0.8))
-    a(line([(0, ground - 30), (120, ground - 56), (260, ground - 34), (420, ground - 52), (600, ground - 30), (800, ground - 46)], 1.2))
-    a(tree(140, ground, 52, 30) + tree(540, ground, 60, 34) + tree(745, ground, 48, 28))
-    a(cloud(220, 28, 1.0) + cloud(560, 20, 0.9) + cloud(700, 44, 0.8))
-    a(bird(330, 40) + bird(350, 30, 5) + bird(640, 60))
-    for sx, sy in ((40, 30), (440, 50), (780, 24)):
-        a(sparkle(sx, sy))
-    for x, s in ((50, 0.78), (225, 0.72), (400, 0.8), (585, 0.74)):
-        y = ground - 208 * s
-        a(f'<g transform="translate({x} {y:.1f}) scale({s})" stroke-width="{2.4 / s:.2f}">{walker()}</g>')
-    return '\n'.join(p)
 
 
 # ───────────────────────────── Sabarimala sannidhanam ─────────────────────────────
@@ -262,10 +167,8 @@ def gopuram():
 
 
 ART = {
-    'ayyappa': (ayyappa, '0 0 220 262'),
     'sannidhanam': (sannidhanam, '0 0 400 300'),
     'gopuram': (gopuram, '0 0 400 320'),
-    'walkers': (strip, '0 0 800 200'),
 }
 COLORS = {'gold': ('#C9A227', 0.85, 2.4), 'cream': ('#FFF0CC', 0.32, 2.3), 'brown': ('#8A4B14', 0.22, 2.6)}
 
@@ -273,8 +176,6 @@ for name, (fn, vb) in ART.items():
     rng.seed(sum(map(ord, name)))
     body = fn()
     for cname, (c, op, sw) in COLORS.items():
-        if name == 'walkers' and cname == 'cream':
-            continue
         with open(os.path.join(OUT, f'{name}-{cname}.svg'), 'w') as fh:
             fh.write(svg(vb, c, op, sw, body))
 print('wrote doodle art to', os.path.abspath(OUT))

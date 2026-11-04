@@ -150,29 +150,26 @@ body:has(.admin-root)::before{display:none}
 .admin-root .top h1,.admin-root .a-login h1,.admin-root aside h2{font-family:'Cinzel','Palatino Linotype',Palatino,serif;letter-spacing:.03em}
 .admin-root .a-login{
   background:
-    url("./art/walkers-gold.svg") no-repeat center bottom / min(760px,100%) auto,
     url("./art/sannidhanam-gold.svg") no-repeat center calc(100% - 70px) / min(440px,90vw) auto,
     radial-gradient(ellipse at 50% 28%,rgba(201,162,39,.22),transparent 55%),
     linear-gradient(160deg,var(--maroon),#240000)}
 .admin-root .a-login .box{border-top:4px solid var(--gold);box-shadow:0 18px 50px rgba(0,0,0,.45);position:relative;margin-bottom:34vh}
 .admin-root .a-login .box::before{content:"";display:block;height:22px;margin:-14px 0 8px;background:url("./art/arches.svg") repeat-x center bottom / auto 22px}
 .admin-root aside{
-  background:var(--maroon) url("./art/ayyappa-cream.svg") no-repeat center calc(100% - 120px) / 64% auto}
+  background:var(--maroon) url("./art/gopuram-cream.svg") no-repeat center calc(100% - 128px) / 88% auto}
 .admin-root main{
   --art:url("./art/gopuram-brown.svg");
   background:
-    url("./art/walkers-brown.svg") no-repeat left bottom / min(980px,100%) auto,
-    var(--art) no-repeat right clamp(8px,2vw,32px) bottom 96px / min(440px,60vw) auto,
+    var(--art) no-repeat right clamp(8px,2vw,32px) bottom 0 / min(440px,60vw) auto,
     radial-gradient(ellipse at 100% 0%,rgba(201,162,39,.10),transparent 55%),
     var(--bg)}
 .admin-root main[data-view="batches"],.admin-root main[data-view="payments"]{--art:url("./art/sannidhanam-brown.svg")}
-.admin-root main[data-view="expenses"],.admin-root main[data-view="excel"]{--art:url("./art/ayyappa-brown.svg")}
 @media(min-width:1001px){
   .admin-root .top{position:relative;margin-bottom:26px}
   .admin-root .top::after{content:"";position:absolute;left:0;right:0;bottom:-16px;height:14px;background:url("./art/arches.svg") repeat-x left bottom / auto 14px;pointer-events:none}
 }
 @media(max-width:760px){
-  .admin-root main{background-size:min(520px,100%) auto,min(300px,80vw) auto,auto,auto;background-position:left bottom,right 8px bottom 56px,0 0,0 0}
+  .admin-root main{background-size:min(300px,80vw) auto,auto,auto;background-position:right 8px bottom 0,0 0,0 0}
 }
 
 /* Login: temple on the left, card on the right (desktop). Phones keep the stacked layout. */
@@ -181,7 +178,6 @@ body:has(.admin-root)::before{display:none}
     place-items:center end;
     padding-right:clamp(48px,9vw,180px);
     background:
-      url("./art/walkers-gold.svg") no-repeat left bottom / min(1100px,70vw) auto,
       url("./art/sannidhanam-gold.svg") no-repeat left clamp(40px,9vw,160px) center / min(520px,40vw) auto,
       radial-gradient(ellipse at 28% 50%,rgba(201,162,39,.20),transparent 55%),
       linear-gradient(160deg,var(--maroon),#240000)}
