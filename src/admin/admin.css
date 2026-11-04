@@ -139,7 +139,9 @@ body:has(.admin-root)::before{display:none}
 @media(max-width:1000px){
  .admin-root .a-drawer{top:calc(60px + env(safe-area-inset-top))}
  .admin-root .a-drawer .sheet{padding-top:16px}
- .admin-root .a-drawer .hdr{top:-16px;margin-top:-16px;padding-top:16px}
+ .admin-root .a-drawer .hdr{top:-16px;margin-top:-16px;padding-top:16px;height:68px;box-sizing:border-box;overflow:hidden;margin-bottom:0}
+ /* name stays pinned and the tab row pins right under it; only the fields scroll */
+ .admin-root .a-drawer .tabs{position:sticky;top:52px;z-index:2;background:var(--bg);margin-top:0;padding-top:2px}
  .admin-root .scrim{z-index:40}
  .admin-root aside{z-index:45}
 }
