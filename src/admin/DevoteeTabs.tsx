@@ -2,6 +2,7 @@ import { useAdmin } from './AdminContext'
 import { AddDeekshaBox, DeekshaPill, Field } from './ui'
 import { Deeksha, FamilyMember, THIS_YEAR } from './types'
 import { batchOf, fmtPhone, normPhone } from './utils'
+import { Select } from './Select'
 
 export function DeekshaTab({ phone }: { phone: string }) {
   const { db, update, toast, showModal } = useAdmin()
@@ -25,9 +26,9 @@ export function DeekshaTab({ phone }: { phone: string }) {
             <Field label="Malai date"><input type="date" value={x.malai_date} onChange={(e) => upd(x.year, 'malai_date', e.target.value)} /></Field>
             <Field label="Irumudi date"><input type="date" value={x.irumudi_date} onChange={(e) => upd(x.year, 'irumudi_date', e.target.value)} /></Field>
             <Field label="Mandala days">
-              <select value={x.mandala_days} onChange={(e) => upd(x.year, 'mandala_days', +e.target.value)}>
+              <Select value={x.mandala_days} onChange={(e) => upd(x.year, 'mandala_days', +e.target.value)}>
                 {[41, 48, 21, 11].map((n) => <option key={n}>{n}</option>)}
-              </select>
+              </Select>
             </Field>
             <Field label="Completed on"><input type="date" value={x.end_date} onChange={(e) => upd(x.year, 'end_date', e.target.value)} /></Field>
           </div>
@@ -54,9 +55,9 @@ export function FamilyTab({ phone }: { phone: string }) {
             <Field label="Relation"><input defaultValue={f.relation} onBlur={(e) => e.target.value !== f.relation && set(i, { relation: e.target.value })} /></Field>
             <Field label="Phone (optional)"><input defaultValue={fmtPhone(f.member_phone)} onBlur={(e) => { const v = normPhone(e.target.value); v !== f.member_phone && set(i, { member_phone: v }) }} /></Field>
             <Field label="Emergency contact">
-              <select value={f.emergency === 'yes' ? 'yes' : 'no'} onChange={(e) => set(i, { emergency: e.target.value })}>
+              <Select value={f.emergency === 'yes' ? 'yes' : 'no'} onChange={(e) => set(i, { emergency: e.target.value })}>
                 <option value="no">No</option><option value="yes">Yes</option>
-              </select>
+              </Select>
             </Field>
           </div>
           <button className="btn danger sm" style={{ marginTop: 8 }} onClick={() => update((d) => { d.family.splice(i, 1) })}>Remove</button>
@@ -83,13 +84,13 @@ export function YatraTab({ phone }: { phone: string }) {
     <>
       <div className="sub">
         <Field label={`Sabarimala batch ${THIS_YEAR}`}>
-          <select value={cur ? cur.id : ''} onChange={(e) => setBatch(e.target.value)}>
+          <Select value={cur ? cur.id : ''} onChange={(e) => setBatch(e.target.value)}>
             <option value="">Not assigned</option>
             {bs.map((b) => {
               const n = db.batch_members.filter((m) => m.batch_id === b.id).length
               return <option key={b.id} value={b.id}>{b.name} · {b.travel_date} ({n}/{b.capacity})</option>
             })}
-          </select>
+          </Select>
         </Field>
       </div>
       <div className="muted">Past batches</div>

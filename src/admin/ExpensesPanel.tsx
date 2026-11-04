@@ -3,6 +3,7 @@ import { useAdmin } from './AdminContext'
 import { Field } from './ui'
 import { EXP_CATS } from './types'
 import { money, todayISO } from './utils'
+import { Select } from './Select'
 
 export default function ExpensesPanel() {
   const { db, openExpense, confirm, update } = useAdmin()
@@ -39,12 +40,12 @@ export default function ExpensesPanel() {
       </div>
       <div className="filters">
         <input placeholder="Search paid to, note…" aria-label="Search expenses" value={f.q} onChange={(e) => setF({ ...f, q: e.target.value })} />
-        <select aria-label="Category filter" value={f.cat} onChange={(e) => setF({ ...f, cat: e.target.value })}>
+        <Select aria-label="Category filter" value={f.cat} onChange={(e) => setF({ ...f, cat: e.target.value })}>
           <option value="">All categories</option>{EXP_CATS.map((c) => <option key={c}>{c}</option>)}
-        </select>
-        <select aria-label="Month filter" value={f.month} onChange={(e) => setF({ ...f, month: e.target.value })}>
+        </Select>
+        <Select aria-label="Month filter" value={f.month} onChange={(e) => setF({ ...f, month: e.target.value })}>
           <option value="">All months</option>{months.map((m) => <option key={m}>{m}</option>)}
-        </select>
+        </Select>
       </div>
       <div className="tablewrap">
         <table>
@@ -91,8 +92,8 @@ export function ExpenseForm({ index }: { index: number | null }) {
       <div className="grid2">
         <Field label="Date"><input type="date" value={e.date} onChange={set('date')} /></Field>
         <Field label="Amount (₹) *"><input type="number" min="0" value={e.amount} onChange={set('amount')} /></Field>
-        <Field label="Category"><select value={e.category} onChange={set('category')}>{EXP_CATS.map((c) => <option key={c}>{c}</option>)}</select></Field>
-        <Field label="Mode"><select value={e.mode} onChange={set('mode')}>{['Cash', 'UPI', 'Bank'].map((m) => <option key={m}>{m}</option>)}</select></Field>
+        <Field label="Category"><Select value={e.category} onChange={set('category')}>{EXP_CATS.map((c) => <option key={c}>{c}</option>)}</Select></Field>
+        <Field label="Mode"><Select value={e.mode} onChange={set('mode')}>{['Cash', 'UPI', 'Bank'].map((m) => <option key={m}>{m}</option>)}</Select></Field>
         <Field label="Paid to" full><input value={e.paid_to} onChange={set('paid_to')} /></Field>
         <Field label="Note" full><input value={e.note} onChange={set('note')} /></Field>
       </div>

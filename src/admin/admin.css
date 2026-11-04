@@ -183,3 +183,21 @@ body:has(.admin-root)::before{display:none}
       linear-gradient(160deg,var(--maroon),#240000)}
   .admin-root .a-login .box{margin-bottom:0}
 }
+
+/* ── Styled select / combo (replaces native dropdowns) ── */
+.admin-root .sel-btn{position:relative;display:block;width:100%;min-height:40px;padding:8px 34px 8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);text-align:left;cursor:pointer;font:inherit;line-height:1.35}
+.admin-root .sel-btn>span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.admin-root .sel-btn .sel-ph{color:var(--mute)}
+.admin-root .sel-btn::after{content:"";position:absolute;right:12px;top:50%;width:7px;height:7px;margin-top:-6px;border-right:2px solid var(--maroon);border-bottom:2px solid var(--maroon);transform:rotate(45deg);transition:transform .15s}
+.admin-root .sel-btn[aria-expanded="true"]{border-color:var(--saffron);box-shadow:0 0 0 3px rgba(217,94,10,.15)}
+.admin-root .sel-btn[aria-expanded="true"]::after{transform:rotate(225deg);margin-top:-2px}
+.admin-root .sel-btn:disabled{opacity:.5;cursor:not-allowed}
+.admin-root .sel-pop{position:fixed;z-index:70;display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 32px rgba(60,20,0,.22);overflow:hidden}
+.admin-root .sel-search{padding:8px;border-bottom:1px solid var(--line);background:#fffaf0;flex:0 0 auto}
+.admin-root .sel-search input{min-height:36px;padding:6px 10px}
+.admin-root .sel-list{overflow:auto;padding:4px;-webkit-overflow-scrolling:touch}
+.admin-root .sel-opt{padding:10px 12px;border-radius:7px;cursor:pointer;color:var(--ink);line-height:1.3}
+.admin-root .sel-opt.hi{background:#fff3d6}
+.admin-root .sel-opt.on{font-weight:700;color:var(--maroon);position:relative;padding-right:30px}
+.admin-root .sel-opt.on::after{content:"";position:absolute;right:12px;top:50%;width:5px;height:10px;margin-top:-7px;border-right:2px solid var(--saffron);border-bottom:2px solid var(--saffron);transform:rotate(45deg)}
+.admin-root .sel-empty{padding:12px;color:var(--mute);text-align:center;font-size:14px}

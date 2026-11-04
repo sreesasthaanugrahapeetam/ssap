@@ -5,6 +5,7 @@ import { DeekshaTab, FamilyTab, YatraTab } from './DevoteeTabs'
 import { DevoteePaymentsTab } from './ServicePayments'
 import { Devotee, GOTHRAMS, NEW_TAG } from './types'
 import { blankDevotee, findDevotee, fmtPhone, normPhone } from './utils'
+import { Select, Combo } from './Select'
 
 type Tab = 'basics' | 'spiritual' | 'family' | 'payments' | 'yatra'
 const TABS: [Tab, string][] = [['basics', 'Basics'], ['spiritual', 'Deeksha'], ['family', 'Family'], ['payments', 'Payments'], ['yatra', 'Yatra']]
@@ -120,21 +121,18 @@ export default function DevoteeForm({ phone }: { phone?: string }) {
               <Field label="Email"><input type="email" inputMode="email" autoComplete="off" value={draft.email} onChange={set('email')} /></Field>
               <Field label="Date of birth"><input type="date" value={draft.dob} onChange={set('dob')} /></Field>
               <Field label="Blood group">
-                <select value={draft.blood_group} onChange={set('blood_group')}>{BLOOD.map((b) => <option key={b}>{b}</option>)}</select>
+                <Select value={draft.blood_group} onChange={set('blood_group')}>{BLOOD.map((b) => <option key={b}>{b}</option>)}</Select>
               </Field>
-              <Field label="Gothram *" after={<>
-                <datalist id="gothramList">{GOTHRAMS.map((g) => <option key={g} value={g} />)}</datalist>
-                {errs.gt && <div className="err" role="alert">{errs.gt}</div>}</>}>
-                <input id="f_gothram" list="gothramList" autoComplete="off" placeholder="Pick or type" value={draft.gothram} onChange={set('gothram')} />
+              <Field label="Gothram *" after={errs.gt && <div className="err" role="alert">{errs.gt}</div>}>
+                <Combo id="f_gothram" options={GOTHRAMS} placeholder="Pick or type" value={draft.gothram} onChange={(v) => setDraft({ ...draft, gothram: v })} />
               </Field>
-              <Field label="Referred by" after={
-                <datalist id="swamyList"><option value={NEW_TAG} />{others.map((n) => <option key={n} value={n} />)}</datalist>}>
-                <input list="swamyList" autoComplete="off" placeholder="Pick a swamy or type a name" value={draft.referred_by} onChange={set('referred_by')} />
+              <Field label="Referred by">
+                <Combo options={[NEW_TAG, ...others]} placeholder="Pick a swamy or type a name" value={draft.referred_by} onChange={(v) => setDraft({ ...draft, referred_by: v })} />
               </Field>
               <Field label="Status">
-                <select value={draft.active === 'no' ? 'no' : 'yes'} onChange={set('active')}>
+                <Select value={draft.active === 'no' ? 'no' : 'yes'} onChange={set('active')}>
                   <option value="yes">Active</option><option value="no">Inactive</option>
-                </select>
+                </Select>
               </Field>
               <Field label="Address" full><textarea rows={2} value={draft.address} onChange={set('address')} /></Field>
               <Field label="Photo" full after={<div className="muted" style={{ fontSize: 12 }}>Prototype stores a small resized copy in this browser.</div>}>

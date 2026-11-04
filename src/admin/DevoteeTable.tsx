@@ -4,6 +4,7 @@ import { Avatar, DeekshaPill } from './ui'
 import { NEW_TAG, THIS_YEAR } from './types'
 import { batchOf, curDeeksha, duesOf, fmtPhone, money } from './utils'
 import { exportXlsx } from './excel'
+import { Select } from './Select'
 
 const rowKey = (open: () => void) => ({
   tabIndex: 0,
@@ -38,20 +39,20 @@ export default function DevoteeTable() {
       </div>
       <div className="filters">
         <input placeholder="Search name, phone, gothram, place…" aria-label="Search devotees" value={f.q} onChange={set('q')} />
-        <select aria-label="Deeksha filter" value={f.deeksha} onChange={set('deeksha')}>
+        <Select aria-label="Deeksha filter" value={f.deeksha} onChange={set('deeksha')}>
           <option value="">All deeksha</option>
           <option value="active">In deeksha {THIS_YEAR}</option>
           <option value="none">Not in deeksha {THIS_YEAR}</option>
-        </select>
-        <select aria-label="Batch filter" value={f.batch} onChange={set('batch')}>
+        </Select>
+        <Select aria-label="Batch filter" value={f.batch} onChange={set('batch')}>
           <option value="">All batches</option>
           <option value="none">No batch</option>
           {db.batches.map((b) => <option key={b.id} value={b.id}>{b.name} ({b.year})</option>)}
-        </select>
-        <select aria-label="Dues filter" value={f.dues} onChange={set('dues')}>
+        </Select>
+        <Select aria-label="Dues filter" value={f.dues} onChange={set('dues')}>
           <option value="">Dues: any</option>
           <option value="due">Has pending dues</option>
-        </select>
+        </Select>
       </div>
       <div className="tablewrap">
         <table>

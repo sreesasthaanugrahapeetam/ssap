@@ -3,6 +3,7 @@ import { useAdmin } from './AdminContext'
 import { Field } from './ui'
 import { SVC_TYPES } from './types'
 import { findDevotee, money, todayISO } from './utils'
+import { Select } from './Select'
 
 function useMarkPaid() {
   const { update } = useAdmin()
@@ -39,15 +40,15 @@ function AddPayment({ phone }: { phone: string }) {
       <b>Add payment</b>
       <div className="grid2" style={{ marginTop: 8 }}>
         <Field label="Type">
-          <select value={f.type} onChange={set('type')}>
+          <Select value={f.type} onChange={set('type')}>
             {['Annadanam', 'Alpaharam', 'Pooja', 'Yatra', 'Donation', 'Other'].map((t) => <option key={t}>{t}</option>)}
-          </select>
+          </Select>
         </Field>
         {svc && <Field label={f.type + ' date *'}><input id="psd" type="date" value={f.sd} onChange={set('sd')} /></Field>}
-        {svc && <Field label="Session"><select value={f.se} onChange={set('se')}><option>Morning</option><option>Evening</option></select></Field>}
+        {svc && <Field label="Session"><Select value={f.se} onChange={set('se')}><option>Morning</option><option>Evening</option></Select></Field>}
         <Field label="Amount (₹) *"><input type="number" min="0" inputMode="decimal" value={f.amount} onChange={set('amount')} /></Field>
-        <Field label="Status"><select value={f.status} onChange={set('status')}><option>Paid</option><option>Pending</option></select></Field>
-        <Field label="Mode"><select value={f.mode} onChange={set('mode')}><option>UPI</option><option>Cash</option><option>Bank</option></select></Field>
+        <Field label="Status"><Select value={f.status} onChange={set('status')}><option>Paid</option><option>Pending</option></Select></Field>
+        <Field label="Mode"><Select value={f.mode} onChange={set('mode')}><option>UPI</option><option>Cash</option><option>Bank</option></Select></Field>
         <Field label="Note" full><input value={f.note} onChange={set('note')} /></Field>
       </div>
       <button className="btn" style={{ marginTop: 8 }} onClick={add}>Add</button>
