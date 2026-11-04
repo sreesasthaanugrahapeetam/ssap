@@ -112,8 +112,9 @@
  .admin-root .tablewrap th,.admin-root .tablewrap td{white-space:nowrap;padding:10px 12px}
  .admin-root .tablewrap td:nth-child(2){min-width:120px}
  .admin-root .tablewrap{max-height:none;overflow-x:auto;-webkit-overflow-scrolling:touch}
- .admin-root .top h1{flex-basis:100%}
- .admin-root .top .btn{flex:1}
+ .admin-root .top{flex-wrap:nowrap;margin-bottom:12px}
+ .admin-root .top h1{flex:1;min-width:0;font-size:19px;line-height:1.25;margin:0}
+ .admin-root .top .btn{flex:0 0 auto;white-space:nowrap;min-height:38px;padding:8px 12px}
  .admin-root .stat b{font-size:22px}
  .admin-root input,.admin-root select,.admin-root textarea{font-size:16px}
  .admin-root .a-drawer .sheet{width:100vw;padding:16px 14px;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
