@@ -78,7 +78,7 @@ export default function DevoteeForm({ phone }: { phone?: string }) {
       }
     })
     if (!isNew && ph !== orig) toast('Phone changed, all linked records updated')
-    setOrig(ph); setIsNew(false); setDraft({ ...rec, phone: fmtPhone(ph) })
+    closeDrawer()
     toast('Saved')
   }
 
