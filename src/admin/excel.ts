@@ -16,9 +16,23 @@ const KEYMAP: Record<string, keyof DB> = {
   Expenses: 'expenses', Batches: 'batches', BatchMembers: 'batch_members',
 }
 
+function scoped(db: DB, phones: Set<string>): DB {
+  const members = db.batch_members.filter((m) => phones.has(m.phone))
+  const batchIds = new Set(members.map((m) => m.batch_id))
+  return {
+    ...db,
+    devotees: db.devotees.filter((d) => phones.has(d.phone)),
+    family: db.family.filter((x) => phones.has(x.phone)),
+    deekshas: db.deekshas.filter((x) => phones.has(x.phone)),
+    payments: db.payments.filter((x) => phones.has(x.phone)),
+    batch_members: members,
+    batches: db.batches.filter((b) => batchIds.has(b.id)),
+  }
+}
+
 function workbook(db: DB | null) {
   const w = XLSX.utils.book_new()
-  Object.keys(SHEETS).forEach((n) => {
+  Object.keys(SHEETS).filter((n) => n !== 'Expenses').forEach((n) => {
     const cols = SHEETS[n]
     const rows = db ? (db[KEYMAP[n]] as any[]).map((r) => cols.map((c) => (r[c] == null ? '' : r[c]))) : []
     const ws = XLSX.utils.aoa_to_sheet([cols as any[]].concat(rows))
@@ -28,8 +42,9 @@ function workbook(db: DB | null) {
   return w
 }
 
-export function exportXlsx(db: DB, toast: (m: string) => void) {
-  XLSX.writeFile(workbook(db), 'peetam-devotees.xlsx')
+/** Pass `phones` to export only those devotees (and their related rows). */
+export function exportXlsx(db: DB, toast: (m: string) => void, phones?: Set<string>) {
+  XLSX.writeFile(workbook(phones ? scoped(db, phones) : db), 'peetam-devotees.xlsx')
   toast('Exported')
 }
 export function templateXlsx() {

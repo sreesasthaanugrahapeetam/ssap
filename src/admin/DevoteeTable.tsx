@@ -34,7 +34,7 @@ export default function DevoteeTable() {
     <>
       <div className="top">
         <h1>Devotees</h1>
-        <button className="btn sec" onClick={() => exportXlsx(db, toast)}>⬇ Excel</button>
+        <button className="btn sec" onClick={() => exportXlsx(db, toast, new Set(rows.map((d) => d.phone)))}>⬇ Excel ({rows.length})</button>
         <button className="btn" onClick={() => openDevotee()}>+ Add devotee</button>
       </div>
       <div className="filters">
