@@ -12,8 +12,8 @@ export default defineConfig({
       includeAssets: ['assets/favicon.png'],
       manifest: {
         id: '/admin/',
-        name: 'Peetam Admin',
-        short_name: 'Peetam Admin',
+        name: 'Peetam',
+        short_name: 'Peetam',
         description: 'Sree Sastha Anugraha Peetam admin',
         start_url: '/admin/',
         scope: '/', // whole origin, so no route (or the 404 redirect hop) falls outside the app and shows browser Back / Reload

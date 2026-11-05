@@ -15,9 +15,9 @@ import ExcelPanel from './ExcelPanel'
 import PoojasView, { PoojaForm } from './PoojasView'
 import { DrawerState, SESSION_KEY, View } from './types'
 
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
-const VIEW_PATH: Record<View, string> = {
+const VIEW_PATH: Record<View, string> = { // only used to map incoming URLs to screens
   dash: 'dashboard', devotees: 'devotees', batches: 'batches', payments: 'payments', expenses: 'expenses', poojas: 'poojas', excel: 'excel',
 }
 const PATH_VIEW = {
@@ -52,13 +52,10 @@ const wasLoggedIn = () => { try { return sessionStorage.getItem(SESSION_KEY) ===
 
 export default function AdminApp() {
   const [authed, setAuthed] = useState(wasLoggedIn)
+  // The URL is read once (so a link to /admin/devotees still opens that screen) and never changes after,
+  // like a native app: iOS shows its browser bar (share / refresh / Safari) when the path leaves the start URL.
   const location = useLocation()
-  const navigate = useNavigate()
-  const seg = location.pathname.replace(/^\/admin\/?/, '').split('/')[0]
-  const view: View = PATH_VIEW[seg] ?? 'dash'
-  // installed app / phone: switch screens in place (no history entries), so the window never grows a Back button
-  const setView = useCallback((v: View) => navigate('/admin/' + VIEW_PATH[v], { replace: matchMedia('(display-mode: standalone), (max-width: 760px)').matches }), [navigate])
-  useEffect(() => { if (!PATH_VIEW[seg]) navigate('/admin/dashboard', { replace: true }) }, [seg, navigate])
+  const [view, setView] = useState<View>(() => PATH_VIEW[location.pathname.replace(/^\/admin\/?/, '').split('/')[0]] ?? 'dash')
   const [navOpen, setNavOpen] = useState(false)
   const [drawer, setDrawer] = useState<DrawerState>(null)
   const [modal, setModal] = useState<ReactNode>(null)
@@ -167,11 +164,11 @@ export default function AdminApp() {
             <div className="a-app">
               <header className="mbar">
                 <button ref={burger} className="burger" aria-label={navOpen ? 'Close menu' : 'Open menu'} aria-expanded={navOpen} aria-controls="admin-side" onClick={() => toggleNav(!navOpen)}>☰</button>
-                <span>🕉 Peetam Admin</span>
+                <span>🕉 Peetam</span>
               </header>
               <div className="scrim" onClick={() => toggleNav(false)} />
               <aside id="admin-side" ref={side} aria-label="Main navigation">
-                <h2>🕉 Peetam Admin</h2>
+                <h2>🕉 Peetam</h2>
                 <div className="navlist" role="navigation">
                   {NAV.map(([v, label]) => (
                     <a key={v} className={view === v ? 'on' : undefined} tabIndex={0} role="button" aria-current={view === v ? 'page' : undefined}

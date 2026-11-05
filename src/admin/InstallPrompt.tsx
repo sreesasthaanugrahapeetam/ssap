@@ -26,8 +26,8 @@ export default function InstallPrompt() {
   }
 
   return (
-    <div className="a-install" role="dialog" aria-label="Install Peetam Admin">
-      <b>Install Peetam Admin</b>
+    <div className="a-install" role="dialog" aria-label="Install Peetam">
+      <b>Install Peetam</b>
       <p>{ev ? 'Add the admin app to your device for quick access.' : 'Tap Share, then “Add to Home Screen” to install.'}</p>
       <div className="row">
         {ev && <button className="btn sm" onClick={install}>Install</button>}
