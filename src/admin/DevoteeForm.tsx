@@ -1,9 +1,9 @@
-import { ChangeEvent, ReactNode, useState } from 'react'
+import { ChangeEvent, ReactNode, useEffect, useState } from 'react'
 import { useAdmin } from './AdminContext'
 import { Avatar, Field } from './ui'
 import { DeekshaTab, FamilyTab, YatraTab, PoojasTab } from './DevoteeTabs'
 import { DevoteePaymentsTab } from './ServicePayments'
-import { Devotee, GOTHRAMS, NEW_TAG } from './types'
+import { Devotee, GOTHRAMS, NEW_TAG, SWAMY_YEARS } from './types'
 import { blankDevotee, donatedBy, duesOf, findDevotee, fmtPhone, money, normPhone } from './utils'
 import { Select, Combo } from './Select'
 
@@ -25,6 +25,9 @@ export default function DevoteeForm({ phone }: { phone?: string }) {
     return d
   })
   const [errs, setErrs] = useState<Errs>({})
+  // keep the dropdown in step when the Deeksha tab moves the swamy up a level
+  const dbYear = findDevotee(db, orig)?.swamy_year
+  useEffect(() => { if (!isNew && dbYear !== undefined) setDraft((d) => (d.swamy_year === dbYear ? d : { ...d, swamy_year: dbYear })) }, [dbYear, isNew])
   const set = (k: keyof Devotee) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setDraft({ ...draft, [k]: e.target.value })
 
@@ -65,7 +68,7 @@ export default function DevoteeForm({ phone }: { phone?: string }) {
     setErrs({})
     const rec: Devotee = {
       phone: ph, full_name: draft.full_name.trim(), email: draft.email, address: draft.address, dob: draft.dob,
-      blood_group: draft.blood_group, gothram: draft.gothram, referred_by: (draft.referred_by || '').trim() || NEW_TAG,
+      blood_group: draft.blood_group, gothram: draft.gothram, swamy_year: draft.swamy_year, referred_by: (draft.referred_by || '').trim() || NEW_TAG,
       photo: draft.photo, notes: draft.notes, active: draft.active,
     }
     update((d) => {
@@ -136,6 +139,11 @@ export default function DevoteeForm({ phone }: { phone?: string }) {
               </Field>
               <Field label="Gothram *" after={errs.gt && <div className="err" role="alert">{errs.gt}</div>}>
                 <Combo id="f_gothram" options={GOTHRAMS} placeholder="Pick or type" value={draft.gothram} onChange={(v) => setDraft({ ...draft, gothram: v })} />
+              </Field>
+              <Field label="Which year of deeksha?">
+                <Select value={draft.swamy_year} onChange={set('swamy_year')}>
+                  <option value="">Select</option>{SWAMY_YEARS.map((y) => <option key={y}>{y}</option>)}
+                </Select>
               </Field>
               <Field label="Referred by">
                 <Combo options={[NEW_TAG, ...others]} placeholder="Pick a swamy or type a name" value={draft.referred_by} onChange={(v) => setDraft({ ...draft, referred_by: v })} />

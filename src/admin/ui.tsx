@@ -1,7 +1,7 @@
 import { cloneElement, ReactElement, ReactNode, useEffect, useId, useRef, useState, FormEvent } from 'react'
 import { useAdmin } from './AdminContext'
 import { Deeksha, THIS_YEAR } from './types'
-import { daysLeft, initials } from './utils'
+import { daysLeft, initials, isClosed } from './utils'
 
 /** Label linked to its single control child (id + aria-required). */
 export function Field({ label, full, after, children }: { label: string; full?: boolean; after?: ReactNode; children: ReactElement }) {
@@ -24,13 +24,13 @@ export function Avatar({ photo, name, large }: { photo?: string; name?: string; 
 
 export function DeekshaPill({ dk }: { dk?: Deeksha }) {
   if (!dk) return <span className="pill">—</span>
-  if (dk.end_date) return <span className="pill ok">Completed {dk.year}</span>
+  if (isClosed(dk)) return <span className="pill ok">Completed {dk.year}</span>
   const left = daysLeft(dk)
   if (left == null) return <span className="pill">—</span>
   if (new Date(dk.malai_date) > new Date()) return <span className="pill gold">Starts {dk.malai_date}</span>
   return left >= 0
     ? <span className="pill gold">Day {(+dk.mandala_days) - left} / {dk.mandala_days}</span>
-    : <span className="pill warn">Overdue</span>
+    : <span className="pill ok">Irumudi done</span>
 }
 
 export function ConfirmBox({ msg, label, onOk }: { msg: string; label?: string; onOk: () => void }) {
@@ -56,7 +56,7 @@ export function AddDeekshaBox({ onAdd }: { onAdd: (year: number) => boolean }) {
   return (
     <form className="box" role="dialog" aria-modal="true" onSubmit={submit}>
       <h3>Add deeksha year</h3>
-      <Field label="Year"><input ref={ref} type="number" min="2000" value={year} onChange={(e) => setYear(e.target.value)} /></Field>
+      <Field label="Year"><input ref={ref} type="number" min="2000" max={THIS_YEAR} value={year} onChange={(e) => setYear(e.target.value)} /></Field>
       <div className="acts">
         <button type="button" className="btn sec" onClick={closeModal}>Cancel</button>
         <button className="btn">Add</button>

@@ -3,7 +3,7 @@ import { DB, NEW_TAG, THIS_YEAR, sessionsFor } from './types'
 import { migrateServices, normPhone } from './utils'
 
 export const SHEETS: Record<string, string[]> = {
-  Devotees: ['phone', 'full_name', 'email', 'address', 'dob', 'blood_group', 'gothram', 'referred_by', 'active', 'notes'],
+  Devotees: ['phone', 'full_name', 'email', 'address', 'dob', 'blood_group', 'gothram', 'swamy_year', 'referred_by', 'active', 'notes'],
   Family: ['phone', 'name', 'relation', 'member_phone', 'emergency'],
   Deekshas: ['phone', 'year', 'malai_date', 'irumudi_date', 'mandala_days', 'end_date'],
   Payments: ['phone', 'type', 'service_date', 'session', 'pooja_id', 'amount', 'date', 'mode', 'status', 'note'],

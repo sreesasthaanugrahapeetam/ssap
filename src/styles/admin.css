@@ -62,7 +62,10 @@
 .admin-root .stat span.fs12{margin-top:4px}
 .admin-root .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:16px}
 .admin-root .panel h3{margin:0 0 10px;font-size:15px;font-weight:700;color:var(--maroon)}
-.admin-root .filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px;margin:14px 0 12px}
+.admin-root input{min-width:0;max-width:100%;box-sizing:border-box}
+.admin-root input[type=date]{-webkit-appearance:none;appearance:none;display:block;cursor:pointer;padding-right:38px;background-repeat:no-repeat;background-position:right 11px center;background-size:18px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a1f1f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E")}
+.admin-root input[type=date]::-webkit-calendar-picker-indicator{display:none}
+.admin-root .filters{display:grid;grid-template-columns:minmax(0,2fr) repeat(4,minmax(0,1fr));gap:10px;margin:14px 0 12px}
 .admin-root table{width:100%;border-collapse:collapse;background:var(--card)}
 .admin-root th,.admin-root td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle}
 .admin-root th{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--mute);letter-spacing:.04em;background:#fff6dc;position:sticky;top:0}
@@ -85,7 +88,19 @@
 .admin-root .tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:14px;overflow-x:auto;scrollbar-width:thin}
 .admin-root .tabs button{white-space:nowrap;min-height:40px;border:0;background:none;padding:8px 12px;cursor:pointer;font-weight:600;color:var(--mute);border-bottom:3px solid transparent;margin-bottom:-2px}
 .admin-root .tabs button.on{color:var(--saffron);border-color:var(--saffron)}
+.admin-root .sub-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.admin-root .sub-h .push{margin-left:auto}
+.admin-root .pay{cursor:pointer}
+.admin-root .pay:hover{background:#fff6dc}
+.admin-root .pay-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.admin-root .pay-title{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;min-width:0}
+.admin-root .pay-amt{white-space:nowrap;font-size:16px}
+.admin-root .pay-meta{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;margin-top:6px;font-size:13px}
+.admin-root .pay-acts{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:10px}
+.admin-root .pay-acts .btn{white-space:nowrap}
+.admin-root .pay-acts .push{margin-left:auto}
 .admin-root .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.admin-root .grid2.two{grid-template-columns:1fr 1fr}
 .admin-root .grid2 .full{grid-column:1/-1}
 .admin-root .actbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;position:sticky;bottom:-20px;background:var(--bg);padding:12px 0 14px;border-top:1px solid var(--line);z-index:1}
 .admin-root .actbar .push{margin-left:auto}
@@ -134,7 +149,7 @@
  .admin-root .a-modal .box{width:100%;border-radius:16px 16px 0 0;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
  .admin-root .a-modal .acts .btn{flex:1}
 }
-@media(max-width:420px){.admin-root .filters{grid-template-columns:1fr}.admin-root .cards{grid-template-columns:1fr 1fr}}
+@media(max-width:420px){.admin-root .cards{grid-template-columns:1fr 1fr}}
 .admin-root a[href^="tel:"]{color:var(--maroon);text-decoration:underline;text-underline-offset:2px;font-weight:600}
 /* The public site paints a fixed safe-area band on body::before; the admin top bar already pads for the notch, so drop the band here to avoid doubling the inset. */
 body:has(.admin-root)::before{display:none}
@@ -259,3 +274,39 @@ body:has(.admin-root)::before{display:none}
 .admin-root .sgroup.later .sgroup-h{background:#f1e8d2;color:var(--mute)}
 .admin-root .a-modal textarea{width:100%;margin:8px 0;resize:none;font-size:13px}
 .copy-scratch{position:fixed;left:-9999px;top:0;opacity:0}
+
+/* ── App shell (phones and installed PWA): the page never scrolls, only the content area does ── */
+.admin-root .tabbar{display:none}
+@media(max-width:760px),(display-mode:standalone){
+ html:has(.admin-root),body:has(.admin-root){height:100%;overflow:hidden;overscroll-behavior:none}
+ body:has(.admin-root){position:fixed;inset:0;width:100%;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+ .admin-root input,.admin-root textarea,.admin-root [contenteditable]{-webkit-user-select:text;user-select:text}
+ .admin-root{height:100dvh;min-height:0;overflow:hidden}
+ .admin-root .a-app{height:100dvh;min-height:0;overflow:hidden;grid-template-rows:auto minmax(0,1fr) auto}
+ .admin-root main{min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+ .admin-root main::-webkit-scrollbar,.admin-root .a-drawer .sheet::-webkit-scrollbar{display:none}
+ .admin-root .a-drawer .sheet{overscroll-behavior:contain;scrollbar-width:none}
+ .admin-root .a-login{min-height:100dvh}
+}
+@media(max-width:760px){
+ .admin-root .burger{display:none}
+ .admin-root .tabbar{display:grid;grid-template-columns:repeat(5,1fr);background:var(--card);border-top:1px solid var(--line);padding:6px 4px calc(2px + env(safe-area-inset-bottom) * .4);z-index:20}
+ .admin-root .tabbar button{display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;color:var(--mute);font-size:11px;font-weight:600;min-height:46px;padding:4px 0;border-radius:10px;cursor:pointer}
+ .admin-root .tabbar .ico{display:grid;place-items:center;width:56px;height:30px;border-radius:99px;transition:background .2s}
+ .admin-root .tabbar button.on{color:var(--saffron);font-weight:700}
+ .admin-root .tabbar button.on .ico{background:rgba(217,94,10,.14)}
+ .admin-root .tabbar button.on svg{stroke-width:2.2}
+ .admin-root main{padding-bottom:14px}
+ .admin-root .a-toast{bottom:calc(72px + env(safe-area-inset-bottom) * .4)}
+}
+
+/* pull to refresh indicator (phones / installed app) */
+.admin-root .ptr{display:none}
+@media(max-width:760px),(display-mode:standalone){
+ .admin-root .a-app{position:relative}
+ .admin-root .ptr{display:grid;place-items:center;position:absolute;left:50%;top:calc(60px + env(safe-area-inset-top));width:36px;height:36px;border-radius:50%;background:#fff;color:var(--mute);box-shadow:0 2px 10px rgba(0,0,0,.2);z-index:15;opacity:0;pointer-events:none;transform:translate(-50%,-44px)}
+ .admin-root .ptr.ready{color:var(--saffron)}
+ .admin-root .ptr.spin{opacity:1;transform:translate(-50%,16px);transition:transform .2s}
+ .admin-root .ptr.spin svg{animation:ptrspin .8s linear infinite}
+}
+@keyframes ptrspin{to{transform:rotate(360deg)}}

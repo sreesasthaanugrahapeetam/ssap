@@ -15,32 +15,49 @@ import ExcelPanel from './ExcelPanel'
 import PoojasView, { PoojaForm } from './PoojasView'
 import { DrawerState, SESSION_KEY, View } from './types'
 
-import { useLocation, useNavigate } from 'react-router-dom'
 
-const VIEW_PATH: Record<View, string> = {
+const VIEW_KEY = 'ssap_view'
+const VIEW_PATH: Record<View, string> = { // screen ids (keys are what matters)
   dash: 'dashboard', devotees: 'devotees', batches: 'batches', payments: 'payments', expenses: 'expenses', poojas: 'poojas', excel: 'excel',
 }
-const PATH_VIEW = {
-  ...(Object.fromEntries(Object.entries(VIEW_PATH).map(([v, p]) => [p, v])) as Record<string, View>),
-  // extra URLs that open the Excel screen
-  export: 'excel', import: 'excel',
-} as Record<string, View>
-
 const NAV: [View, string][] = [
   ['dash', 'Dashboard'], ['devotees', 'Devotees'], ['batches', 'Batches / Yatra'],
   ['payments', 'Payments'], ['poojas', 'Poojas & Seva'], ['expenses', 'Expenses'],
 ]
 
+/** Bottom tab bar on phones (mobile-app style); everything else is under More. */
+const QUICK: [View, string, string][] = [['dash', 'Home', 'home'], ['devotees', 'Devotees', 'users'], ['expenses', 'Expenses', 'receipt'], ['payments', 'Payments', 'wallet']]
+
+/** Line icons (24px grid, rounded strokes) for the bottom tab bar. */
+const ICONS: Record<string, ReactNode> = {
+  home: <><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></>,
+  users: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>,
+  receipt: <><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z" /><path d="M14 8H8" /><path d="M16 12H8" /><path d="M13 16H8" /></>,
+  wallet: <><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" /><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" /></>,
+  more: <><rect width="7" height="7" x="3" y="3" rx="1.5" /><rect width="7" height="7" x="14" y="3" rx="1.5" /><rect width="7" height="7" x="14" y="14" rx="1.5" /><rect width="7" height="7" x="3" y="14" rx="1.5" /></>,
+}
+const TabIcon = ({ name }: { name: string }) => (
+  <span className="ico" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">{ICONS[name]}</svg>
+  </span>
+)
+
 const wasLoggedIn = () => { try { return sessionStorage.getItem(SESSION_KEY) === '1' } catch { return false } }
 
 export default function AdminApp() {
   const [authed, setAuthed] = useState(wasLoggedIn)
-  const location = useLocation()
-  const navigate = useNavigate()
-  const seg = location.pathname.replace(/^\/admin\/?/, '').split('/')[0]
-  const view: View = PATH_VIEW[seg] ?? 'dash'
-  const setView = useCallback((v: View) => navigate('/admin/' + VIEW_PATH[v]), [navigate])
-  useEffect(() => { if (!PATH_VIEW[seg]) navigate('/admin/dashboard', { replace: true }) }, [seg, navigate])
+  // The URL is never read or changed: iOS shows its browser bar (share / refresh / Safari) when the path leaves the
+  // start URL, and an old URL such as /admin/payments would otherwise reopen that screen on every launch.
+  // The last screen is kept across a reload only, so pull-to-refresh stays on it and a fresh launch opens the dashboard.
+  const [view, setViewRaw] = useState<View>(() => {
+    try {
+      // only a reload (pull-to-refresh, browser refresh) keeps the current screen; a fresh launch always opens the dashboard
+      const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
+      const v = nav?.type === 'reload' ? sessionStorage.getItem(VIEW_KEY) as View | null : null
+      return v && v in VIEW_PATH ? v : 'dash'
+    } catch { return 'dash' }
+  })
+  const setView = useCallback((v: View) => { setViewRaw(v); try { sessionStorage.setItem(VIEW_KEY, v) } catch { /* ignore */ } }, [])
   const [navOpen, setNavOpen] = useState(false)
   const [drawer, setDrawer] = useState<DrawerState>(null)
   const [modal, setModal] = useState<ReactNode>(null)
@@ -57,6 +74,15 @@ export default function AdminApp() {
     toastTimer.current = window.setTimeout(() => setToastOn(false), 2200)
   }, [])
   useEffect(() => () => window.clearTimeout(toastTimer.current), [])
+  // clicking anywhere on a date field opens its calendar (the native icon is replaced by a larger one, see admin.css)
+  useEffect(() => {
+    const open = (e: MouseEvent) => {
+      const t = e.target as HTMLInputElement | null
+      if (t instanceof HTMLInputElement && t.type === 'date' && !t.readOnly && !t.disabled) { try { t.showPicker() } catch { /* unsupported or blocked: native typing still works */ } }
+    }
+    document.addEventListener('click', open)
+    return () => document.removeEventListener('click', open)
+  }, [])
 
   const onSaveError = useCallback(() => toast('Could not save (storage blocked)'), [toast])
   const { db, update, replace } = useLocalStore(onSaveError)
@@ -103,6 +129,39 @@ export default function AdminApp() {
     return () => { document.body.style.overflow = prev }
   }, [locked])
 
+  // pull to refresh (phones / installed app): drag down at the top of a screen and release to reload the app.
+  // Off while a menu, form or dialog is open so unsaved edits are never lost.
+  const lockedRef = useRef(false)
+  lockedRef.current = locked
+  const ptr = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const main = document.querySelector<HTMLElement>('.admin-root main')
+    const el = ptr.current
+    if (!authed || !main || !el) return
+    const mq = matchMedia('(display-mode: standalone), (max-width: 760px)')
+    const PULL = 70
+    let y0 = 0, dy = 0, on = false
+    const show = (d: number) => { el.style.transform = `translate(-50%, ${d - 44}px) rotate(${d * 3}deg)`; el.style.opacity = String(Math.min(1, d / PULL)); el.classList.toggle('ready', d >= PULL) }
+    const reset = () => { el.style.transform = ''; el.style.opacity = ''; el.classList.remove('ready') }
+    const start = (e: TouchEvent) => { if (!mq.matches || lockedRef.current || main.scrollTop > 0 || e.touches.length !== 1) return; on = true; y0 = e.touches[0].clientY; dy = 0 }
+    const move = (e: TouchEvent) => {
+      if (!on) return
+      if (main.scrollTop > 0 || lockedRef.current) { on = false; reset(); return }
+      dy = Math.max(0, (e.touches[0].clientY - y0) * 0.5)
+      if (dy > 0) show(Math.min(dy, 90))
+    }
+    const end = () => {
+      if (!on) return
+      on = false
+      if (dy >= PULL) { el.classList.add('spin'); window.setTimeout(() => window.location.reload(), 350) } else reset()
+    }
+    main.addEventListener('touchstart', start, { passive: true })
+    main.addEventListener('touchmove', move, { passive: true })
+    main.addEventListener('touchend', end)
+    main.addEventListener('touchcancel', end)
+    return () => { main.removeEventListener('touchstart', start); main.removeEventListener('touchmove', move); main.removeEventListener('touchend', end); main.removeEventListener('touchcancel', end) }
+  }, [authed])
+
   // focus first field when a drawer opens (desktop only)
   useEffect(() => {
     if (drawer && matchMedia('(min-width:761px)').matches)
@@ -140,11 +199,11 @@ export default function AdminApp() {
             <div className="a-app">
               <header className="mbar">
                 <button ref={burger} className="burger" aria-label={navOpen ? 'Close menu' : 'Open menu'} aria-expanded={navOpen} aria-controls="admin-side" onClick={() => toggleNav(!navOpen)}>☰</button>
-                <span>🕉 Peetam Admin</span>
+                <span>🕉 Peetam</span>
               </header>
               <div className="scrim" onClick={() => toggleNav(false)} />
               <aside id="admin-side" ref={side} aria-label="Main navigation">
-                <h2>🕉 Peetam Admin</h2>
+                <h2>🕉 Peetam</h2>
                 <div className="navlist" role="navigation">
                   {NAV.map(([v, label]) => (
                     <a key={v} className={view === v ? 'on' : undefined} tabIndex={0} role="button" aria-current={view === v ? 'page' : undefined}
@@ -155,7 +214,18 @@ export default function AdminApp() {
                   <a href="#" onClick={(e) => { e.preventDefault(); logout() }} className="link-inline">Log out</a>
                 </div>
               </aside>
+              <div className="ptr" ref={ptr} aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7" /><path d="M21 3v6h-6" /></svg>
+              </div>
               <main tabIndex={-1} data-view={view}>{page}</main>
+              <div className="tabbar" role="navigation" aria-label="Quick navigation">
+                {QUICK.map(([v, label, icon]) => (
+                  <button key={v} className={view === v ? 'on' : undefined} aria-current={view === v ? 'page' : undefined} onClick={() => go(v)}>
+                    <TabIcon name={icon} />{label}
+                  </button>
+                ))}
+                <button aria-expanded={navOpen} aria-controls="admin-side" onClick={() => toggleNav(!navOpen)}><TabIcon name="more" />More</button>
+              </div>
             </div>
             {drawer && (
               <div className="a-drawer" onMouseDown={(e) => { if (e.target === e.currentTarget) closeDrawer() }}>

@@ -42,7 +42,7 @@ export default function BatchesView() {
 
 /** Batch drawer form (new when id is null). */
 export function BatchForm({ id }: { id: number | null }) {
-  const { db, update, closeDrawer, toast } = useAdmin()
+  const { db, update, closeDrawer, toast, confirm } = useAdmin()
   const [f, setF] = useState(() => {
     const b = id == null ? { year: THIS_YEAR, name: 'Batch ' + (db.batches.length + 1), travel_date: '', vehicle: '', capacity: 45, notes: '', gurus: [] as Guru[] } : db.batches.find((x) => x.id === id)!
     return { name: b.name, year: String(b.year), travel_date: b.travel_date, vehicle: b.vehicle, capacity: String(b.capacity), notes: b.notes, gurus: b.gurus.map((g) => ({ ...g })) }
@@ -76,7 +76,7 @@ export function BatchForm({ id }: { id: number | null }) {
             {f.gurus.map((g, i) => (
               <div key={g.phone} className="guru-row">
                 <div><b>{g.name}</b><div className="muted fs12">{fmtPhone(g.phone)}</div></div>
-                <button className="btn danger sm" aria-label={'Remove ' + g.name} title="Remove" onClick={() => setF({ ...f, gurus: f.gurus.filter((_, j) => j !== i) })}>✕</button>
+                <button className="btn danger sm" aria-label={'Remove ' + g.name} title="Remove" onClick={() => confirm('Remove ' + g.name + ' as guru swamy?', () => setF({ ...f, gurus: f.gurus.filter((_, j) => j !== i) }), 'Remove')}>✕</button>
               </div>
             ))}
           </div>

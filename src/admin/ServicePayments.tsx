@@ -134,7 +134,7 @@ function AddPayment({ phone }: { phone: string }) {
   return (
     <div className="sub mt12">
       <b>Add payment</b>
-      <div className="grid2 mt8">
+      <div className="grid2 two mt8">
         <Field label="Type">
           <SelectOther value={f.type} options={['Yatra', 'Donation', 'Maintenance', 'Other']} onChange={(v) => setF((p) => ({ ...p, type: v, amount: v === 'Maintenance' && !p.amount ? String(MAINTENANCE_AMOUNT) : p.type === 'Maintenance' && p.amount === String(MAINTENANCE_AMOUNT) ? '' : p.amount }))} />
         </Field>
@@ -152,34 +152,31 @@ function AddPayment({ phone }: { phone: string }) {
 
 /** Payments tab inside the devotee drawer. */
 export function DevoteePaymentsTab({ phone }: { phone: string }) {
-  const { db, update } = useAdmin()
+  const { db, update, confirm } = useAdmin()
   const setStatus = useSetStatus()
   const [editing, setEditing] = useState<number | null>(null)
   const list = db.payments.map((x, i) => ({ x, i })).filter((o) => o.x.phone === phone)
   if (editing != null) return <PaymentEditor index={editing} onDone={() => setEditing(null)} />
   return (
     <>
-      {list.length ? (
-        <div className="tablewrap"><table>
-          <tbody>
-            <tr><th>Type</th><th>Amount</th><th>Status</th><th>Date</th><th></th></tr>
-            {list.map(({ x, i }) => (
-              <tr key={x.id ?? i} {...rowOpen(() => setEditing(i))}>
-                <td>{x.type}{x.service_date && <> <span className="pill gold">{x.service_date}{x.session ? ' · ' + x.session : ''}</span></>}
-                  <div className="muted fs12">{x.note}</div></td>
-                <td>{money(x.amount)}</td>
-                <td><span className={'pill ' + (x.status === 'Paid' ? 'ok' : 'warn')}>{x.status}</span></td>
-                <td>{x.date}</td>
-                <td className="nowrap">
-                  <ReceiptButtons p={x} />
-                  <button className="btn sec sm" onClick={() => setStatus(i, x.status === 'Paid' ? 'Pending' : 'Paid')}>{x.status === 'Paid' ? 'Mark pending' : 'Mark paid'}</button>{' '}
-                  <button className="btn danger sm" aria-label="Delete payment" onClick={() => update((d) => { d.payments.splice(i, 1) })}>✕</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table></div>
-      ) : <div className="muted">No payments yet.</div>}
+      {list.length ? list.map(({ x, i }) => (
+        <div key={x.id ?? i} {...rowOpen(() => setEditing(i), 'sub pay row')}>
+          <div className="pay-top">
+            <div className="pay-title"><b>{x.type}</b>{x.service_date && <span className="pill gold nowrap">{x.service_date}{x.session ? ' · ' + x.session : ''}</span>}</div>
+            <b className="pay-amt">{money(x.amount)}</b>
+          </div>
+          <div className="pay-meta">
+            <span className={'pill ' + (x.status === 'Paid' ? 'ok' : 'warn')}>{x.status}</span>
+            {x.date && <span className="muted nowrap">{x.date}</span>}
+            {x.note && <span className="muted">{x.note}</span>}
+          </div>
+          <div className="pay-acts">
+            <ReceiptButtons p={x} />
+            <button className="btn sec sm" onClick={() => setStatus(i, x.status === 'Paid' ? 'Pending' : 'Paid')}>{x.status === 'Paid' ? 'Mark pending' : 'Mark paid'}</button>
+            <button className="btn danger sm push" aria-label="Delete payment" onClick={() => confirm('Delete this ' + x.type + ' payment of ' + money(x.amount) + '?', () => update((d) => { d.payments.splice(i, 1) }), 'Delete')}>✕</button>
+          </div>
+        </div>
+      )) : <div className="muted">No payments yet.</div>}
       <AddPayment phone={phone} />
     </>
   )

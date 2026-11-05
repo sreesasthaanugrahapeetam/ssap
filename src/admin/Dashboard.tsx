@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { useAdmin } from './AdminContext'
 import { SEVA_KINDS, THIS_YEAR } from './types'
-import { batchOf, curDeeksha, daysLeft, daysUntil, devoteeLabel, money, upcomingPoojas } from './utils'
+import { batchOf, curDeeksha, daysLeft, isClosed, daysUntil, devoteeLabel, money, upcomingPoojas } from './utils'
 import { whenLabel } from './PoojasView'
 
 /** Scrollable list split into Today / Tomorrow / Later groups. Each group has its own heading; empty groups are skipped. */
@@ -25,12 +25,12 @@ function Grouped<T extends { date: string }>({ list, label, row }: { list: T[]; 
 
 export default function Dashboard() {
   const { db, openDevotee, openPooja, go } = useAdmin()
-  const active = db.deekshas.filter((x) => x.year === THIS_YEAR && !x.end_date)
+  const active = db.deekshas.filter((x) => x.year === THIS_YEAR && !isClosed(x))
   const dues = db.payments.filter((p) => p.status === 'Pending').reduce((s, p) => s + (+p.amount || 0), 0)
   const unassigned = active.filter((x) => !batchOf(db, x.phone)).length
   const upcoming = db.devotees
     .map((d) => ({ d, dk: curDeeksha(db, d.phone) }))
-    .filter((x) => x.dk && !x.dk.end_date)
+    .filter((x) => x.dk && !isClosed(x.dk))
     .map((x) => ({ ...x, left: daysLeft(x.dk) }))
     .filter((x) => x.left != null && x.left >= 0)
     .sort((a, b) => (a.left as number) - (b.left as number))
