@@ -15,17 +15,11 @@ import ExcelPanel from './ExcelPanel'
 import PoojasView, { PoojaForm } from './PoojasView'
 import { DrawerState, SESSION_KEY, View } from './types'
 
-import { useLocation } from 'react-router-dom'
 
-const VIEW_PATH: Record<View, string> = { // only used to map incoming URLs to screens
+const VIEW_KEY = 'ssap_view'
+const VIEW_PATH: Record<View, string> = { // screen ids (keys are what matters)
   dash: 'dashboard', devotees: 'devotees', batches: 'batches', payments: 'payments', expenses: 'expenses', poojas: 'poojas', excel: 'excel',
 }
-const PATH_VIEW = {
-  ...(Object.fromEntries(Object.entries(VIEW_PATH).map(([v, p]) => [p, v])) as Record<string, View>),
-  // extra URLs that open the Excel screen
-  export: 'excel', import: 'excel',
-} as Record<string, View>
-
 const NAV: [View, string][] = [
   ['dash', 'Dashboard'], ['devotees', 'Devotees'], ['batches', 'Batches / Yatra'],
   ['payments', 'Payments'], ['poojas', 'Poojas & Seva'], ['expenses', 'Expenses'],
@@ -52,10 +46,13 @@ const wasLoggedIn = () => { try { return sessionStorage.getItem(SESSION_KEY) ===
 
 export default function AdminApp() {
   const [authed, setAuthed] = useState(wasLoggedIn)
-  // The URL is read once (so a link to /admin/devotees still opens that screen) and never changes after,
-  // like a native app: iOS shows its browser bar (share / refresh / Safari) when the path leaves the start URL.
-  const location = useLocation()
-  const [view, setView] = useState<View>(() => PATH_VIEW[location.pathname.replace(/^\/admin\/?/, '').split('/')[0]] ?? 'dash')
+  // The URL is never read or changed: iOS shows its browser bar (share / refresh / Safari) when the path leaves the
+  // start URL, and an old URL such as /admin/payments would otherwise reopen that screen on every launch.
+  // The last screen is kept per app session, so pull-to-refresh stays on it and a fresh launch opens the dashboard.
+  const [view, setViewRaw] = useState<View>(() => {
+    try { const v = sessionStorage.getItem(VIEW_KEY) as View | null; return v && v in VIEW_PATH ? v : 'dash' } catch { return 'dash' }
+  })
+  const setView = useCallback((v: View) => { setViewRaw(v); try { sessionStorage.setItem(VIEW_KEY, v) } catch { /* ignore */ } }, [])
   const [navOpen, setNavOpen] = useState(false)
   const [drawer, setDrawer] = useState<DrawerState>(null)
   const [modal, setModal] = useState<ReactNode>(null)
