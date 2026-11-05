@@ -7,7 +7,7 @@ import { yatraText } from './yatraShare'
 import { useShare } from './useShare'
 
 export function DeekshaTab({ phone }: { phone: string }) {
-  const { db, update, toast, showModal } = useAdmin()
+  const { db, update, toast, showModal, confirm } = useAdmin()
   const list = db.deekshas.filter((x) => x.phone === phone).sort((a, b) => b.year - a.year)
   const upd = (year: number, k: keyof Deeksha, v: string | number) => {
     update((d) => {
@@ -55,7 +55,7 @@ export function DeekshaTab({ phone }: { phone: string }) {
         <div className="sub" key={x.year}>
           <div className="sub-h">
             <b>{x.year}</b> <DeekshaPill dk={x} />
-            <button className="btn danger sm push" onClick={() => remove(x.year)}>Remove</button>
+            <button className="btn danger sm push" onClick={() => confirm('Remove deeksha ' + x.year + '?', () => remove(x.year), 'Remove')}>Remove</button>
           </div>
           <div className="grid2 mt8">
             <Field label="Malai date"><input type="date" value={x.malai_date} onChange={(e) => upd(x.year, 'malai_date', e.target.value)} /></Field>
@@ -76,7 +76,7 @@ export function DeekshaTab({ phone }: { phone: string }) {
 }
 
 export function FamilyTab({ phone }: { phone: string }) {
-  const { db, update } = useAdmin()
+  const { db, update, confirm } = useAdmin()
   const list = db.family.map((f, i) => ({ f, i })).filter((x) => x.f.phone === phone)
   const set = (i: number, patch: Partial<FamilyMember>) => update((d) => { Object.assign(d.family[i], patch) })
   return (
@@ -86,7 +86,7 @@ export function FamilyTab({ phone }: { phone: string }) {
         <div className="sub" key={`${i}|${f.name}|${f.relation}|${f.member_phone}|${f.emergency}`}>
           <div className="sub-h mb10">
             <b>{f.name || 'Family member'}</b>{f.relation && <span className="muted">· {f.relation}</span>}
-            <button className="btn danger sm push" onClick={() => update((d) => { d.family.splice(i, 1) })}>Remove</button>
+            <button className="btn danger sm push" onClick={() => confirm('Remove ' + (f.name || 'this family member') + '?', () => update((d) => { d.family.splice(i, 1) }), 'Remove')}>Remove</button>
           </div>
           <div className="grid2">
             <Field label="Name"><input defaultValue={f.name} onBlur={(e) => e.target.value !== f.name && set(i, { name: e.target.value })} /></Field>
@@ -148,7 +148,7 @@ export function YatraTab({ phone }: { phone: string }) {
 
 /** Poojas this devotee is tagged to. Tag / untag from here, or from the pooja form. */
 export function PoojasTab({ phone }: { phone: string }) {
-  const { db, update, toast } = useAdmin()
+  const { db, update, toast, confirm } = useAdmin()
   const today = todayISO()
   const mine = db.poojas.filter((p) => p.phones.includes(phone)).sort((a, b) => a.date.localeCompare(b.date))
   const untagged = db.poojas.filter((p) => !p.phones.includes(phone) && p.date >= today).sort((a, b) => a.date.localeCompare(b.date))
@@ -164,7 +164,7 @@ export function PoojasTab({ phone }: { phone: string }) {
         <div className="sub" key={p.id}>
           <div className="sub-h">
             <b>{p.kind}</b> <span className="pill gold">{p.date} · {p.session}</span>{p.date < today && <> <span className="pill">past</span></>}
-            <button className="btn danger sm push" onClick={() => untag(p.id)}>Remove</button>
+            <button className="btn danger sm push" onClick={() => confirm('Remove this devotee from ' + p.kind + ' on ' + p.date + '?', () => untag(p.id), 'Remove')}>Remove</button>
           </div>
           <div className="muted fs12">{[p.venue, p.notes].filter(Boolean).join(' · ')}</div>
         </div>

@@ -152,7 +152,7 @@ function AddPayment({ phone }: { phone: string }) {
 
 /** Payments tab inside the devotee drawer. */
 export function DevoteePaymentsTab({ phone }: { phone: string }) {
-  const { db, update } = useAdmin()
+  const { db, update, confirm } = useAdmin()
   const setStatus = useSetStatus()
   const [editing, setEditing] = useState<number | null>(null)
   const list = db.payments.map((x, i) => ({ x, i })).filter((o) => o.x.phone === phone)
@@ -173,7 +173,7 @@ export function DevoteePaymentsTab({ phone }: { phone: string }) {
           <div className="pay-acts">
             <ReceiptButtons p={x} />
             <button className="btn sec sm" onClick={() => setStatus(i, x.status === 'Paid' ? 'Pending' : 'Paid')}>{x.status === 'Paid' ? 'Mark pending' : 'Mark paid'}</button>
-            <button className="btn danger sm push" aria-label="Delete payment" onClick={() => update((d) => { d.payments.splice(i, 1) })}>✕</button>
+            <button className="btn danger sm push" aria-label="Delete payment" onClick={() => confirm('Delete this ' + x.type + ' payment of ' + money(x.amount) + '?', () => update((d) => { d.payments.splice(i, 1) }), 'Delete')}>✕</button>
           </div>
         </div>
       )) : <div className="muted">No payments yet.</div>}

@@ -16,8 +16,9 @@ export default defineConfig({
         short_name: 'Peetam Admin',
         description: 'Sree Sastha Anugraha Peetam admin',
         start_url: '/admin/',
-        scope: '/admin/',
+        scope: '/', // whole origin, so no route (or the 404 redirect hop) falls outside the app and shows browser Back / Reload
         display: 'standalone',
+        display_override: ['standalone'],
         orientation: 'portrait',
         background_color: '#0C0400',
         theme_color: '#0C0400',

@@ -62,7 +62,7 @@ export default function PoojasView() {
 
 /** Poojas & Seva drawer form (add / edit by index). Payment fields are internal and kept in a linked payment record. */
 export function PoojaForm({ index }: { index: number | null }) {
-  const { db, update, closeDrawer, toast } = useAdmin()
+  const { db, update, closeDrawer, toast, confirm } = useAdmin()
   const [f, setF] = useState(() => {
     const x = index == null ? { id: 0, kind: POOJA_KINDS[0], date: todayISO(), session: 'Evening', venue: '', notes: '', phones: [] as string[] } : db.poojas[index]
     const pay = x.id ? db.payments.find((p) => p.pooja_id === x.id) : undefined
@@ -114,7 +114,7 @@ export function PoojaForm({ index }: { index: number | null }) {
         </Field>
         <div className="full">
           {f.phones.map((ph) => (
-            <span key={ph} className="pill gold pill-link" onClick={() => delPhone(ph)} title="Remove">{devoteeLabel(db, ph)} ✕</span>
+            <span key={ph} className="pill gold pill-link" onClick={() => confirm('Remove ' + devoteeLabel(db, ph) + ' from this pooja?', () => delPhone(ph), 'Remove')} title="Remove">{devoteeLabel(db, ph)} ✕</span>
           ))}
         </div>
       </div>

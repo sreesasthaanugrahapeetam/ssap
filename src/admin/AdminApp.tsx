@@ -31,6 +31,23 @@ const NAV: [View, string][] = [
   ['payments', 'Payments'], ['poojas', 'Poojas & Seva'], ['expenses', 'Expenses'],
 ]
 
+/** Bottom tab bar on phones (mobile-app style); everything else is under More. */
+const QUICK: [View, string, string][] = [['dash', 'Home', 'home'], ['devotees', 'Devotees', 'users'], ['batches', 'Yatra', 'bus'], ['payments', 'Payments', 'wallet']]
+
+/** Line icons (24px grid, rounded strokes) for the bottom tab bar. */
+const ICONS: Record<string, ReactNode> = {
+  home: <><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></>,
+  users: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>,
+  bus: <><path d="M8 6v6" /><path d="M15 6v6" /><path d="M2 12h19.6" /><path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3" /><circle cx="7" cy="18" r="2" /><path d="M9 18h5" /><circle cx="16" cy="18" r="2" /></>,
+  wallet: <><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" /><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" /></>,
+  more: <><rect width="7" height="7" x="3" y="3" rx="1.5" /><rect width="7" height="7" x="14" y="3" rx="1.5" /><rect width="7" height="7" x="14" y="14" rx="1.5" /><rect width="7" height="7" x="3" y="14" rx="1.5" /></>,
+}
+const TabIcon = ({ name }: { name: string }) => (
+  <span className="ico" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">{ICONS[name]}</svg>
+  </span>
+)
+
 const wasLoggedIn = () => { try { return sessionStorage.getItem(SESSION_KEY) === '1' } catch { return false } }
 
 export default function AdminApp() {
@@ -39,7 +56,8 @@ export default function AdminApp() {
   const navigate = useNavigate()
   const seg = location.pathname.replace(/^\/admin\/?/, '').split('/')[0]
   const view: View = PATH_VIEW[seg] ?? 'dash'
-  const setView = useCallback((v: View) => navigate('/admin/' + VIEW_PATH[v]), [navigate])
+  // installed app / phone: switch screens in place (no history entries), so the window never grows a Back button
+  const setView = useCallback((v: View) => navigate('/admin/' + VIEW_PATH[v], { replace: matchMedia('(display-mode: standalone), (max-width: 760px)').matches }), [navigate])
   useEffect(() => { if (!PATH_VIEW[seg]) navigate('/admin/dashboard', { replace: true }) }, [seg, navigate])
   const [navOpen, setNavOpen] = useState(false)
   const [drawer, setDrawer] = useState<DrawerState>(null)
@@ -165,6 +183,14 @@ export default function AdminApp() {
                 </div>
               </aside>
               <main tabIndex={-1} data-view={view}>{page}</main>
+              <div className="tabbar" role="navigation" aria-label="Quick navigation">
+                {QUICK.map(([v, label, icon]) => (
+                  <button key={v} className={view === v ? 'on' : undefined} aria-current={view === v ? 'page' : undefined} onClick={() => go(v)}>
+                    <TabIcon name={icon} />{label}
+                  </button>
+                ))}
+                <button aria-expanded={navOpen} aria-controls="admin-side" onClick={() => toggleNav(!navOpen)}><TabIcon name="more" />More</button>
+              </div>
             </div>
             {drawer && (
               <div className="a-drawer" onMouseDown={(e) => { if (e.target === e.currentTarget) closeDrawer() }}>
