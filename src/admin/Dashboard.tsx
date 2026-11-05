@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { useAdmin } from './AdminContext'
-import { SEVA_KINDS, THIS_YEAR } from './types'
-import { batchOf, curDeeksha, daysLeft, daysUntil, devoteeLabel, money, upcomingPoojas } from './utils'
+import { SEVA_KINDS, SWAMY_YEARS, THIS_YEAR } from './types'
+import { batchOf, curDeeksha, daysLeft, isClosed, daysUntil, devoteeLabel, money, upcomingPoojas } from './utils'
 import { whenLabel } from './PoojasView'
 
 /** Scrollable list split into Today / Tomorrow / Later groups. Each group has its own heading; empty groups are skipped. */
@@ -25,12 +25,12 @@ function Grouped<T extends { date: string }>({ list, label, row }: { list: T[]; 
 
 export default function Dashboard() {
   const { db, openDevotee, openPooja, go } = useAdmin()
-  const active = db.deekshas.filter((x) => x.year === THIS_YEAR && !x.end_date)
+  const active = db.deekshas.filter((x) => x.year === THIS_YEAR && !isClosed(x))
   const dues = db.payments.filter((p) => p.status === 'Pending').reduce((s, p) => s + (+p.amount || 0), 0)
   const unassigned = active.filter((x) => !batchOf(db, x.phone)).length
   const upcoming = db.devotees
     .map((d) => ({ d, dk: curDeeksha(db, d.phone) }))
-    .filter((x) => x.dk && !x.dk.end_date)
+    .filter((x) => x.dk && !isClosed(x.dk))
     .map((x) => ({ ...x, left: daysLeft(x.dk) }))
     .filter((x) => x.left != null && x.left >= 0)
     .sort((a, b) => (a.left as number) - (b.left as number))
@@ -40,6 +40,9 @@ export default function Dashboard() {
   const nextAbhi = upcomingPoojas(db, 'Abhishekam')[0]
   // one chronological list (today first, then tomorrow…); the next Padi Pooja and next Abhishekam get a "Next" tag
   const poojaList = upcomingPoojas(db).filter((p) => !SEVA_KINDS.includes(p.kind))
+  const byYear = SWAMY_YEARS.map((y) => ({ y, list: db.devotees.filter((x) => x.swamy_year === y) }))
+  const unsetYear = db.devotees.filter((x) => !x.swamy_year).length
+  const kanney = byYear[0].list
   const idx = (p: typeof nextPadi) => db.poojas.indexOf(p)
 
   return (
@@ -83,6 +86,33 @@ export default function Dashboard() {
             </div>
           )
         })}
+      </div>
+      <div className="dgrid">
+        <div className="panel">
+          <h3>Devotees by deeksha year</h3>
+          {byYear.map(({ y, list }) => (
+            <div key={y} className="mb10">
+              <b>{y}</b> <span className="muted">· {list.length}</span>
+              <progress className="bar" value={list.length} max={Math.max(1, db.devotees.length)} />
+            </div>
+          ))}
+          {unsetYear > 0 && <div className="muted fs12">{unsetYear} with year not set</div>}
+        </div>
+        <div className="panel">
+          <h3>Kanni Swamys (1st year) <span className="pill gold">{kanney.length}</span></h3>
+          {kanney.length ? (
+            <div className="tablewrap"><table>
+              <tbody>
+                <tr><th>Devotee</th><th>Referred by</th><th>Batch</th></tr>
+                {kanney.map((x) => (
+                  <tr key={x.phone} className="row" tabIndex={0} onClick={() => openDevotee(x.phone)}>
+                    <td>{x.full_name}</td><td>{x.referred_by}</td><td>{batchOf(db, x.phone)?.name || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table></div>
+          ) : <span className="muted">No Kanni Swamys yet.</span>}
+        </div>
       </div>
       <div className="dgrid">
         <div className="panel">

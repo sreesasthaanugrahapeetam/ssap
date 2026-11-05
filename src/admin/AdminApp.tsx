@@ -57,6 +57,15 @@ export default function AdminApp() {
     toastTimer.current = window.setTimeout(() => setToastOn(false), 2200)
   }, [])
   useEffect(() => () => window.clearTimeout(toastTimer.current), [])
+  // clicking anywhere on a date field opens its calendar (the native icon is replaced by a larger one, see admin.css)
+  useEffect(() => {
+    const open = (e: MouseEvent) => {
+      const t = e.target as HTMLInputElement | null
+      if (t instanceof HTMLInputElement && t.type === 'date' && !t.readOnly && !t.disabled) { try { t.showPicker() } catch { /* unsupported or blocked: native typing still works */ } }
+    }
+    document.addEventListener('click', open)
+    return () => document.removeEventListener('click', open)
+  }, [])
 
   const onSaveError = useCallback(() => toast('Could not save (storage blocked)'), [toast])
   const { db, update, replace } = useLocalStore(onSaveError)

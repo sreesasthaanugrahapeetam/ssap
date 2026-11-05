@@ -62,7 +62,9 @@
 .admin-root .stat span.fs12{margin-top:4px}
 .admin-root .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:16px}
 .admin-root .panel h3{margin:0 0 10px;font-size:15px;font-weight:700;color:var(--maroon)}
-.admin-root .filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px;margin:14px 0 12px}
+.admin-root input[type=date]{cursor:pointer;padding-right:38px;background-repeat:no-repeat;background-position:right 11px center;background-size:18px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a1f1f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E")}
+.admin-root input[type=date]::-webkit-calendar-picker-indicator{display:none}
+.admin-root .filters{display:grid;grid-template-columns:minmax(0,2fr) repeat(4,minmax(0,1fr));gap:10px;margin:14px 0 12px}
 .admin-root table{width:100%;border-collapse:collapse;background:var(--card)}
 .admin-root th,.admin-root td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle}
 .admin-root th{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--mute);letter-spacing:.04em;background:#fff6dc;position:sticky;top:0}
@@ -85,7 +87,19 @@
 .admin-root .tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:14px;overflow-x:auto;scrollbar-width:thin}
 .admin-root .tabs button{white-space:nowrap;min-height:40px;border:0;background:none;padding:8px 12px;cursor:pointer;font-weight:600;color:var(--mute);border-bottom:3px solid transparent;margin-bottom:-2px}
 .admin-root .tabs button.on{color:var(--saffron);border-color:var(--saffron)}
+.admin-root .sub-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.admin-root .sub-h .push{margin-left:auto}
+.admin-root .pay{cursor:pointer}
+.admin-root .pay:hover{background:#fff6dc}
+.admin-root .pay-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.admin-root .pay-title{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;min-width:0}
+.admin-root .pay-amt{white-space:nowrap;font-size:16px}
+.admin-root .pay-meta{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;margin-top:6px;font-size:13px}
+.admin-root .pay-acts{display:flex;align-items:center;gap:6px;margin-top:10px}
+.admin-root .pay-acts .btn{white-space:nowrap}
+.admin-root .pay-acts .push{margin-left:auto}
 .admin-root .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.admin-root .grid2.two{grid-template-columns:1fr 1fr}
 .admin-root .grid2 .full{grid-column:1/-1}
 .admin-root .actbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;position:sticky;bottom:-20px;background:var(--bg);padding:12px 0 14px;border-top:1px solid var(--line);z-index:1}
 .admin-root .actbar .push{margin-left:auto}

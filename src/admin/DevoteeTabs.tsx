@@ -1,7 +1,7 @@
 import { useAdmin } from './AdminContext'
 import { AddDeekshaBox, DeekshaPill, Field } from './ui'
-import { Deeksha, FamilyMember, THIS_YEAR } from './types'
-import { batchOf, fmtPhone, normPhone, todayISO } from './utils'
+import { Deeksha, FamilyMember, SWAMY_YEARS, THIS_YEAR } from './types'
+import { batchOf, fmtPhone, closeDateFor, irumudiFor, irumudiOf, normPhone, todayISO } from './utils'
 import { Select } from './Select'
 import { yatraText } from './yatraShare'
 import { useShare } from './useShare'
@@ -10,32 +10,64 @@ export function DeekshaTab({ phone }: { phone: string }) {
   const { db, update, toast, showModal } = useAdmin()
   const list = db.deekshas.filter((x) => x.phone === phone).sort((a, b) => b.year - a.year)
   const upd = (year: number, k: keyof Deeksha, v: string | number) => {
-    update((d) => { const r = d.deekshas.find((x) => x.phone === phone && x.year === year); if (r) (r as any)[k] = v })
+    update((d) => {
+      const r = d.deekshas.find((x) => x.phone === phone && x.year === year)
+      if (!r) return
+      ;(r as any)[k] = v
+      if (k === 'malai_date' || k === 'mandala_days') r.irumudi_date = irumudiOf(r.malai_date, r.mandala_days) // auto-fill; user may edit afterwards
+      r.end_date = closeDateFor(r)
+    })
     toast('Saved')
   }
   const add = (y: number) => {
     if (!(y > 0)) { toast('Enter a valid year'); return false }
+    if (y > THIS_YEAR) { toast('Future year not allowed'); return false }
     if (db.deekshas.some((x) => x.phone === phone && x.year === y)) { toast('Year already exists'); return false }
-    update((d) => { d.deekshas.push({ phone, year: y, malai_date: '', end_date: '', mandala_days: 41, irumudi_date: '' }) })
+    const t = new Date(), localToday = [t.getFullYear(), String(t.getMonth() + 1).padStart(2, '0'), String(t.getDate()).padStart(2, '0')].join('-') // malai date defaults to today (local)
+    // joining a later year than any recorded one: move swamy up one level (1st to 2nd, 2nd to 3rd ...)
+    const dev = db.devotees.find((x) => x.phone === phone)
+    const lvl = dev ? SWAMY_YEARS.indexOf(dev.swamy_year) : -1
+    const bump = lvl >= 0 && lvl < SWAMY_YEARS.length - 1 && list.length > 0 && y > Math.max(...list.map((x) => x.year))
+    update((d) => {
+      const rec: Deeksha = { phone, year: y, malai_date: localToday, end_date: '', mandala_days: 41, irumudi_date: '' }
+      rec.irumudi_date = irumudiOf(rec.malai_date, rec.mandala_days)
+      rec.end_date = closeDateFor(rec)
+      d.deekshas.push(rec)
+      if (bump) { const x = d.devotees.find((v) => v.phone === phone); if (x) x.swamy_year = SWAMY_YEARS[lvl + 1] }
+    })
+    if (bump) toast('Moved to ' + SWAMY_YEARS[lvl + 1])
     return true
+  }
+  // removing the latest year undoes the level bump made when it was added (3rd back to 2nd ...)
+  const remove = (year: number) => {
+    const dev = db.devotees.find((v) => v.phone === phone)
+    const lvl = dev ? SWAMY_YEARS.indexOf(dev.swamy_year) : -1
+    const drop = lvl > 0 && list.length > 1 && year === Math.max(...list.map((r) => r.year))
+    update((d) => {
+      d.deekshas = d.deekshas.filter((r) => !(r.phone === phone && r.year === year))
+      if (drop) { const v = d.devotees.find((q) => q.phone === phone); if (v) v.swamy_year = SWAMY_YEARS[lvl - 1] }
+    })
+    if (drop) toast('Moved back to ' + SWAMY_YEARS[lvl - 1])
   }
   return (
     <>
       {list.map((x) => (
         <div className="sub" key={x.year}>
-          <b>{x.year}</b> <DeekshaPill dk={x} />
+          <div className="sub-h">
+            <b>{x.year}</b> <DeekshaPill dk={x} />
+            <button className="btn danger sm push" onClick={() => remove(x.year)}>Remove</button>
+          </div>
           <div className="grid2 mt8">
             <Field label="Malai date"><input type="date" value={x.malai_date} onChange={(e) => upd(x.year, 'malai_date', e.target.value)} /></Field>
-            <Field label="Irumudi date"><input type="date" value={x.irumudi_date} onChange={(e) => upd(x.year, 'irumudi_date', e.target.value)} /></Field>
             <Field label="Mandala days">
               <Select value={x.mandala_days} onChange={(e) => upd(x.year, 'mandala_days', +e.target.value)}>
                 {[41, 48, 21, 11].map((n) => <option key={n}>{n}</option>)}
               </Select>
             </Field>
-            <Field label="Completed on"><input type="date" value={x.end_date} onChange={(e) => upd(x.year, 'end_date', e.target.value)} /></Field>
+            <Field label="Irumudi date" after={<div className="muted fs12">Auto-filled from malai date + mandala days</div>}>
+              <input type="date" value={irumudiFor(x)} onChange={(e) => upd(x.year, 'irumudi_date', e.target.value)} />
+            </Field>
           </div>
-          <button className="btn danger sm mt8"
-            onClick={() => update((d) => { d.deekshas = d.deekshas.filter((r) => !(r.phone === phone && r.year === x.year)) })}>Remove</button>
         </div>
       ))}
       <button className="btn sec" onClick={() => showModal(<AddDeekshaBox onAdd={add} />)}>+ Add deeksha year</button>
@@ -52,6 +84,10 @@ export function FamilyTab({ phone }: { phone: string }) {
       {list.map(({ f, i }) => (
         // remounts when a committed value changes so uncontrolled inputs pick up normalised values
         <div className="sub" key={`${i}|${f.name}|${f.relation}|${f.member_phone}|${f.emergency}`}>
+          <div className="sub-h mb10">
+            <b>{f.name || 'Family member'}</b>{f.relation && <span className="muted">· {f.relation}</span>}
+            <button className="btn danger sm push" onClick={() => update((d) => { d.family.splice(i, 1) })}>Remove</button>
+          </div>
           <div className="grid2">
             <Field label="Name"><input defaultValue={f.name} onBlur={(e) => e.target.value !== f.name && set(i, { name: e.target.value })} /></Field>
             <Field label="Relation"><input defaultValue={f.relation} onBlur={(e) => e.target.value !== f.relation && set(i, { relation: e.target.value })} /></Field>
@@ -62,7 +98,6 @@ export function FamilyTab({ phone }: { phone: string }) {
               </Select>
             </Field>
           </div>
-          <button className="btn danger sm mt8" onClick={() => update((d) => { d.family.splice(i, 1) })}>Remove</button>
         </div>
       ))}
       <button className="btn sec" onClick={() => update((d) => { d.family.push({ phone, name: '', relation: '', member_phone: '', emergency: 'no' }) })}>+ Add family member</button>
@@ -127,9 +162,11 @@ export function PoojasTab({ phone }: { phone: string }) {
     <>
       {mine.length ? mine.map((p) => (
         <div className="sub" key={p.id}>
-          <b>{p.kind}</b> <span className="pill gold">{p.date} · {p.session}</span>{p.date < today && <> <span className="pill">past</span></>}
+          <div className="sub-h">
+            <b>{p.kind}</b> <span className="pill gold">{p.date} · {p.session}</span>{p.date < today && <> <span className="pill">past</span></>}
+            <button className="btn danger sm push" onClick={() => untag(p.id)}>Remove</button>
+          </div>
           <div className="muted fs12">{[p.venue, p.notes].filter(Boolean).join(' · ')}</div>
-          <button className="btn danger sm mt8" onClick={() => untag(p.id)}>Remove</button>
         </div>
       )) : <div className="muted">Not tagged to any pooja.</div>}
       <div className="sub mt12">

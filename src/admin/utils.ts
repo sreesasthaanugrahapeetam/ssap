@@ -1,4 +1,4 @@
-import { DB, Deeksha, Devotee, NEW_TAG, THIS_YEAR, STORAGE_KEY, SESSION_ORDER, sessionsFor, POOJA_KINDS, Payment } from './types'
+import { CLOSE_BUFFER_DAYS, DB, migrateSwamyYear, SWAMY_YEARS, Deeksha, Devotee, NEW_TAG, THIS_YEAR, STORAGE_KEY, SESSION_ORDER, sessionsFor, POOJA_KINDS, Payment } from './types'
 
 /* phone = devotee id, normalised to +91XXXXXXXXXX */
 export function normPhone(p: unknown): string {
@@ -21,7 +21,7 @@ export const upcomingPoojas = (db: DB, kind?: string) =>
 export const daysUntil = (iso: string) => Math.round((Date.parse(iso) - Date.parse(todayISO())) / 864e5)
 
 export const blankDevotee = (): Devotee => ({
-  phone: '', full_name: '', email: '', address: '', dob: '', blood_group: '', gothram: '',
+  phone: '', full_name: '', email: '', address: '', dob: '', blood_group: '', gothram: '', swamy_year: '',
   referred_by: NEW_TAG, photo: '', notes: '', active: 'yes',
 })
 
@@ -38,8 +38,31 @@ export const donatedBy = (db: DB, p: string) =>
   db.payments.filter((x) => x.phone === p && x.status === 'Paid').reduce((s, x) => s + (+x.amount || 0), 0)
 export const duesOf = (db: DB, p: string) =>
   db.payments.filter((x) => x.phone === p && x.status === 'Pending').reduce((s, x) => s + (+x.amount || 0), 0)
+/** Irumudi date = malai date + mandala days (same end-of-mandala rule as daysLeft). '' when no malai date. */
+export function irumudiOf(malai: string, days: number | string): string {
+  if (!malai) return ''
+  const d = new Date(malai)
+  if (isNaN(d.getTime())) return ''
+  d.setUTCDate(d.getUTCDate() + (+days || 41))
+  return d.toISOString().slice(0, 10)
+}
+/** Auto close date: irumudi date plus the buffer days. */
+export const irumudiFor = (dk: Deeksha) => dk.irumudi_date || irumudiOf(dk.malai_date, dk.mandala_days)
+export function closeDateFor(dk: Deeksha): string {
+  const i = irumudiFor(dk)
+  if (!i) return ''
+  const d = new Date(i)
+  if (isNaN(d.getTime())) return ''
+  d.setUTCDate(d.getUTCDate() + CLOSE_BUFFER_DAYS)
+  return d.toISOString().slice(0, 10)
+}
+/** A deeksha is closed once today is past its auto close date. Without a malai date, falls back to a stored end date. */
+export function isClosed(dk: Deeksha): boolean {
+  const close = closeDateFor(dk)
+  return close ? todayISO() > close : !!dk.end_date
+}
 export function daysLeft(dk?: Deeksha): number | null {
-  if (!dk || !dk.malai_date || dk.end_date) return null
+  if (!dk || !dk.malai_date || isClosed(dk)) return null
   const end = new Date(dk.malai_date)
   end.setDate(end.getDate() + (+dk.mandala_days || 41))
   return Math.ceil((end.getTime() - Date.now()) / 864e5)
@@ -64,7 +87,7 @@ export function migrateServices(d: DB) {
 export function seed(): DB {
   const Y = THIS_YEAR
   const D = (phone: string, full_name: string, extra: Partial<Devotee>): Devotee =>
-    Object.assign({ phone, full_name, email: '', address: '', dob: '', blood_group: '', gothram: '', referred_by: NEW_TAG, photo: '', notes: '', active: 'yes' }, extra)
+    Object.assign({ phone, full_name, email: '', address: '', dob: '', blood_group: '', gothram: '', swamy_year: '', referred_by: NEW_TAG, photo: '', notes: '', active: 'yes' }, extra)
   const ph = (n: number) => '+9198480' + String(70000 + n)
   const P0 = ['+919848011111', '+919848022222', '+919848033333', '+919848044444', '+919848055555', '+919848066666']
 
@@ -90,6 +113,35 @@ export function seed(): DB {
     D(ph(13), 'Kiran Kumar', { referred_by: 'Ramesh Kumar', address: 'Anantapur', dob: '1997-03-23', blood_group: 'A+', gothram: 'Gargeya', active: 'no', notes: 'Moved abroad' }),
     D(ph(14), 'Lakshmi Narayana', { referred_by: 'Hari Prasad', address: 'Machilipatnam', dob: '1971-12-19', blood_group: 'B+', gothram: 'Dhananjaya' }),
   ]
+  // sample deeksha year: mostly Kanney (1st year) so reports have data
+  const YEARS = [0, 0, 1, 0, 17, 2, 3, 0, 4, 1, 0, 11, 2, 0, 6, 5, 8].map((i) => SWAMY_YEARS[i])
+  devotees.forEach((d, i) => { d.swamy_year = YEARS[i % YEARS.length] })
+  // mock Kanni Swamy (1st year) list: new devotees on their first deeksha
+  const K = SWAMY_YEARS[0]
+  const kanni: [number, string, string, string, string, string, string][] = [
+    [15, 'Aravind Reddy', 'Prasad Sharma', 'Hyderabad', '2001-05-09', 'Bharadwaja', 'O+'],
+    [16, 'Bhaskar Rao', 'Krishna Murthy', 'Secunderabad', '1994-08-19', 'Kashyapa', 'A+'],
+    [17, 'Charan Teja', 'Hari Prasad', 'Ongole', '2003-01-14', 'Vasishta', 'B+'],
+    [18, 'Dinesh Kumar', NEW_TAG, 'Warangal', '1998-12-02', 'Atreya', 'AB+'],
+    [19, 'Ganesh Naidu', 'Prasad Sharma', 'Tirupati', '1989-03-27', 'Kaushika', 'O-'],
+    [20, 'Harsha Vardhan', 'Krishna Murthy', 'Kukatpally', '2000-07-11', 'Gautama', 'A-'],
+    [21, 'Ismail Raju', NEW_TAG, 'Vijayawada', '1996-10-30', 'Achyuta', 'B-'],
+    [22, 'Jaya Chandra', 'Hari Prasad', 'Guntur', '1992-02-22', 'Srivatsa', 'O+'],
+    [23, 'Karthik Goud', 'Ramesh Kumar', 'Karimnagar', '2002-09-05', 'Maudgalya', 'A+'],
+    [24, 'Laxman Rao', NEW_TAG, 'Nizamabad', '1985-06-16', 'Kutsa', 'B+'],
+    [25, 'Mohan Krishna', 'Prasad Sharma', 'Eluru', '1997-04-08', 'Agastya', 'AB-'],
+    [26, 'Nagendra Babu', 'Krishna Murthy', 'Khammam', '1991-11-25', 'Parashara', 'O+'],
+  ]
+  kanni.forEach(([n, name, ref, address, dob, gothram, blood_group]) => devotees.push(D(ph(n), name, { referred_by: ref, address, dob, gothram, blood_group, swamy_year: K })))
+  // senior swamys so every level from 1st to Guru Swamy (18+) has at least one devotee
+  const seniors: [number, string, number, string, string][] = [
+    [27, 'Narasimha Rao', 7, 'Rajahmundry', 'Kaundinya'], [28, 'Om Prakash', 9, 'Kakinada', 'Garga'],
+    [29, 'Pavan Kalyan', 10, 'Anantapur', 'Haritasa'], [30, 'Rajesh Varma', 12, 'Nellore', 'Jabali'],
+    [31, 'Sai Kiran', 13, 'Kurnool', 'Angirasa'], [32, 'Tirumala Rao', 14, 'Machilipatnam', 'Vatsa'],
+    [33, 'Uday Kumar', 15, 'Visakhapatnam', 'Pulastya'], [34, 'Venu Gopal', 16, 'Hyderabad', 'Sandilya'],
+    [35, 'Yadagiri Rao', 18, 'Hyderabad', 'Kapila'],
+  ]
+  seniors.forEach(([n, name, lvl, address, gothram]) => devotees.push(D(ph(n), name, { referred_by: 'Prasad Sharma', address, gothram, swamy_year: SWAMY_YEARS[lvl], dob: '19' + (50 + lvl) + '-06-15' })))
   const fam = (phone: string, name: string, relation: string, member_phone = '', emergency = 'no') => ({ phone, name, relation, member_phone, emergency })
   const family = [
     fam(P0[0], 'Lakshmi Kumar', 'Wife', '+919848077777', 'yes'), fam(P0[0], 'Arjun Kumar', 'Son'),
@@ -108,6 +160,12 @@ export function seed(): DB {
     { phone: P0[3], year: Y - 1, malai_date: (Y - 1) + '-11-17', end_date: (Y - 1) + '-12-28', mandala_days: 41, irumudi_date: (Y - 1) + '-12-27' },
     { phone: ph(4), year: Y - 1, malai_date: (Y - 1) + '-11-20', end_date: (Y - 1) + '-12-30', mandala_days: 41, irumudi_date: (Y - 1) + '-12-29' },
   ]
+
+  deekshas.push(
+    ...[27, 28, 29, 30, 31, 32, 33, 34, 35].map((n) => dk(ph(n), inDays(-12))),
+    dk(ph(15), inDays(-10)), dk(ph(16), inDays(-10)), dk(ph(17), inDays(-3)), dk(ph(18), inDays(-3), 48), dk(ph(19), inDays(0)), dk(ph(20), inDays(0)),
+    dk(ph(21), inDays(2), 21), dk(ph(22), inDays(2)), dk(ph(23), inDays(5)), dk(ph(24), inDays(5), 48), dk(ph(25), inDays(9)), dk(ph(26), inDays(9)),
+  )
 
   // ── payments (money records) ──
   let pid = 1
@@ -161,6 +219,11 @@ export function seed(): DB {
     // Yatra seats
     ...[P0[0], P0[1], P0[4], ph(1), ph(2), ph(7), ph(11)].map((x) => pay(x, 'Yatra', 6000, 'Paid', { note: 'Bus seat' })),
     ...[P0[2], ph(3), ph(5), ph(9), ph(14)].map((x) => pay(x, 'Yatra', 6000, 'Pending', { note: 'Bus seat' })),
+    // Kanni Swamy: first-year maintenance and yatra seats
+    ...[ph(15), ph(16), ph(17), ph(19), ph(20), ph(22), ph(25)].map((x) => pay(x, 'Maintenance', 10116, 'Paid', { note: 'Annual maintenance' })),
+    ...[ph(18), ph(21), ph(23), ph(24), ph(26)].map((x) => pay(x, 'Maintenance', 10116, 'Pending', { note: 'Annual maintenance' })),
+    ...[ph(15), ph(16), ph(19), ph(22), ph(25)].map((x) => pay(x, 'Yatra', 6000, 'Paid', { note: 'Bus seat' })),
+    ...[ph(17), ph(18), ph(20), ph(23)].map((x) => pay(x, 'Yatra', 6000, 'Pending', { note: 'Bus seat' })),
     // Donations
     pay(ph(7), 'Donation', 25000, 'Paid', { note: 'Temple fund' }), pay(ph(12), 'Donation', 5000, 'Paid', { note: 'Annadanam fund' }),
     pay(ph(6), 'Donation', 2000, 'Paid', { note: '' }),
@@ -186,9 +249,9 @@ export function seed(): DB {
     { id: 3, year: Y, name: 'Batch 3 – Bus B', travel_date: (Y + 1) + '-01-04', vehicle: 'Bus B (45 seats)', capacity: 45, notes: 'Makara Jyothi darshan batch', gurus: [{ name: 'Ramesh Kumar', phone: P0[0] }, { name: 'Chandra Sekhar', phone: ph(7) }] },
   ]
   const members: [number, string[]][] = [
-    [1, [P0[0], P0[1], P0[4], ph(1), ph(2), ph(7)]],
-    [2, [P0[2], ph(3), ph(9), ph(14)]],
-    [3, [ph(5), ph(11), ph(12)]],
+    [1, [P0[0], P0[1], P0[4], ph(1), ph(2), ph(7), ph(15), ph(16), ph(19), ph(20), ph(22)]],
+    [2, [P0[2], ph(3), ph(9), ph(14), ph(17), ph(18), ph(21), ph(23)]],
+    [3, [ph(5), ph(11), ph(12), ph(24), ph(25)]],
   ]
   const batch_members = members.flatMap(([batch_id, list]) => list.map((phone) => ({ batch_id, phone })))
 
@@ -225,7 +288,8 @@ export function loadDB(): DB {
   try {
     const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
     if (d && d.devotees) {
-      d.devotees.forEach((x: any) => { if (!x.referred_by) x.referred_by = NEW_TAG; delete x.guru_swamy })
+      d.devotees.forEach((x: any) => { x.swamy_year = migrateSwamyYear(x.swamy_year); if (!x.referred_by) x.referred_by = NEW_TAG; delete x.guru_swamy })
+      ;(d.deekshas || []).forEach((k: any) => { if (k.malai_date) { if (!k.irumudi_date) k.irumudi_date = irumudiOf(k.malai_date, k.mandala_days); k.end_date = closeDateFor(k) } })
       if (!d.expenses) d.expenses = []
       if (!d.poojas) d.poojas = []
       d.batches.forEach((b: any) => { if (!Array.isArray(b.gurus)) b.gurus = [] })
