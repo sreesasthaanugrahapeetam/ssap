@@ -127,6 +127,39 @@ export default function AdminApp() {
     return () => { document.body.style.overflow = prev }
   }, [locked])
 
+  // pull to refresh (phones / installed app): drag down at the top of a screen and release to reload the app.
+  // Off while a menu, form or dialog is open so unsaved edits are never lost.
+  const lockedRef = useRef(false)
+  lockedRef.current = locked
+  const ptr = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const main = document.querySelector<HTMLElement>('.admin-root main')
+    const el = ptr.current
+    if (!authed || !main || !el) return
+    const mq = matchMedia('(display-mode: standalone), (max-width: 760px)')
+    const PULL = 70
+    let y0 = 0, dy = 0, on = false
+    const show = (d: number) => { el.style.transform = `translate(-50%, ${d - 44}px) rotate(${d * 3}deg)`; el.style.opacity = String(Math.min(1, d / PULL)); el.classList.toggle('ready', d >= PULL) }
+    const reset = () => { el.style.transform = ''; el.style.opacity = ''; el.classList.remove('ready') }
+    const start = (e: TouchEvent) => { if (!mq.matches || lockedRef.current || main.scrollTop > 0 || e.touches.length !== 1) return; on = true; y0 = e.touches[0].clientY; dy = 0 }
+    const move = (e: TouchEvent) => {
+      if (!on) return
+      if (main.scrollTop > 0 || lockedRef.current) { on = false; reset(); return }
+      dy = Math.max(0, (e.touches[0].clientY - y0) * 0.5)
+      if (dy > 0) show(Math.min(dy, 90))
+    }
+    const end = () => {
+      if (!on) return
+      on = false
+      if (dy >= PULL) { el.classList.add('spin'); window.setTimeout(() => window.location.reload(), 350) } else reset()
+    }
+    main.addEventListener('touchstart', start, { passive: true })
+    main.addEventListener('touchmove', move, { passive: true })
+    main.addEventListener('touchend', end)
+    main.addEventListener('touchcancel', end)
+    return () => { main.removeEventListener('touchstart', start); main.removeEventListener('touchmove', move); main.removeEventListener('touchend', end); main.removeEventListener('touchcancel', end) }
+  }, [authed])
+
   // focus first field when a drawer opens (desktop only)
   useEffect(() => {
     if (drawer && matchMedia('(min-width:761px)').matches)
@@ -179,6 +212,9 @@ export default function AdminApp() {
                   <a href="#" onClick={(e) => { e.preventDefault(); logout() }} className="link-inline">Log out</a>
                 </div>
               </aside>
+              <div className="ptr" ref={ptr} aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7" /><path d="M21 3v6h-6" /></svg>
+              </div>
               <main tabIndex={-1} data-view={view}>{page}</main>
               <div className="tabbar" role="navigation" aria-label="Quick navigation">
                 {QUICK.map(([v, label, icon]) => (
