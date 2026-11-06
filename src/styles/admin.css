@@ -1,0 +1,330 @@
+/* Admin styles, scoped under .admin-root so they cannot leak into / clash with the public site (legacy.css).
+   legacy.css has global resets (* {margin:0;padding:0}), body/nav/a/button/img rules and :root vars;
+   everything below re-asserts what the admin needs at higher specificity. */
+.admin-root{--bg:#FFF9EC;--card:#fff;--ink:#2a1500;--mute:#7a6a55;--line:#ecdcb8;--ok:#2e7d32;--warn:#c62828;
+  min-height:100vh;margin:0;font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;letter-spacing:normal;text-align:left;background:var(--bg);color:var(--ink)}
+.admin-root,.admin-root *,.admin-root *::before,.admin-root *::after{box-sizing:border-box}
+.admin-root button,.admin-root input,.admin-root select,.admin-root textarea{font:inherit;letter-spacing:normal}
+.admin-root p{margin:1em 0}
+.admin-root a{color:revert;text-decoration:revert;cursor:pointer}
+.admin-root img{display:inline;max-width:none}
+.admin-root .btn{border:0;border-radius:8px;padding:9px 14px;min-height:40px;cursor:pointer;background:var(--saffron);color:#fff;font-weight:600}
+.admin-root .btn.sec{background:#fff;color:var(--maroon);border:1px solid var(--line)}
+.admin-root .btn.danger{background:var(--warn)}
+.admin-root .btn.sm{padding:5px 10px;min-height:32px;font-size:13px}
+.admin-root .btn:hover{filter:brightness(1.07)}
+.admin-root input,.admin-root select,.admin-root textarea{width:100%;min-height:40px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+.admin-root label{display:block;font-size:12px;font-weight:600;color:var(--mute);margin:0 0 3px;text-transform:uppercase;letter-spacing:.04em}
+.admin-root :focus-visible{outline:3px solid var(--saffron);outline-offset:2px}
+.admin-root .btn:disabled{opacity:.5;cursor:not-allowed}
+@media(prefers-reduced-motion:reduce){.admin-root *{transition:none!important;scroll-behavior:auto!important}}
+
+/* login */
+.admin-root .a-login{min-height:100vh;display:grid;place-items:center;background:linear-gradient(160deg,var(--maroon),#2b0000)}
+.admin-root .a-login .box{background:var(--card);padding:32px;border-radius:14px;width:min(380px,92vw);text-align:center}
+.admin-root .a-login h1{margin:0 0 4px;color:var(--maroon);font-size:20px;font-weight:700;line-height:1.3}
+.admin-root .a-login p{color:var(--mute);margin:0 0 18px}
+.admin-root .a-login .hint{font-size:12px;margin-top:12px}
+.admin-root .a-login label{text-align:left}
+
+/* shell */
+.admin-root .a-app{display:grid;grid-template-columns:210px 1fr;min-height:100vh}
+.admin-root aside{background:var(--maroon);color:var(--cream);padding:18px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;overflow:auto}
+.admin-root aside h2{font-size:15px;margin:0 6px 18px;color:var(--gold);font-weight:700}
+.admin-root aside a{display:flex;align-items:center;min-height:40px;padding:9px 12px;border-radius:8px;color:var(--cream);text-decoration:none;cursor:pointer;margin-bottom:3px}
+.admin-root aside a.on,.admin-root aside a:hover{background:rgba(255,255,255,.12)}
+.admin-root aside a.on{box-shadow:inset 3px 0 0 var(--gold);font-weight:600}
+.admin-root aside .navlist{display:flex;flex-direction:column}
+.admin-root .mbar,.admin-root .scrim{display:none}
+/* menu is hidden by default at every width; the burger in the top bar toggles it */
+@media all{
+ .admin-root .a-app{grid-template-columns:1fr;grid-template-rows:auto 1fr;align-content:start}
+ .admin-root .mbar{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:20;background:var(--maroon);color:var(--gold);padding:0 12px;padding-top:env(safe-area-inset-top);height:calc(60px + env(safe-area-inset-top));box-sizing:border-box;flex:0 0 auto;font-weight:700;white-space:nowrap;overflow:hidden}
+ .admin-root .burger{border:0;background:rgba(255,255,255,.12);color:var(--cream);width:44px;height:44px;padding:0;border-radius:10px;font-size:22px;line-height:1;cursor:pointer}
+ .admin-root aside{position:fixed;left:0;top:0;bottom:0;height:100%;width:min(280px,84vw);z-index:30;transform:translateX(-100%);transition:transform .25s;padding-top:calc(18px + env(safe-area-inset-top))}
+ .admin-root.navopen aside{transform:none;box-shadow:6px 0 30px rgba(0,0,0,.35)}
+ .admin-root .scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:25}
+ .admin-root.navopen .scrim{display:block}
+}
+.admin-root aside .foot{margin-top:auto;padding-top:14px;font-size:12px;opacity:.8}
+.admin-root main{display:block;padding:22px clamp(14px,2.4vw,40px);min-width:0}
+.admin-root .dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;align-items:start}
+.admin-root .dgrid .panel{margin-bottom:0}
+.admin-root .dgrid+.panel,.admin-root .cards+.dgrid{margin-top:0}
+@media(min-width:1100px){.admin-root .cards{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}}
+@media(min-width:1200px){.admin-root .a-drawer .sheet{width:min(960px,60vw)}}
+.admin-root .top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px;min-height:40px}
+.admin-root .top h1{margin:0;font-size:22px;font-weight:700;line-height:1.3;color:var(--maroon);flex:1}
+.admin-root .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px}
+.admin-root .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.admin-root .stat b{display:block;font-size:26px;color:var(--saffron)}
+.admin-root .stat span{display:block;color:var(--mute);font-size:13px}
+.admin-root .stat span.fs12{margin-top:4px}
+.admin-root .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:16px}
+.admin-root .panel h3{margin:0 0 10px;font-size:15px;font-weight:700;color:var(--maroon)}
+.admin-root input{min-width:0;max-width:100%;box-sizing:border-box}
+.admin-root input[type=date]{-webkit-appearance:none;appearance:none;display:block;cursor:pointer;padding-right:38px;background-repeat:no-repeat;background-position:right 11px center;background-size:18px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a1f1f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E")}
+.admin-root input[type=date]::-webkit-calendar-picker-indicator{display:none}
+.admin-root .filters{display:grid;grid-template-columns:minmax(0,2fr) repeat(4,minmax(0,1fr));gap:10px;margin:14px 0 12px}
+.admin-root table{width:100%;border-collapse:collapse;background:var(--card)}
+.admin-root th,.admin-root td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle}
+.admin-root th{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--mute);letter-spacing:.04em;background:#fff6dc;position:sticky;top:0}
+.admin-root tr.row{cursor:pointer}
+.admin-root tr.row:hover{background:#fff6dc}
+.admin-root .tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px;max-height:max(320px,calc(100vh - 300px))}
+.admin-root .avatar{width:34px;height:34px;border-radius:50%;background:var(--gold);color:#fff;display:inline-grid;place-items:center;font-weight:700;vertical-align:middle;margin-right:8px;overflow:hidden}
+.admin-root .avatar img{display:block;width:100%;height:100%;object-fit:cover}
+.admin-root .pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;background:#eee;color:var(--ink)}
+.admin-root .pill.ok{background:#e1f3e2;color:var(--ok)}
+.admin-root .pill.warn{background:#fde4e4;color:var(--warn)}
+.admin-root .pill.gold{background:#fbefc6;color:#7a5c0a}
+.admin-root .muted{color:var(--mute)}
+
+/* drawer */
+.admin-root .a-drawer{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:35;display:flex;justify-content:flex-end}
+.admin-root .a-drawer .sheet{background:var(--bg);width:min(760px,100vw);height:100%;overflow:auto;padding:20px 22px}
+.admin-root .a-drawer .hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px;position:sticky;top:-20px;margin-top:-20px;padding:20px 0 8px;background:var(--bg);z-index:2}
+.admin-root .a-drawer .hdr h2{margin:0;flex:1;color:var(--maroon);font-size:19px;font-weight:700;line-height:1.3}
+.admin-root .tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:14px;overflow-x:auto;scrollbar-width:thin}
+.admin-root .tabs button{white-space:nowrap;min-height:40px;border:0;background:none;padding:8px 12px;cursor:pointer;font-weight:600;color:var(--mute);border-bottom:3px solid transparent;margin-bottom:-2px}
+.admin-root .tabs button.on{color:var(--saffron);border-color:var(--saffron)}
+.admin-root .sub-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.admin-root .sub-h .push{margin-left:auto}
+.admin-root .pay{cursor:pointer}
+.admin-root .pay:hover{background:#fff6dc}
+.admin-root .pay-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.admin-root .pay-title{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;min-width:0}
+.admin-root .pay-amt{white-space:nowrap;font-size:16px}
+.admin-root .pay-meta{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;margin-top:6px;font-size:13px}
+.admin-root .pay-acts{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:10px}
+.admin-root .pay-acts .btn{white-space:nowrap}
+.admin-root .pay-acts .push{margin-left:auto}
+.admin-root .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.admin-root .grid2.two{grid-template-columns:1fr 1fr}
+.admin-root .grid2 .full{grid-column:1/-1}
+.admin-root .actbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;position:sticky;bottom:-20px;background:var(--bg);padding:12px 0 14px;border-top:1px solid var(--line);z-index:1}
+.admin-root .actbar{justify-content:flex-end}
+.admin-root .actbar .btn.sec{order:1}
+.admin-root .actbar .btn:not(.sec):not(.danger){order:2}
+.admin-root .actbar .push{margin-left:0;margin-right:auto;order:0}
+.admin-root .sub>.btn.mt8{display:flex;margin-left:auto}
+.admin-root .empty{padding:28px 12px;text-align:center;color:var(--mute)}
+.admin-root .req{color:var(--warn)}
+.admin-root .sub{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px;background:#fff}
+.admin-root .err{color:var(--warn);font-size:13px;margin-top:4px}
+.admin-root .dropzone{border:2px dashed var(--gold);border-radius:12px;padding:22px;text-align:center;color:var(--mute);background:#fffdf5}
+.admin-root .a-modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40;display:flex;align-items:center;justify-content:center;padding:16px}
+.admin-root .a-modal .box{background:var(--bg);border-radius:12px;padding:20px 22px;width:min(420px,100%);box-shadow:0 10px 40px rgba(0,0,0,.3)}
+.admin-root .a-modal h3{margin:0 0 10px;font-size:17px;font-weight:700;color:var(--maroon)}
+.admin-root .a-modal .acts{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.admin-root .a-toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));max-width:90vw;left:50%;transform:translateX(-50%);background:var(--maroon);color:#fff;padding:10px 18px;border-radius:99px;z-index:50;opacity:0;transition:.25s;pointer-events:none}
+.admin-root .a-toast.show{opacity:1}
+.admin-root .bar{display:block;width:100%;height:8px;border:0;border-radius:99px;background:#eee;overflow:hidden;appearance:none;-webkit-appearance:none}
+.admin-root .bar::-webkit-progress-bar{background:#eee}
+.admin-root .bar::-webkit-progress-value{background:var(--saffron);border-radius:99px}
+.admin-root .bar::-moz-progress-bar{background:var(--saffron);border-radius:99px}
+
+@media(min-width:761px){.admin-root .m-only{display:none!important}}
+@media(max-width:760px){
+ .admin-root .a-app{grid-template-columns:1fr}
+ .admin-root .filters{grid-template-columns:1fr 1fr}
+ .admin-root .filters input:first-child{grid-column:1/-1}
+ .admin-root .grid2{grid-template-columns:1fr}
+ .admin-root main{padding:14px 14px calc(14px + env(safe-area-inset-bottom))}
+ .admin-root .tablewrap table{min-width:640px}
+ .admin-root .tablewrap th,.admin-root .tablewrap td{white-space:nowrap;padding:10px 12px}
+ .admin-root .tablewrap td:nth-child(2){min-width:120px}
+ .admin-root .tablewrap{max-height:none;overflow-x:auto;-webkit-overflow-scrolling:touch}
+ .admin-root .top{flex-wrap:nowrap;margin-bottom:8px;height:44px;min-height:44px}
+ .admin-root .top h1{flex:1;min-width:0;font-size:19px;line-height:1.25;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .admin-root .top .btn{flex:0 0 auto;white-space:nowrap;min-height:38px;padding:8px 12px}
+ .admin-root .stat b{font-size:22px}
+ .admin-root input,.admin-root select,.admin-root textarea{font-size:16px}
+ .admin-root .a-drawer .sheet{width:100vw;padding:16px 14px;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+ .admin-root .a-drawer .hdr .btn{display:none}
+ .admin-root .m-only{display:inline-flex}
+ .admin-root .actbar{bottom:-16px}
+ .admin-root .actbar{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 0 calc(14px + env(safe-area-inset-bottom))}
+ .admin-root .actbar .btn{width:100%;min-height:46px;justify-content:center;font-size:15px}
+ .admin-root .actbar .btn.sec{border:1.5px solid var(--maroon);color:var(--maroon);font-weight:700}
+ .admin-root .actbar .btn.danger,.admin-root .actbar .btn:only-child{grid-column:1/-1}
+ .admin-root .actbar .push{margin-right:0}
+ .admin-root .actbar .btn.danger{order:3}
+ .admin-root .a-modal{align-items:flex-end;padding:0}
+ .admin-root .a-modal .box{width:100%;border-radius:16px 16px 0 0;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+ .admin-root .a-modal .acts .btn{flex:1}
+}
+@media(max-width:420px){.admin-root .cards{grid-template-columns:1fr 1fr}}
+.admin-root a[href^="tel:"]{color:var(--maroon);text-decoration:underline;text-underline-offset:2px;font-weight:600}
+/* The public site paints a fixed safe-area band on body::before; the admin top bar already pads for the notch, so drop the band here to avoid doubling the inset. */
+body:has(.admin-root)::before{display:none}
+
+/* Keep the app top bar visible above create/edit forms on mobile (must come after the base drawer rules). */
+@media(max-width:1000px){
+ .admin-root .a-drawer{top:calc(60px + env(safe-area-inset-top))}
+ .admin-root .a-drawer .sheet{padding-top:16px}
+ .admin-root .a-drawer .hdr{top:-16px;margin-top:-16px;padding-top:16px;height:68px;box-sizing:border-box;overflow:hidden;margin-bottom:0}
+ /* name stays pinned and the tab row pins right under it; only the fields scroll */
+ .admin-root .a-drawer .tabs{position:sticky;top:52px;z-index:2;background:var(--bg);margin-top:0;padding-top:2px}
+ .admin-root .scrim{z-index:40}
+ .admin-root aside{z-index:45}
+}
+
+/* ── Temple look: line-art backdrops, serif headings, warm paper ── */
+.admin-root .top h1,.admin-root .a-login h1,.admin-root aside h2{font-family:'Cinzel','Palatino Linotype',Palatino,serif;letter-spacing:.03em}
+.admin-root .a-login{
+  background:
+    url("../admin/art/sannidhanam-gold.svg") no-repeat center calc(100% - 70px) / min(440px,90vw) auto,
+    radial-gradient(ellipse at 50% 28%,rgba(201,162,39,.22),transparent 55%),
+    linear-gradient(160deg,var(--maroon),#240000)}
+.admin-root .a-login .box{border-top:4px solid var(--gold);box-shadow:0 18px 50px rgba(0,0,0,.45);position:relative;margin-bottom:34vh}
+.admin-root .a-login .box::before{content:"";display:block;height:22px;margin:-14px 0 8px;background:url("../admin/art/arches.svg") repeat-x center bottom / auto 22px}
+.admin-root aside{
+  background:var(--maroon) url("../admin/art/gopuram-cream.svg") no-repeat center calc(100% - 128px) / 88% auto}
+.admin-root main{
+  --art:url("../admin/art/gopuram-brown.svg");
+  background:
+    var(--art) no-repeat right clamp(8px,2vw,32px) bottom 0 / min(440px,60vw) auto,
+    radial-gradient(ellipse at 100% 0%,rgba(201,162,39,.10),transparent 55%),
+    var(--bg)}
+.admin-root main[data-view="batches"],.admin-root main[data-view="payments"]{--art:url("../admin/art/sannidhanam-brown.svg")}
+@media(min-width:1001px){
+  .admin-root .top{position:relative;margin-bottom:26px}
+  .admin-root .top::after{content:"";position:absolute;left:0;right:0;bottom:-16px;height:14px;background:url("../admin/art/arches.svg") repeat-x left bottom / auto 14px;pointer-events:none}
+}
+@media(max-width:760px){
+  .admin-root main{background-size:min(300px,80vw) auto,auto,auto;background-position:right 8px bottom 0,0 0,0 0}
+}
+
+/* Login: temple on the left, card on the right (desktop). Phones keep the stacked layout. */
+@media(min-width:900px){
+  .admin-root .a-login{
+    place-items:center end;
+    padding-right:clamp(48px,9vw,180px);
+    background:
+      url("../admin/art/sannidhanam-gold.svg") no-repeat left clamp(40px,9vw,160px) center / min(520px,40vw) auto,
+      radial-gradient(ellipse at 28% 50%,rgba(201,162,39,.20),transparent 55%),
+      linear-gradient(160deg,var(--maroon),#240000)}
+  .admin-root .a-login .box{margin-bottom:0}
+}
+
+/* ── Styled select / combo (replaces native dropdowns) ── */
+.admin-root .sel-btn{position:relative;display:block;width:100%;min-height:40px;padding:8px 34px 8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);text-align:left;cursor:pointer;font:inherit;line-height:1.35}
+.admin-root .sel-btn>span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.admin-root .sel-btn .sel-ph{color:var(--mute)}
+.admin-root .sel-btn::after{content:"";position:absolute;right:12px;top:50%;width:7px;height:7px;margin-top:-6px;border-right:2px solid var(--maroon);border-bottom:2px solid var(--maroon);transform:rotate(45deg);transition:transform .15s}
+.admin-root .sel-btn[aria-expanded="true"]{border-color:var(--saffron);box-shadow:0 0 0 3px rgba(217,94,10,.15)}
+.admin-root .sel-btn[aria-expanded="true"]::after{transform:rotate(225deg);margin-top:-2px}
+.admin-root .sel-btn:disabled{opacity:.5;cursor:not-allowed}
+.admin-root .sel-pop{position:fixed;z-index:70;display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 32px rgba(60,20,0,.22);overflow:hidden}
+.admin-root .sel-search{padding:8px;border-bottom:1px solid var(--line);background:#fffaf0;flex:0 0 auto}
+.admin-root .sel-search input{min-height:36px;padding:6px 10px}
+.admin-root .sel-list{overflow:auto;padding:4px;-webkit-overflow-scrolling:touch}
+.admin-root .sel-opt{padding:10px 12px;border-radius:7px;cursor:pointer;color:var(--ink);line-height:1.3}
+.admin-root .sel-opt.hi{background:#fff3d6}
+.admin-root .sel-opt.on{font-weight:700;color:var(--maroon);position:relative;padding-right:30px}
+.admin-root .sel-opt.on::after{content:"";position:absolute;right:12px;top:50%;width:5px;height:10px;margin-top:-7px;border-right:2px solid var(--saffron);border-bottom:2px solid var(--saffron);transform:rotate(45deg)}
+.admin-root .sel-empty{padding:12px;color:var(--mute);text-align:center;font-size:14px}
+
+/* utilities (replace former inline styles) */
+.admin-root .avatar.lg{width:46px;height:46px;font-size:17px}
+.admin-root .tabs button:disabled{opacity:.4;cursor:not-allowed}
+.admin-root .btn-block{width:100%}
+.admin-root .mt8{margin-top:8px}.admin-root .mt10{margin-top:10px}.admin-root .mt12{margin-top:12px}.admin-root .mt14{margin-top:14px}
+.admin-root .mb8{margin-bottom:8px}.admin-root .mb10{margin-bottom:10px}
+.admin-root .fs12{font-size:12px}.admin-root .fs13{font-size:13px}.admin-root .fw4{font-weight:400}
+.admin-root .nowrap{white-space:nowrap}
+.admin-root .link-inline{padding:0;text-decoration:underline;display:inline-flex}
+.admin-root .log-list{margin:8px 0 0 18px;color:var(--mute);font-size:13px}
+.admin-root .batch-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.admin-root .batch-head h3{margin:0;flex:1}
+.admin-root .batch-meta{margin:4px 0 8px}
+.admin-root .pill-link{cursor:pointer;margin:2px}
+
+/* PWA install popup */
+.admin-root .a-install{position:fixed;z-index:80;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(380px,92vw);background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:0 12px 32px rgba(60,20,0,.28)}
+.admin-root .a-install p{margin:4px 0 10px;color:var(--mute);font-size:14px}
+.admin-root .a-install .row{display:flex;gap:8px;justify-content:flex-end}
+
+.admin-root .stat .svc-line{cursor:pointer;margin-top:6px;color:var(--ink)}
+.admin-root .stat .svc-line b{display:inline;font-size:inherit;color:inherit}
+.admin-root .scrolllist{max-height:260px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;background:#fff;margin-top:8px}
+.admin-root .srow{padding:9px 12px;border-bottom:1px solid var(--line);cursor:pointer}
+.admin-root .srow:last-child{border-bottom:0}
+.admin-root .srow:hover{background:rgba(217,94,10,.06)}
+.admin-root .donated{display:flex;flex-wrap:wrap;gap:6px 24px;margin:-4px 0 12px;padding:8px 12px;border-radius:8px;background:#fbefc6;color:#7a5c0a;font-size:14px}
+.admin-root .donated .due{color:var(--warn)}
+.admin-root .donated b{font-size:18px;margin-left:6px}
+.admin-root .panel.row{cursor:pointer}
+.admin-root .panel.row:hover{border-color:var(--gold)}
+.admin-root .dgrid.tri{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.admin-root .panel .cards{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.admin-root .panel .stat{padding:10px}
+.admin-root .panel .stat b{font-size:18px}
+.admin-root .scrolllist{max-height:300px}
+.admin-root .guru-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--line)}
+.admin-root .guru-row .btn{min-height:32px;width:32px;padding:0}
+.admin-root .dgrid+.dgrid{margin-top:16px}
+.admin-root .srow .when{font-size:12px;color:var(--mute)}
+.admin-root tr.row.today{background:#fff1d6}
+/* Today / Tomorrow / Later groups in dashboard lists */
+.admin-root .sgroup-h{position:sticky;top:0;z-index:1;display:flex;justify-content:space-between;padding:6px 12px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid var(--line)}
+.admin-root .sgroup-h span{opacity:.8}
+.admin-root .sgroup.today .sgroup-h{background:var(--saffron);color:#fff}
+.admin-root .sgroup.today .srow{background:#fff1d6}
+.admin-root .sgroup.today .when{color:var(--saffron);font-weight:700}
+.admin-root .sgroup.tomorrow .sgroup-h{background:var(--gold);color:#fff}
+.admin-root .sgroup.tomorrow .srow{background:#fffaf0}
+.admin-root .sgroup.tomorrow .when{color:#7a5c0a;font-weight:600}
+.admin-root .sgroup.later .sgroup-h{background:#f1e8d2;color:var(--mute)}
+.admin-root .a-modal textarea{width:100%;margin:8px 0;resize:none;font-size:13px}
+.copy-scratch{position:fixed;left:-9999px;top:0;opacity:0}
+
+/* ── App shell (phones and installed PWA): the page never scrolls, only the content area does ── */
+.admin-root .tabbar{display:none}
+@media(max-width:760px),(display-mode:standalone){
+ html:has(.admin-root),body:has(.admin-root){height:100%;overflow:hidden;overscroll-behavior:none}
+ body:has(.admin-root){position:fixed;inset:0;width:100%;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+ .admin-root input,.admin-root textarea,.admin-root [contenteditable]{-webkit-user-select:text;user-select:text}
+ .admin-root{height:100dvh;min-height:0;overflow:hidden}
+ .admin-root .a-app{height:100dvh;min-height:0;overflow:hidden;grid-template-rows:auto minmax(0,1fr) auto}
+ .admin-root main{min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+ .admin-root main::-webkit-scrollbar,.admin-root .a-drawer .sheet::-webkit-scrollbar{display:none}
+ .admin-root .a-drawer .sheet{overscroll-behavior:contain;scrollbar-width:none}
+ .admin-root .a-login{min-height:100dvh}
+}
+@media(max-width:760px){
+ .admin-root .burger{display:none}
+ .admin-root .tabbar{display:grid;grid-template-columns:repeat(5,1fr);background:var(--card);border-top:1px solid var(--line);padding:6px 4px calc(2px + env(safe-area-inset-bottom) * .4);z-index:20}
+ .admin-root .tabbar button{display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;color:var(--mute);font-size:11px;font-weight:600;min-height:46px;padding:4px 0;border-radius:10px;cursor:pointer}
+ .admin-root .tabbar .ico{display:grid;place-items:center;width:56px;height:30px;border-radius:99px;transition:background .2s}
+ .admin-root .tabbar button.on{color:var(--saffron);font-weight:700}
+ .admin-root .tabbar button.on .ico{background:rgba(217,94,10,.14)}
+ .admin-root .tabbar button.on svg{stroke-width:2.2}
+ .admin-root main{padding-bottom:14px}
+ .admin-root .a-toast{bottom:calc(72px + env(safe-area-inset-bottom) * .4)}
+}
+
+/* pull to refresh indicator (phones / installed app) */
+.admin-root .ptr{display:none}
+@media(max-width:760px),(display-mode:standalone){
+ .admin-root .a-app{position:relative}
+ .admin-root .ptr{display:grid;place-items:center;position:absolute;left:50%;top:calc(60px + env(safe-area-inset-top));width:36px;height:36px;border-radius:50%;background:#fff;color:var(--mute);box-shadow:0 2px 10px rgba(0,0,0,.2);z-index:15;opacity:0;pointer-events:none;transform:translate(-50%,-44px)}
+ .admin-root .ptr.ready{color:var(--saffron)}
+ .admin-root .ptr.spin{opacity:1;transform:translate(-50%,16px);transition:transform .2s}
+ .admin-root .ptr.spin svg{animation:ptrspin .8s linear infinite}
+}
+@keyframes ptrspin{to{transform:rotate(360deg)}}
+
+/* Availability calendar inside admin drawers (light theme) */
+.admin-root .ac{background:#fff;border:1px solid var(--line);width:100%;margin-top:4px}
+.admin-root .ac-head{color:var(--ink)}
+.admin-root .ac-head button{background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:8px}
+.admin-root .ac-w{color:var(--mute)}
+.admin-root .ac-d{height:42px;min-height:0}
+.admin-root .ac-d.past{background:#f1ece0;color:#a99d86}
+.admin-root .ac-legend{color:var(--ink)}
+
+.admin-root .swamy-list{margin:6px 0 0;padding-left:22px;columns:2;column-gap:28px}
+.admin-root .swamy-list li{break-inside:avoid;padding:2px 0}
+@media (max-width:760px){.admin-root .swamy-list{columns:1}}

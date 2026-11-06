@@ -1,0 +1,248 @@
+import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import '../styles/admin.css'
+import { AdminContext } from './AdminContext'
+import { useLocalStore } from './useLocalStore'
+import { ConfirmBox } from './ui'
+import Login from './Login'
+import InstallPrompt from './InstallPrompt'
+import Dashboard from './Dashboard'
+import DevoteeTable from './DevoteeTable'
+import DevoteeForm from './DevoteeForm'
+import BatchesView, { BatchForm } from './BatchesView'
+import PaymentsView, { PaymentForm } from './ServicePayments'
+import ExpensesPanel, { ExpenseForm } from './ExpensesPanel'
+import ExcelPanel from './ExcelPanel'
+import PoojasView, { PoojaForm } from './PoojasView'
+import { DrawerState, SESSION_KEY, View } from './types'
+
+
+const VIEW_KEY = 'ssap_view'
+const VIEW_PATH: Record<View, string> = { // screen ids (keys are what matters)
+  dash: 'dashboard', devotees: 'devotees', batches: 'batches', payments: 'payments', expenses: 'expenses', poojas: 'poojas', excel: 'excel',
+}
+const NAV: [View, string][] = [
+  ['dash', 'Dashboard'], ['devotees', 'Devotees'], ['batches', 'Batches / Yatra'],
+  ['payments', 'Payments'], ['poojas', 'Poojas & Seva'], ['expenses', 'Expenses'],
+]
+
+/** Bottom tab bar on phones (mobile-app style); everything else is under More. */
+const QUICK: [View, string, string][] = [['dash', 'Home', 'home'], ['devotees', 'Devotees', 'users'], ['expenses', 'Expenses', 'receipt'], ['payments', 'Payments', 'wallet']]
+
+/** Line icons (24px grid, rounded strokes) for the bottom tab bar. */
+const ICONS: Record<string, ReactNode> = {
+  home: <><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></>,
+  users: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>,
+  receipt: <><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z" /><path d="M14 8H8" /><path d="M16 12H8" /><path d="M13 16H8" /></>,
+  wallet: <><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" /><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" /></>,
+  more: <><rect width="7" height="7" x="3" y="3" rx="1.5" /><rect width="7" height="7" x="14" y="3" rx="1.5" /><rect width="7" height="7" x="14" y="14" rx="1.5" /><rect width="7" height="7" x="3" y="14" rx="1.5" /></>,
+}
+const TabIcon = ({ name }: { name: string }) => (
+  <span className="ico" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">{ICONS[name]}</svg>
+  </span>
+)
+
+const wasLoggedIn = () => { try { return sessionStorage.getItem(SESSION_KEY) === '1' } catch { return false } }
+
+export default function AdminApp() {
+  const [authed, setAuthed] = useState(wasLoggedIn)
+  // The URL is only READ, once, on load (e.g. typing /admin/excel); the app never rewrites it. iOS shows its browser bar
+  // when the path leaves the start URL, so navigating inside the app must not change it.
+  // On a reload the last screen wins (pull-to-refresh stays put); otherwise a typed /admin/<screen> opens that screen,
+  // and a plain /admin/ launch opens the dashboard.
+  const [view, setViewRaw] = useState<View>(() => {
+    const fromUrl = (): View | null => {
+      const seg = location.pathname.replace(/^\/admin\/?/, '').split('/')[0].toLowerCase()
+      return (Object.keys(VIEW_PATH) as View[]).find((k) => VIEW_PATH[k] === seg || k === seg) ?? null
+    }
+    try {
+      const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
+      const saved = nav?.type === 'reload' ? sessionStorage.getItem(VIEW_KEY) as View | null : null
+      if (saved && saved in VIEW_PATH) return saved
+      return fromUrl() ?? 'dash'
+    } catch { return 'dash' }
+  })
+  const setView = useCallback((v: View) => { setViewRaw(v); try { sessionStorage.setItem(VIEW_KEY, v) } catch { /* ignore */ } }, [])
+  const [navOpen, setNavOpen] = useState(false)
+  const [drawer, setDrawer] = useState<DrawerState>(null)
+  const [modal, setModal] = useState<ReactNode>(null)
+  const [toastMsg, setToastMsg] = useState('')
+  const [toastOn, setToastOn] = useState(false)
+  const toastTimer = useRef<number | undefined>(undefined)
+  const nonce = useRef(0)
+  const burger = useRef<HTMLButtonElement>(null)
+  const side = useRef<HTMLElement>(null)
+
+  const toast = useCallback((m: string) => {
+    setToastMsg(m); setToastOn(true)
+    window.clearTimeout(toastTimer.current)
+    toastTimer.current = window.setTimeout(() => setToastOn(false), 2200)
+  }, [])
+  useEffect(() => () => window.clearTimeout(toastTimer.current), [])
+  // clicking anywhere on a date field opens its calendar (the native icon is replaced by a larger one, see admin.css)
+  useEffect(() => {
+    const open = (e: MouseEvent) => {
+      const t = e.target as HTMLInputElement | null
+      if (t instanceof HTMLInputElement && t.type === 'date' && !t.readOnly && !t.disabled) { try { t.showPicker() } catch { /* unsupported or blocked: native typing still works */ } }
+    }
+    document.addEventListener('click', open)
+    return () => document.removeEventListener('click', open)
+  }, [])
+
+  const onSaveError = useCallback(() => toast('Could not save (storage blocked)'), [toast])
+  const { db, update, replace } = useLocalStore(onSaveError)
+
+  const closeDrawer = useCallback(() => setDrawer(null), [])
+  const closeModal = useCallback(() => setModal(null), [])
+  const toggleNav = useCallback((on: boolean) => {
+    setNavOpen(on)
+    if (on) setTimeout(() => side.current?.querySelector<HTMLElement>('a.on')?.focus(), 0)
+    else if (side.current?.contains(document.activeElement)) burger.current?.focus()
+  }, [])
+  const go = useCallback((v: View) => { toggleNav(false); setDrawer(null); setView(v) }, [toggleNav, setView])
+
+  const ctx = useMemo(() => ({
+    db, update, replace, toast, view, go, closeDrawer, closeModal,
+    showModal: (n: ReactNode) => setModal(n),
+    confirm: (msg: string, onOk: () => void, label?: string) => setModal(<ConfirmBox msg={msg} label={label} onOk={onOk} />),
+    openDevotee: (phone?: string) => setDrawer({ kind: 'devotee', phone, nonce: ++nonce.current }),
+    openBatch: (id: number | null) => setDrawer({ kind: 'batch', id, nonce: ++nonce.current }),
+    openExpense: (index: number | null) => setDrawer({ kind: 'expense', index, nonce: ++nonce.current }),
+    openPooja: (index: number | null) => setDrawer({ kind: 'pooja', index, nonce: ++nonce.current }),
+    openPayment: (index: number | null) => setDrawer({ kind: 'payment', index, nonce: ++nonce.current }),
+  }), [db, update, replace, toast, view, go, closeDrawer, closeModal])
+
+  // Esc closes the topmost layer
+  useEffect(() => {
+    if (!authed) return
+    const h = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      if (navOpen) toggleNav(false)
+      else if (modal) setModal(null)
+      else if (drawer) setDrawer(null)
+    }
+    document.addEventListener('keydown', h)
+    return () => document.removeEventListener('keydown', h)
+  }, [authed, navOpen, modal, drawer, toggleNav])
+
+  // lock page scroll while an overlay is open
+  const locked = authed && (navOpen || !!drawer || !!modal)
+  useEffect(() => {
+    if (!locked) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prev }
+  }, [locked])
+
+  // pull to refresh (phones / installed app): drag down at the top of a screen and release to reload the app.
+  // Off while a menu, form or dialog is open so unsaved edits are never lost.
+  const lockedRef = useRef(false)
+  lockedRef.current = locked
+  const ptr = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const main = document.querySelector<HTMLElement>('.admin-root main')
+    const el = ptr.current
+    if (!authed || !main || !el) return
+    const mq = matchMedia('(display-mode: standalone), (max-width: 760px)')
+    const PULL = 70
+    let y0 = 0, dy = 0, on = false
+    const show = (d: number) => { el.style.transform = `translate(-50%, ${d - 44}px) rotate(${d * 3}deg)`; el.style.opacity = String(Math.min(1, d / PULL)); el.classList.toggle('ready', d >= PULL) }
+    const reset = () => { el.style.transform = ''; el.style.opacity = ''; el.classList.remove('ready') }
+    const start = (e: TouchEvent) => { if (!mq.matches || lockedRef.current || main.scrollTop > 0 || e.touches.length !== 1) return; on = true; y0 = e.touches[0].clientY; dy = 0 }
+    const move = (e: TouchEvent) => {
+      if (!on) return
+      if (main.scrollTop > 0 || lockedRef.current) { on = false; reset(); return }
+      dy = Math.max(0, (e.touches[0].clientY - y0) * 0.5)
+      if (dy > 0) show(Math.min(dy, 90))
+    }
+    const end = () => {
+      if (!on) return
+      on = false
+      if (dy >= PULL) { el.classList.add('spin'); window.setTimeout(() => window.location.reload(), 350) } else reset()
+    }
+    main.addEventListener('touchstart', start, { passive: true })
+    main.addEventListener('touchmove', move, { passive: true })
+    main.addEventListener('touchend', end)
+    main.addEventListener('touchcancel', end)
+    return () => { main.removeEventListener('touchstart', start); main.removeEventListener('touchmove', move); main.removeEventListener('touchend', end); main.removeEventListener('touchcancel', end) }
+  }, [authed])
+
+  // focus first field when a drawer opens (desktop only)
+  useEffect(() => {
+    if (drawer && matchMedia('(min-width:761px)').matches)
+      document.querySelector<HTMLElement>('.admin-root .a-drawer .sheet input:not([type=file]),.admin-root .a-drawer .sheet select')?.focus()
+  }, [drawer?.nonce]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const logout = () => { try { sessionStorage.removeItem(SESSION_KEY) } catch { /* ignore */ } setDrawer(null); setModal(null); setNavOpen(false); setView('dash'); setAuthed(false) }
+  const enter = () => { try { sessionStorage.setItem(SESSION_KEY, '1') } catch { /* ignore */ } setAuthed(true) }
+
+  const navKey = (v: View) => (e: React.KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(v) } }
+
+  let page: ReactNode
+  switch (view) {
+    case 'devotees': page = <DevoteeTable />; break
+    case 'batches': page = <BatchesView />; break
+    case 'payments': page = <PaymentsView />; break
+    case 'expenses': page = <ExpensesPanel />; break
+    case 'poojas': page = <PoojasView />; break
+    case 'excel': page = <ExcelPanel />; break
+    default: page = <Dashboard />
+  }
+
+  let sheet: ReactNode = null
+  if (drawer?.kind === 'devotee') sheet = <DevoteeForm key={drawer.nonce} phone={drawer.phone} />
+  else if (drawer?.kind === 'batch') sheet = <BatchForm key={drawer.nonce} id={drawer.id} />
+  else if (drawer?.kind === 'expense') sheet = <ExpenseForm key={drawer.nonce} index={drawer.index} />
+  else if (drawer?.kind === 'pooja') sheet = <PoojaForm key={drawer.nonce} index={drawer.index} />
+  else if (drawer?.kind === 'payment') sheet = <PaymentForm key={drawer.nonce} index={drawer.index} />
+
+  return (
+    <AdminContext.Provider value={ctx}>
+      <div className={'admin-root' + (navOpen ? ' navopen' : '')}>
+        {!authed ? <Login onEnter={enter} /> : (
+          <>
+            <div className="a-app">
+              <header className="mbar">
+                <button ref={burger} className="burger" aria-label={navOpen ? 'Close menu' : 'Open menu'} aria-expanded={navOpen} aria-controls="admin-side" onClick={() => toggleNav(!navOpen)}>☰</button>
+                <span>🕉 Peetam</span>
+              </header>
+              <div className="scrim" onClick={() => toggleNav(false)} />
+              <aside id="admin-side" ref={side} aria-label="Main navigation">
+                <h2>🕉 Peetam</h2>
+                <div className="navlist" role="navigation">
+                  {NAV.map(([v, label]) => (
+                    <a key={v} className={view === v ? 'on' : undefined} tabIndex={0} role="button" aria-current={view === v ? 'page' : undefined}
+                      onClick={() => go(v)} onKeyDown={navKey(v)}>{label}</a>
+                  ))}
+                </div>
+                <div className="foot">Data saved in this browser. Use Excel export to back up.<br /><br />
+                  <a href="#" onClick={(e) => { e.preventDefault(); logout() }} className="link-inline">Log out</a>
+                </div>
+              </aside>
+              <div className="ptr" ref={ptr} aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7" /><path d="M21 3v6h-6" /></svg>
+              </div>
+              <main tabIndex={-1} data-view={view}>{page}</main>
+              <div className="tabbar" role="navigation" aria-label="Quick navigation">
+                {QUICK.map(([v, label, icon]) => (
+                  <button key={v} className={view === v ? 'on' : undefined} aria-current={view === v ? 'page' : undefined} onClick={() => go(v)}>
+                    <TabIcon name={icon} />{label}
+                  </button>
+                ))}
+                <button aria-expanded={navOpen} aria-controls="admin-side" onClick={() => toggleNav(!navOpen)}><TabIcon name="more" />More</button>
+              </div>
+            </div>
+            {drawer && (
+              <div className="a-drawer" onMouseDown={(e) => { if (e.target === e.currentTarget) closeDrawer() }}>
+                <div className="sheet" role="dialog" aria-modal="true" aria-label="Details">{sheet}</div>
+              </div>
+            )}
+            {modal && <div className="a-modal">{modal}</div>}
+          </>
+        )}
+        <InstallPrompt />
+        <div className={'a-toast' + (toastOn ? ' show' : '')} role="status" aria-live="polite">{toastMsg}</div>
+      </div>
+    </AdminContext.Provider>
+  )
+}
