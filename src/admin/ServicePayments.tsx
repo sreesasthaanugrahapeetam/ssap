@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAdmin } from './AdminContext'
 import { Field, rowOpen } from './ui'
 import { MAINTENANCE_AMOUNT, Payment, SVC_TYPES, sessionsFor } from './types'
-import { findDevotee, money, todayISO } from './utils'
+import { devoteeLabel, findDevotee, money, todayISO } from './utils'
 import { Select, SelectOther } from './Select'
 import { downloadReceiptPdf, receiptData, receiptShare } from './receipt'
 import { useShare } from './useShare'
@@ -32,7 +32,7 @@ function ReceiptButtons({ p }: { p: Payment }) {
 export function PaymentEditor({ index, onDone }: { index: number; onDone: () => void }) {
   const { db, update, toast, confirm, go } = useAdmin()
   const p = db.payments[index]
-  const [f, setF] = useState(() => ({ type: p?.type ?? '', amount: String(p?.amount ?? ''), status: p?.status ?? 'Paid', mode: p?.mode || 'UPI', date: p?.date || todayISO(), note: p?.note ?? '' }))
+  const [f, setF] = useState(() => ({ type: p?.type ?? '', amount: String(p?.amount ?? ''), status: p?.status ?? 'Pending', mode: p?.mode || 'UPI', date: p?.date || todayISO(), note: p?.note ?? '' }))
   if (!p) return null
   const linked = db.poojas.find((x) => x.id === p.pooja_id)
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setF({ ...f, [k]: e.target.value })
@@ -80,8 +80,23 @@ export function PaymentEditor({ index, onDone }: { index: number; onDone: () => 
 }
 
 /** Payment drawer (opened from the Payments page). */
-export function PaymentForm({ index }: { index: number }) {
-  const { closeDrawer } = useAdmin()
+export function PaymentForm({ index }: { index: number | null }) {
+  const { db, closeDrawer } = useAdmin()
+  const [phone, setPhone] = useState('')
+  if (index == null) {
+    return (
+      <>
+        <div className="hdr"><h2>Add payment</h2><button className="btn sec" onClick={closeDrawer}>Close</button></div>
+        <Field label="Devotee *">
+          <Select value={phone} onChange={(e) => setPhone(e.target.value)}>
+            <option value="">Select devotee…</option>
+            {db.devotees.map((d) => <option key={d.phone} value={d.phone}>{devoteeLabel(db, d.phone)}</option>)}
+          </Select>
+        </Field>
+        {phone ? <AddPayment key={phone} phone={phone} onAdded={closeDrawer} /> : <div className="muted mt12">Choose a devotee to record a payment.</div>}
+      </>
+    )
+  }
   return (
     <>
       <div className="hdr"><h2>Edit payment</h2><button className="btn sec" onClick={closeDrawer}>Close</button></div>
@@ -103,10 +118,10 @@ function useSetStatus() {
   }
 }
 
-const BLANK = { type: 'Yatra', sd: '', se: 'Morning', amount: '', status: 'Paid', mode: 'UPI', note: '' }
+const BLANK = { type: 'Yatra', sd: '', se: 'Morning', amount: '', status: 'Pending', mode: 'UPI', note: '' }
 
 /** "Add payment" form. Annadanam / Alpaharam / Pooja sponsorships are scheduled on the Poojas & Seva screen. */
-function AddPayment({ phone }: { phone: string }) {
+function AddPayment({ phone, onAdded }: { phone: string; onAdded?: () => void }) {
   const { update, toast } = useAdmin()
   const [f, setF] = useState(BLANK)
   const set = (k: keyof typeof BLANK) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -129,6 +144,7 @@ function AddPayment({ phone }: { phone: string }) {
       })
     })
     setF(BLANK); toast('Added')
+    onAdded?.()
   }
 
   return (
@@ -190,7 +206,7 @@ export default function PaymentsView() {
   const tot = (s: string) => rows.filter((r) => r.p.status === s).reduce((a, r) => a + (+r.p.amount || 0), 0)
   return (
     <>
-      <div className="top"><h1>Payments</h1></div>
+      <div className="top"><h1>Payments</h1><button className="btn" onClick={() => openPayment(null)}>+ Add payment</button></div>
       <div className="cards">
         <div className="stat"><b>{money(tot('Paid'))}</b><span>Collected</span></div>
         <div className="stat"><b>{money(tot('Pending'))}</b><span>Pending</span></div>

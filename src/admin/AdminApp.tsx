@@ -104,7 +104,7 @@ export default function AdminApp() {
     openBatch: (id: number | null) => setDrawer({ kind: 'batch', id, nonce: ++nonce.current }),
     openExpense: (index: number | null) => setDrawer({ kind: 'expense', index, nonce: ++nonce.current }),
     openPooja: (index: number | null) => setDrawer({ kind: 'pooja', index, nonce: ++nonce.current }),
-    openPayment: (index: number) => setDrawer({ kind: 'payment', index, nonce: ++nonce.current }),
+    openPayment: (index: number | null) => setDrawer({ kind: 'payment', index, nonce: ++nonce.current }),
   }), [db, update, replace, toast, view, go, closeDrawer, closeModal])
 
   // Esc closes the topmost layer

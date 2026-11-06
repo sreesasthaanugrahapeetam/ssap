@@ -91,6 +91,7 @@ export function importXlsx(file: File, update: (fn: (d: DB) => void) => void): P
               const rec: any = {}
               SHEETS[sn].forEach((c) => { rec[c] = row[c] == null ? '' : row[c] })
               rec.phone = ph
+              if (sn === 'Payments' && !['Paid', 'Pending'].includes(String(rec.status).trim())) rec.status = 'Pending'
               if (sn === 'Payments' && rec.service_date && !sessionsFor(rec.type).includes(rec.session)) rec.session = sessionsFor(rec.type)[0]
               if (rec.member_phone) rec.member_phone = normPhone(rec.member_phone)
               ;['year', 'mandala_days', 'amount', 'pooja_id'].forEach((k) => { if (k in rec) rec[k] = +rec[k] || 0 })

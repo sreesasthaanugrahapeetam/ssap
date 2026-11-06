@@ -66,5 +66,5 @@ export type DrawerState =
   | { kind: 'batch'; id: number | null; nonce: number }
   | { kind: 'expense'; index: number | null; nonce: number }
   | { kind: 'pooja'; index: number | null; nonce: number }
-  | { kind: 'payment'; index: number; nonce: number }
+  | { kind: 'payment'; index: number | null; nonce: number }
   | null

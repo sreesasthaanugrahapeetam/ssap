@@ -103,7 +103,11 @@
 .admin-root .grid2.two{grid-template-columns:1fr 1fr}
 .admin-root .grid2 .full{grid-column:1/-1}
 .admin-root .actbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;position:sticky;bottom:-20px;background:var(--bg);padding:12px 0 14px;border-top:1px solid var(--line);z-index:1}
-.admin-root .actbar .push{margin-left:auto}
+.admin-root .actbar{justify-content:flex-end}
+.admin-root .actbar .btn.sec{order:1}
+.admin-root .actbar .btn:not(.sec):not(.danger){order:2}
+.admin-root .actbar .push{margin-left:0;margin-right:auto;order:0}
+.admin-root .sub>.btn.mt8{display:flex;margin-left:auto}
 .admin-root .empty{padding:28px 12px;text-align:center;color:var(--mute)}
 .admin-root .req{color:var(--warn)}
 .admin-root .sub{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px;background:#fff}
@@ -144,7 +148,8 @@
  .admin-root .actbar .btn{width:100%;min-height:46px;justify-content:center;font-size:15px}
  .admin-root .actbar .btn.sec{border:1.5px solid var(--maroon);color:var(--maroon);font-weight:700}
  .admin-root .actbar .btn.danger,.admin-root .actbar .btn:only-child{grid-column:1/-1}
- .admin-root .actbar .push{margin-left:0}
+ .admin-root .actbar .push{margin-right:0}
+ .admin-root .actbar .btn.danger{order:3}
  .admin-root .a-modal{align-items:flex-end;padding:0}
  .admin-root .a-modal .box{width:100%;border-radius:16px 16px 0 0;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
  .admin-root .a-modal .acts .btn{flex:1}
@@ -312,10 +317,14 @@ body:has(.admin-root)::before{display:none}
 @keyframes ptrspin{to{transform:rotate(360deg)}}
 
 /* Availability calendar inside admin drawers (light theme) */
-.admin-root .ac{background:#fff;border:1px solid var(--line);max-width:340px;margin-top:4px}
+.admin-root .ac{background:#fff;border:1px solid var(--line);width:100%;margin-top:4px}
 .admin-root .ac-head{color:var(--ink)}
 .admin-root .ac-head button{background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:8px}
 .admin-root .ac-w{color:var(--mute)}
-.admin-root .ac-d{min-height:36px}
+.admin-root .ac-d{height:42px;min-height:0}
 .admin-root .ac-d.past{background:#f1ece0;color:#a99d86}
 .admin-root .ac-legend{color:var(--ink)}
+
+.admin-root .swamy-list{margin:6px 0 0;padding-left:22px;columns:2;column-gap:28px}
+.admin-root .swamy-list li{break-inside:avoid;padding:2px 0}
+@media (max-width:760px){.admin-root .swamy-list{columns:1}}

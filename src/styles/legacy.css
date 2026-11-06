@@ -862,7 +862,7 @@ footer {
 .df-photo input { flex:1; min-width:180px; font-size:.9rem; }
 .df-msg { min-height:1.4rem; text-align:center; margin-top:.9rem; font-size:.98rem; }
 .df-msg.err { color:#ff9d8a; } .df-msg.ok { color:var(--gold-hi); }
-.df-actions { display:flex; gap:.8rem; justify-content:center; margin-top:.9rem; flex-wrap:wrap; }
+.df-actions { display:flex; gap:.8rem; justify-content:flex-end; margin-top:.9rem; flex-wrap:wrap; }
 .df-submit { background:linear-gradient(135deg, var(--gold), var(--gold-hi)); color:#1a0800; border-color:transparent; }
 .df-submit:disabled { opacity:.6; cursor:wait; }
 .df-note { text-align:center; color:var(--cream-3); font-size:.82rem; margin-top:.7rem; }
@@ -1088,13 +1088,13 @@ footer {
 .df-photo img.show { display: block; }
 
 /* Availability calendar (donor form) */
-.ac { border:1px solid rgba(201,162,39,.4); background:rgba(0,0,0,.35); padding:.7rem; max-width:340px; }
+.ac { border:1px solid rgba(201,162,39,.4); background:rgba(0,0,0,.35); padding:.8rem; width:100%; }
 .ac-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:.5rem; color:var(--gold-hi); font-family:var(--f-head); letter-spacing:.08em; }
 .ac-head button { width:34px; height:34px; background:transparent; border:1px solid rgba(201,162,39,.5); color:var(--gold-hi); cursor:pointer; font-size:1.1rem; }
 .ac-head button:disabled { opacity:.3; cursor:not-allowed; }
-.ac-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+.ac-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
 .ac-w { text-align:center; font-size:.7rem; color:var(--gold); padding-bottom:2px; }
-.ac-d { aspect-ratio:1; padding:0; border:1px solid transparent; font:inherit; font-size:.9rem; color:#fff; cursor:pointer; border-radius:4px; width:100%; }
+.ac-d { height:42px; padding:0; border:1px solid transparent; font:inherit; font-size:.9rem; color:#fff; cursor:pointer; border-radius:4px; width:100%; }
 .ac-d.free { background:#1e7a3c; }
 .ac-d.free:hover { background:#27a04f; }
 .ac-d.taken { background:#b3261e; cursor:not-allowed; opacity:.85; }
@@ -1104,3 +1104,6 @@ footer {
 .ac-legend span::before { content:""; display:inline-block; width:.8rem; height:.8rem; margin-right:.35rem; border-radius:3px; vertical-align:-1px; }
 .ac-legend .free::before { background:#1e7a3c; }
 .ac-legend .taken::before { background:#b3261e; }
+
+.df-actions .df-btn:not(.df-submit) { order:1; }
+.df-actions .df-submit { order:2; }

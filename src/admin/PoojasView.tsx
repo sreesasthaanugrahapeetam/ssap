@@ -69,7 +69,7 @@ export function PoojaForm({ index }: { index: number | null }) {
     const pay = x.id ? db.payments.find((p) => p.pooja_id === x.id) : undefined
     const date = index == null && db.poojas.some((p) => p.date === x.date && p.kind === x.kind && p.session === x.session) ? '' : x.date
     return { kind: x.kind, date, session: x.session, venue: x.venue, notes: x.notes, phones: [...x.phones],
-      amount: pay ? String(pay.amount) : '', status: pay?.status || 'Paid', mode: pay?.mode || 'UPI' }
+      amount: pay ? String(pay.amount) : '', status: pay?.status || 'Pending', mode: pay?.mode || 'UPI' }
   })
   const sessions = sessionsFor(f.kind)
   /** Another activity of the same kind already holds this date + session (the one being edited does not count). */

@@ -1,12 +1,27 @@
 import { useState } from 'react'
 import { useAdmin } from './AdminContext'
 import { Field, rowOpen } from './ui'
-import { Guru } from './types'
+import { Devotee, Guru } from './types'
 import { yatraText } from './yatraShare'
 import { useShare } from './useShare'
 import { Select } from './Select'
 import { fmtPhone } from './utils'
 import { THIS_YEAR } from './types'
+
+/** Numbered list of the swamies in a batch; each name opens the devotee. */
+function SwamyList({ members, onOpen }: { members: Devotee[]; onOpen: (phone: string) => void }) {
+  if (!members.length) return <span className="muted">No swamies yet. Assign from a devotee’s Yatra tab.</span>
+  return (
+    <ol className="swamy-list">
+      {members.map((d) => (
+        <li key={d.phone}>
+          <a href="#" onClick={(e) => { e.preventDefault(); e.stopPropagation(); onOpen(d.phone) }}>{d.full_name}</a>
+          <span className="muted fs12"> · {fmtPhone(d.phone)}</span>
+        </li>
+      ))}
+    </ol>
+  )
+}
 
 export default function BatchesView() {
   const { db, openBatch, openDevotee, confirm, update } = useAdmin()
@@ -42,7 +57,8 @@ export default function BatchesView() {
 
 /** Batch drawer form (new when id is null). */
 export function BatchForm({ id }: { id: number | null }) {
-  const { db, update, closeDrawer, toast, confirm } = useAdmin()
+  const { db, update, closeDrawer, toast, confirm, openDevotee } = useAdmin()
+  const members = id == null ? [] : (db.batch_members.filter((m) => m.batch_id === id).map((m) => db.devotees.find((d) => d.phone === m.phone)).filter(Boolean) as Devotee[])
   const [f, setF] = useState(() => {
     const b = id == null ? { year: THIS_YEAR, name: 'Batch ' + (db.batches.length + 1), travel_date: '', vehicle: '', capacity: 45, notes: '', gurus: [] as Guru[] } : db.batches.find((x) => x.id === id)!
     return { name: b.name, year: String(b.year), travel_date: b.travel_date, vehicle: b.vehicle, capacity: String(b.capacity), notes: b.notes, gurus: b.gurus.map((g) => ({ ...g })) }
@@ -90,6 +106,12 @@ export function BatchForm({ id }: { id: number | null }) {
           </Field>
         </div>
       </div>
+      {id != null && (
+        <div className="sub mt12">
+          <b>Swamies in this batch ({members.length}/{f.capacity || db.batches.find((x) => x.id === id)?.capacity})</b>
+          <div className="mt8"><SwamyList members={members} onOpen={openDevotee} /></div>
+        </div>
+      )}
       <div className="actbar"><button className="btn" onClick={save}>Save</button><button className="btn sec" onClick={closeDrawer}>Cancel</button></div>
     </>
   )
