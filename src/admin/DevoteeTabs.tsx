@@ -1,5 +1,5 @@
 import { useAdmin } from './AdminContext'
-import { AddDeekshaBox, DeekshaPill, Field } from './ui'
+import { AddDeekshaBox, DeekshaPill, Field, PinLink } from './ui'
 import { Deeksha, FamilyMember, SWAMY_YEARS, THIS_YEAR } from './types'
 import { batchOf, fmtPhone, closeDateFor, irumudiFor, irumudiOf, normPhone, todayISO } from './utils'
 import { Select } from './Select'
@@ -166,7 +166,7 @@ export function PoojasTab({ phone }: { phone: string }) {
             <b>{p.kind}</b> <span className="pill gold">{p.date} · {p.session}</span>{p.date < today && <> <span className="pill">past</span></>}
             <button className="btn danger sm push" onClick={() => confirm('Remove this devotee from ' + p.kind + ' on ' + p.date + '?', () => untag(p.id), 'Remove')}>Remove</button>
           </div>
-          <div className="muted fs12">{[p.venue, p.notes].filter(Boolean).join(' · ')}</div>
+          <div className="muted fs12"><PinLink value={p.venue} />{p.venue && p.notes ? ' · ' : ''}{p.notes}</div>
         </div>
       )) : <div className="muted">Not tagged to any pooja.</div>}
       <div className="sub mt12">

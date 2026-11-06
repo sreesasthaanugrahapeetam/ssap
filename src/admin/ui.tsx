@@ -72,3 +72,14 @@ export const rowOpen = (open: () => void, className = 'row') => ({
   onClick: (e: React.MouseEvent) => { if (!(e.target as HTMLElement).closest('button,a,input,select,.pill-link')) open() },
   onKeyDown: (e: React.KeyboardEvent) => { if (e.key === 'Enter' && e.target === e.currentTarget) open() },
 })
+
+const isUrl = (v: string) => /^https?:\/\/\S+$/i.test(v)
+/** True when the value is acceptable as a Google Maps pin: empty or an http(s) link. */
+export const validPin = (v: string) => !v || isUrl(v)
+/** Pin link opens in Google Maps; legacy plain-text venues still show as text. */
+export function PinLink({ value }: { value: string }) {
+  if (!value) return null
+  return isUrl(value)
+    ? <a href={value} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>📍 Map</a>
+    : <>{value}</>
+}

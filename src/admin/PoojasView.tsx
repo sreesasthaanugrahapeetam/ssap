@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAdmin } from './AdminContext'
-import { Field, rowOpen } from './ui'
+import { Field, PinLink, rowOpen, validPin } from './ui'
 import { POOJA_KINDS, SESSION_ORDER, sessionsFor } from './types'
 import { daysUntil, devoteeLabel, money, todayISO } from './utils'
 import { Select, SelectOther } from './Select'
@@ -33,7 +33,7 @@ export default function PoojasView() {
             <tr key={p.id ?? i} {...rowOpen(() => openPooja(i), p.date === today ? 'row today' : 'row')}>
               <td>{p.kind}<div className="muted fs12">{p.notes}</div></td>
               <td>{p.date} <span className="pill gold">{p.session}</span><div className="muted fs12">{whenLabel(p.date)}</div></td>
-              <td className="hm">{p.phones.length ? p.phones.map((ph) => devoteeLabel(db, ph)).join(', ') : <span className="muted">—</span>}<div className="muted fs12">{p.venue}</div></td>
+              <td className="hm">{p.phones.length ? p.phones.map((ph) => devoteeLabel(db, ph)).join(', ') : <span className="muted">—</span>}<div className="muted fs12"><PinLink value={p.venue} /></div></td>
               <td className="hm">{pay ? <>{money(pay.amount)} <span className={'pill ' + (pay.status === 'Paid' ? 'ok' : 'warn')}>{pay.status}</span></> : <span className="muted">—</span>}</td>
               <td className="nowrap">
                 <button className="btn danger sm" aria-label="Delete activity" onClick={() => confirm('Delete this activity and its linked payment?', () => update((d) => { const id = d.poojas[i].id; d.poojas.splice(i, 1); d.payments = d.payments.filter((x) => x.pooja_id !== id) }))}>✕</button>
@@ -85,6 +85,8 @@ export function PoojaForm({ index }: { index: number | null }) {
   const delPhone = (ph: string) => setF({ ...f, phones: f.phones.filter((x) => x !== ph) })
   const save = () => {
     if (!f.kind.trim()) { toast('Enter what the other activity is'); return }
+    const oldVenue = index == null ? '' : db.poojas[index].venue
+    if (f.venue.trim() !== oldVenue && !validPin(f.venue.trim())) { toast('Paste a Google Maps link (starts with https://)'); return }
     if (!f.date) { toast('Pick an available date'); return }
     if (taken(f.date, f.kind.trim(), f.session)) { toast('That date and session is already booked'); return }
     const amt = +f.amount
@@ -111,7 +113,7 @@ export function PoojaForm({ index }: { index: number | null }) {
         <Field label="Session"><Select value={f.session} onChange={(e) => setF((p) => ({ ...p, session: e.target.value, date: taken(p.date, p.kind, e.target.value) ? '' : p.date }))}>{sessions.map((s) => <option key={s}>{s}</option>)}</Select></Field>
         <div className="full"><div className="muted fs12">Date * (green = free, red = already booked for this activity and session)</div>
           <AvailabilityCalendar value={f.date} min={todayISO()} isTaken={(k) => taken(k, f.kind, f.session)} onPick={(k) => setF((p) => ({ ...p, date: k }))} /></div>
-        <Field label="Venue"><input value={f.venue} onChange={set('venue')} /></Field>
+        <Field label="Google Maps pin" full><input type="url" inputMode="url" placeholder="Paste Google Maps link, e.g. https://maps.app.goo.gl/..." value={f.venue} onChange={set('venue')} /></Field>
         <Field label="Notes (occasion)" full><input value={f.notes} onChange={set('notes')} /></Field>
         <Field label="Donors" full>
           <Select value="" onChange={(e) => addPhone(e.target.value)}>
