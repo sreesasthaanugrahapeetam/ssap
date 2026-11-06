@@ -46,15 +46,20 @@ const wasLoggedIn = () => { try { return sessionStorage.getItem(SESSION_KEY) ===
 
 export default function AdminApp() {
   const [authed, setAuthed] = useState(wasLoggedIn)
-  // The URL is never read or changed: iOS shows its browser bar (share / refresh / Safari) when the path leaves the
-  // start URL, and an old URL such as /admin/payments would otherwise reopen that screen on every launch.
-  // The last screen is kept across a reload only, so pull-to-refresh stays on it and a fresh launch opens the dashboard.
+  // The URL is only READ, once, on load (e.g. typing /admin/excel); the app never rewrites it. iOS shows its browser bar
+  // when the path leaves the start URL, so navigating inside the app must not change it.
+  // On a reload the last screen wins (pull-to-refresh stays put); otherwise a typed /admin/<screen> opens that screen,
+  // and a plain /admin/ launch opens the dashboard.
   const [view, setViewRaw] = useState<View>(() => {
+    const fromUrl = (): View | null => {
+      const seg = location.pathname.replace(/^\/admin\/?/, '').split('/')[0].toLowerCase()
+      return (Object.keys(VIEW_PATH) as View[]).find((k) => VIEW_PATH[k] === seg || k === seg) ?? null
+    }
     try {
-      // only a reload (pull-to-refresh, browser refresh) keeps the current screen; a fresh launch always opens the dashboard
       const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
-      const v = nav?.type === 'reload' ? sessionStorage.getItem(VIEW_KEY) as View | null : null
-      return v && v in VIEW_PATH ? v : 'dash'
+      const saved = nav?.type === 'reload' ? sessionStorage.getItem(VIEW_KEY) as View | null : null
+      if (saved && saved in VIEW_PATH) return saved
+      return fromUrl() ?? 'dash'
     } catch { return 'dash' }
   })
   const setView = useCallback((v: View) => { setViewRaw(v); try { sessionStorage.setItem(VIEW_KEY, v) } catch { /* ignore */ } }, [])
