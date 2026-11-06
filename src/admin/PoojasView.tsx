@@ -4,6 +4,7 @@ import { Field, rowOpen } from './ui'
 import { POOJA_KINDS, SESSION_ORDER, sessionsFor } from './types'
 import { daysUntil, devoteeLabel, money, todayISO } from './utils'
 import { Select, SelectOther } from './Select'
+import AvailabilityCalendar from '../components/annadanam/AvailabilityCalendar'
 
 export const whenLabel = (iso: string) => {
   const n = daysUntil(iso)
@@ -66,10 +67,14 @@ export function PoojaForm({ index }: { index: number | null }) {
   const [f, setF] = useState(() => {
     const x = index == null ? { id: 0, kind: POOJA_KINDS[0], date: todayISO(), session: 'Evening', venue: '', notes: '', phones: [] as string[] } : db.poojas[index]
     const pay = x.id ? db.payments.find((p) => p.pooja_id === x.id) : undefined
-    return { kind: x.kind, date: x.date, session: x.session, venue: x.venue, notes: x.notes, phones: [...x.phones],
+    const date = index == null && db.poojas.some((p) => p.date === x.date && p.kind === x.kind && p.session === x.session) ? '' : x.date
+    return { kind: x.kind, date, session: x.session, venue: x.venue, notes: x.notes, phones: [...x.phones],
       amount: pay ? String(pay.amount) : '', status: pay?.status || 'Paid', mode: pay?.mode || 'UPI' }
   })
   const sessions = sessionsFor(f.kind)
+  /** Another activity of the same kind already holds this date + session (the one being edited does not count). */
+  const taken = (date: string, kind: string, session: string) =>
+    db.poojas.some((p, i) => i !== index && p.date === date && p.kind === kind && p.session === session)
   const set = (k: 'date' | 'session' | 'venue' | 'notes' | 'amount' | 'status' | 'mode') => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const v = e.target.value
     setF({ ...f, [k]: v })
@@ -80,7 +85,8 @@ export function PoojaForm({ index }: { index: number | null }) {
   const delPhone = (ph: string) => setF({ ...f, phones: f.phones.filter((x) => x !== ph) })
   const save = () => {
     if (!f.kind.trim()) { toast('Enter what the other activity is'); return }
-    if (!f.date) { toast('Pick a date'); return }
+    if (!f.date) { toast('Pick an available date'); return }
+    if (taken(f.date, f.kind.trim(), f.session)) { toast('That date and session is already booked'); return }
     const amt = +f.amount
     if (amt > 0 && !donor) { toast('Add a donor to record a payment'); return }
     const r = { kind: f.kind.trim(), date: f.date, session: f.session, venue: f.venue.trim(), notes: f.notes.trim(), phones: f.phones }
@@ -101,9 +107,10 @@ export function PoojaForm({ index }: { index: number | null }) {
     <>
       <div className="hdr"><h2>{index == null ? 'Schedule' : 'Edit'} activity</h2><button className="btn sec" onClick={closeDrawer}>Close</button></div>
       <div className="grid2">
-        <Field label="Activity"><SelectOther value={f.kind} options={POOJA_KINDS} onChange={(v) => setF((p) => ({ ...p, kind: v, session: sessionsFor(v).includes(p.session) ? p.session : sessionsFor(v)[0] }))} /></Field>
-        <Field label="Date *"><input type="date" value={f.date} onChange={set('date')} /></Field>
-        <Field label="Session"><Select value={f.session} onChange={set('session')}>{sessions.map((s) => <option key={s}>{s}</option>)}</Select></Field>
+        <Field label="Activity"><SelectOther value={f.kind} options={POOJA_KINDS} onChange={(v) => setF((p) => { const se = sessionsFor(v).includes(p.session) ? p.session : sessionsFor(v)[0]; return { ...p, kind: v, session: se, date: taken(p.date, v, se) ? '' : p.date } })} /></Field>
+        <Field label="Session"><Select value={f.session} onChange={(e) => setF((p) => ({ ...p, session: e.target.value, date: taken(p.date, p.kind, e.target.value) ? '' : p.date }))}>{sessions.map((s) => <option key={s}>{s}</option>)}</Select></Field>
+        <div className="full"><div className="muted fs12">Date * (green = free, red = already booked for this activity and session)</div>
+          <AvailabilityCalendar value={f.date} min={todayISO()} isTaken={(k) => taken(k, f.kind, f.session)} onPick={(k) => setF((p) => ({ ...p, date: k }))} /></div>
         <Field label="Venue"><input value={f.venue} onChange={set('venue')} /></Field>
         <Field label="Notes (occasion)" full><input value={f.notes} onChange={set('notes')} /></Field>
         <Field label="Donors" full>

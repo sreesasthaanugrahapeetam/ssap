@@ -94,7 +94,7 @@ export default function AnnadanamSchedule() {
         </div>
       </div>
       <DonorPopup info={pop} open={popOpen} onClose={closePop} onAddDonor={openForm} />
-      {DONOR_FORM_URL && <DonorForm open={formOpen} pre={pre} onClose={closeForm} onSaved={onSaved} />}
+      {DONOR_FORM_URL && <DonorForm open={formOpen} pre={pre} days={days} donors={donors} onClose={closeForm} onSaved={onSaved} />}
     </section>
   )
 }

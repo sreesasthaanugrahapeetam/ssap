@@ -102,6 +102,14 @@ export function slotsFor(d: Day, donors: Donors): SlotItem[] | null {
   return items.some(it => it.filled) ? items : null
 }
 
+/** True when a donor or a schedule entry already holds this slot on this date ("yyyy-mm-dd"). */
+export function slotTaken(dateKey: string, slot: string, days: Day[] | null, donors: Donors): boolean {
+  if ((donors[dateKey + '|' + slot.toLowerCase()] || []).length) return true
+  const idx = SLOTS.find(([l]) => l === slot)?.[1]
+  if (idx === undefined) return false
+  return (days || []).some(d => dkey(d.date) === dateKey && !!cleanName(d.cols[idx]))
+}
+
 export function famText(rows: FamRow[], lang: 'en' | 'te'): string {
   return rows.map(r => {
     const name = (lang === 'te' ? r.te : r.en).trim().replace(/[;:]+/g, ',')

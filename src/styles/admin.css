@@ -310,3 +310,12 @@ body:has(.admin-root)::before{display:none}
  .admin-root .ptr.spin svg{animation:ptrspin .8s linear infinite}
 }
 @keyframes ptrspin{to{transform:rotate(360deg)}}
+
+/* Availability calendar inside admin drawers (light theme) */
+.admin-root .ac{background:#fff;border:1px solid var(--line);max-width:340px;margin-top:4px}
+.admin-root .ac-head{color:var(--ink)}
+.admin-root .ac-head button{background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:8px}
+.admin-root .ac-w{color:var(--mute)}
+.admin-root .ac-d{min-height:36px}
+.admin-root .ac-d.past{background:#f1ece0;color:#a99d86}
+.admin-root .ac-legend{color:var(--ink)}

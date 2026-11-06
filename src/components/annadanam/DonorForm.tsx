@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { DONOR_FORM_URL, REL, compress, dkey, famText, istToday, type Donor, type FamRow } from '../../lib/annadanam'
+import { DONOR_FORM_URL, REL, compress, dkey, famText, istToday, slotTaken, type Day, type Donor, type Donors, type FamRow } from '../../lib/annadanam'
+import AvailabilityCalendar from './AvailabilityCalendar'
 import Svg from './Svg'
 import { useModalLock } from './useModalLock'
 
@@ -10,12 +11,14 @@ let famId = 0
 interface Props {
   open: boolean
   pre: { date?: string; slot?: string }
+  days: Day[] | null
+  donors: Donors
   onClose: () => void
   /** Called after a successful save; donor is null when the entry is held for review. */
   onSaved: (key: string, donor: Donor | null) => void
 }
 
-export default function DonorForm({ open, pre, onClose, onSaved }: Props) {
+export default function DonorForm({ open, pre, days, donors, onClose, onSaved }: Props) {
   const popRef = useRef<HTMLDivElement>(null)
   const nameRef = useRef<HTMLInputElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -42,8 +45,9 @@ export default function DonorForm({ open, pre, onClose, onSaved }: Props) {
     if (fileRef.current) fileRef.current.value = ''
     setPreview(''); setMsg({ t: '', c: '' }); setHp(''); setSaving(false)
     const t = new Date(istToday())
-    setDate(pre.date || dkey(t)); setMinDate(dkey(t))
-    setSlot(pre.slot || 'Morning')
+    const sl = pre.slot || 'Morning'
+    setMinDate(dkey(t)); setSlot(sl)
+    setDate(pre.date && !slotTaken(pre.date, sl, days, donors) ? pre.date : '')
     if (!fcfg) fcfg = fetch(DONOR_FORM_URL).then(r => r.json()).catch(() => ({}))
     let live = true
     fcfg.then(c => { if (live) setNeedPass(!!(c && c.requirePasscode)) })
@@ -74,7 +78,8 @@ export default function DonorForm({ open, pre, onClose, onSaved }: Props) {
 
   async function submit() {
     const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date)
-    if (!m) return say('Please choose a date.', 'err')
+    if (!m) return say('Please choose an available date.', 'err')
+    if (slotTaken(date, slot, days, donors)) { setDate(''); return say('That date and meal is already booked. Please pick a green date.', 'err') }
     const en = nameEn.trim(), te = nameTe.trim()
     if (!en && !te) return say('Please enter the donor name.', 'err')
     setSaving(true); say('Saving…')
@@ -107,11 +112,13 @@ export default function DonorForm({ open, pre, onClose, onSaved }: Props) {
         <h3>Add Donor Details</h3>
         <div className="df-te">అన్నదాత వివరాలు నమోదు చేయండి</div>
         <div className="df-grid">
-          <div className="df-f"><label>Date<i> *</i></label><input type="date" autoComplete="off" value={date} min={minDate} onChange={e => setDate(e.target.value)} /></div>
-          <div className="df-f"><label>Meal<i> *</i></label>
-            <select value={slot} onChange={e => setSlot(e.target.value)}>
+          <div className="df-f full"><label>Meal<i> *</i></label>
+            <select value={slot} onChange={e => { setSlot(e.target.value); if (date && slotTaken(date, e.target.value, days, donors)) setDate('') }}>
               {['Morning', 'Afternoon', 'Evening'].map(v => <option key={v} value={v}>{v}</option>)}
             </select>
+          </div>
+          <div className="df-f full"><label>Date<i> *</i></label>
+            <AvailabilityCalendar value={date} min={minDate} isTaken={k => slotTaken(k, slot, days, donors)} onPick={setDate} />
           </div>
           <div className="df-f"><label>Donor name (English)<i> *</i></label><input type="text" autoComplete="off" placeholder="e.g. Ramesh Kumar" ref={nameRef} value={nameEn} onChange={e => setNameEn(e.target.value)} /></div>
           <div className="df-f"><label>Donor name (తెలుగు)</label><input type="text" autoComplete="off" className="te" placeholder="తెలుగులో పేరు" value={nameTe} onChange={e => setNameTe(e.target.value)} /></div>
