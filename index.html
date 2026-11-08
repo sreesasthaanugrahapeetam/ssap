@@ -418,6 +418,17 @@ section[id] { scroll-margin-top: 68px; }
   margin: 0 auto;
 }
 
+/* ─── TESTIMONIALS (Google Maps reviews) ─── */
+.t-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
+.t-card { background: var(--bg-3); border: 1px solid rgba(201,162,39,.25); border-radius: 12px; padding: 1.4rem; display: flex; flex-direction: column; gap: .7rem; }
+.t-stars { color: var(--gold-hi); letter-spacing: .15em; font-size: 1.05rem; }
+.t-text { font-family: var(--f-body); font-size: 1.05rem; line-height: 1.55; color: var(--cream-2); flex: 1; }
+.t-meta { font-family: var(--f-head); font-size: .85rem; color: var(--gold); letter-spacing: .05em; }
+.t-meta small { display: block; color: var(--cream-3); font-family: var(--f-body); font-size: .85rem; letter-spacing: 0; }
+.t-more { text-align: center; margin-top: 2rem; }
+.t-more a { color: var(--gold-hi); font-family: var(--f-head); letter-spacing: .06em; text-decoration: none; border-bottom: 1px solid var(--gold); }
+
+
 /* ─── ABOUT ─── */
 .about-grid {
   display: grid;
