@@ -418,17 +418,6 @@ section[id] { scroll-margin-top: 68px; }
   margin: 0 auto;
 }
 
-/* ─── TESTIMONIALS (Google Maps reviews) ─── */
-.t-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
-.t-card { background: var(--bg-3); border: 1px solid rgba(201,162,39,.25); border-radius: 12px; padding: 1.4rem; display: flex; flex-direction: column; gap: .7rem; }
-.t-stars { color: var(--gold-hi); letter-spacing: .15em; font-size: 1.05rem; }
-.t-text { font-family: var(--f-body); font-size: 1.05rem; line-height: 1.55; color: var(--cream-2); flex: 1; }
-.t-meta { font-family: var(--f-head); font-size: .85rem; color: var(--gold); letter-spacing: .05em; }
-.t-meta small { display: block; color: var(--cream-3); font-family: var(--f-body); font-size: .85rem; letter-spacing: 0; }
-.t-more { text-align: center; margin-top: 2rem; }
-.t-more a { color: var(--gold-hi); font-family: var(--f-head); letter-spacing: .06em; text-decoration: none; border-bottom: 1px solid var(--gold); }
-
-
 /* ─── ABOUT ─── */
 .about-grid {
   display: grid;
@@ -704,7 +693,8 @@ section[id] { scroll-margin-top: 68px; }
 .anna-item { border-radius:10px; overflow:hidden; border:1px solid rgba(201,162,39,.2); background:rgba(0,0,0,.4); aspect-ratio:16/9; position:relative; }
 .anna-item video,.anna-item img { width:100%; height:100%; object-fit:cover; display:block; }
 .bn-wrap.bn-card { width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; }
-.an-media .bn-dots { margin-top: .7rem; }
+.an-media .bn-dots, .ev-media .bn-dots { margin-top: .7rem; }
+.ev-media { width: 100%; max-width: 760px; margin-top: 1.6rem; }
 .anna-item.empty { display:flex; align-items:center; justify-content:center; flex-direction:column; gap:.4rem; color:rgba(201,162,39,.2); font-family:var(--f-head); font-size:.72rem; letter-spacing:.07em; }
 .anna-cta { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin-top:2rem; }
 .anna-note { text-align:center; color:var(--cream-3); font-size:.85rem; margin-top:.8rem; font-style:italic; }
@@ -822,6 +812,21 @@ footer {
 .ad-full { grid-column:1 / -1; color:var(--cream); }
 .ad-slide.te .ad-k { font-family:var(--f-te); text-transform:none; letter-spacing:0; font-size:.95em; }
 .ad-slide.te .ad-v, .ad-slide.te .ad-full { font-family:var(--f-te); line-height:1.6; }
+.ad-video-wrap { flex:1; min-height:0; display:flex; align-items:center; justify-content:center; margin-top:.9rem; container-type:size; }
+.ad-video-wrap iframe { width:100%; width:min(100cqw, calc(100cqh * 16 / 9)); aspect-ratio:16 / 9; height:auto; border:1px solid var(--gold); background:#000; }
+/* an extra slide with disable_left_panel = yes: full-width, no logo panel */
+.ad-card.ad-wide { grid-template-columns:1fr; grid-template-rows:1fr; }
+.ad-card.ad-wide .ad-left { display:none; }
+@media (max-width: 760px) { .ad-card.ad-wide .ad-slide { padding-top:3.6rem; } }
+.ad-te { font-family:var(--f-te); line-height:1.7; }
+/* an extra slide that has a photo or video AND text: compact heading and text so the picture gets the room */
+.ad-slide.has-media .ad-title { font-size:clamp(1.15rem,3.2vh,1.9rem); }
+.ad-slide.has-media .ad-sub { font-size:clamp(.85rem,1.9vh,1.05rem); }
+.ad-slide.has-media .ad-rule { margin-top:.5rem; }
+.ad-slide.has-media .ad-text { font-size:clamp(.9rem,2vh,1.15rem); margin-top:.5rem; line-height:1.45; }
+.ad-slide.has-media .ad-photo-wrap, .ad-slide.has-media .ad-video-wrap { min-height:clamp(160px,34vh,420px); margin-top:.6rem; }
+.ad-slide.has-media .ad-cap { margin-top:.4rem; }
+.ad-title.ad-te { font-weight:700; }
 .ad-photo-wrap { flex:1; min-height:0; display:flex; align-items:center; justify-content:center; margin-top:.9rem; }
 .ad-photo-wrap img { max-width:100%; max-height:100%; object-fit:contain; border:2px solid var(--gold); box-shadow:0 0 30px rgba(201,162,39,.25); background:rgba(0,0,0,.4); }
 .ad-cap { text-align:center; margin-top:.8rem; font-family:var(--f-head); color:var(--cream); font-size:clamp(.95rem,2.2vh,1.3rem); letter-spacing:.04em; }
@@ -853,7 +858,7 @@ footer {
 .ad-dots button.on { background:var(--gold); width:24px; }
 .ad-bar { position:absolute; left:0; right:0; bottom:0; height:3px; background:rgba(201,162,39,.15); z-index:5; }
 .ad-bar i { display:block; height:100%; width:0; background:linear-gradient(to right, var(--gold), var(--gold-hi)); }
-.ad-bar.run i { animation:adFill 7s linear forwards; }
+.ad-bar.run i { animation:adFill var(--ad-sec, 7s) linear forwards; }
 .ad-card.paused .ad-bar i { animation-play-state:paused; }
 @keyframes adFill { from { width:0; } to { width:100%; } }
 .ad-single .ad-nav, .ad-single .ad-dots, .ad-single .ad-bar { display:none; }
@@ -922,6 +927,8 @@ footer {
 .df-actions { display:flex; gap:.8rem; justify-content:center; margin-top:.9rem; flex-wrap:wrap; }
 .df-submit { background:linear-gradient(135deg, var(--gold), var(--gold-hi)); color:#1a0800; border-color:transparent; }
 .df-submit:disabled { opacity:.6; cursor:wait; }
+.df-hint { text-align:center; color:var(--cream-3); font-size:.85rem; margin-top:.5rem; }
+.df-card input.te.auto { border-style:dashed; border-color:rgba(201,162,39,.75); }
 .df-note { text-align:center; color:var(--cream-3); font-size:.82rem; margin-top:.7rem; }
 @media (max-width: 560px) {
   .df-grid { grid-template-columns:1fr; }
@@ -1347,7 +1354,7 @@ footer {
     <div id="as-today"></div>
     <h3 class="as-sub" id="as-upcoming-title">UPCOMING ANNADANAM</h3>
     <div class="as-upcoming" id="as-upcoming"></div>
-    <p class="as-open">Want to sponsor Annadanam on a day with no donor? <a href="#contact">Contact us to book your slot</a>.</p>
+    <p class="as-open" id="as-footer">Want to sponsor Annadanam on a day with no donor? <a href="#contact">Contact us to book your slot.</a></p>
     <div class="as-add" id="as-add" hidden><button type="button" id="as-add-btn">+ ADD DONOR DETAILS</button></div>
   </div>
 </section>
@@ -1386,20 +1393,6 @@ footer {
       </div>
     </div>
     <p class="gal-note">✦ Divine moments from Sree Sastha Anugraha Peetam · More photos coming soon ✦</p>
-  </div>
-</section>
-
-<!-- ──────────────────────────────────── TESTIMONIALS ─── -->
-<section class="section" id="testimonials" aria-label="Devotee reviews from Google Maps" hidden>
-  <div class="container">
-    <header class="sec-head reveal">
-      <span class="sec-icon" aria-hidden="true">🙏</span>
-      <h2 class="sec-en">Devotee Testimonials</h2>
-      <div class="sec-te">భక్తుల అనుభవాలు</div>
-      <div class="sec-rule"></div>
-    </header>
-    <div class="t-grid" id="t-grid"></div>
-    <p class="t-more"><a href="https://maps.app.goo.gl/Xwtto6qcNGQ3YYC57" target="_blank" rel="noopener">Read all reviews on Google Maps →</a></p>
   </div>
 </section>
 
@@ -1539,6 +1532,14 @@ footer {
       <span style="font-family:var(--f-te);font-size:.92rem;color:var(--cream-2);">
         మాన్య శ్రీ అయ్యప్ప ఇంద్ర కుమార్ దేవ్ గురు స్వామి గారి ఆధ్వర్యంలో ఏర్పాటు చేయు
       </span>
+    </div>
+
+    <div class="ev-media" id="ev-media" role="region" aria-roledescription="carousel" aria-label="Event photos and videos" hidden>
+      <div class="bn-wrap bn-card" id="ev-wrap">
+        <button class="bn-arrow bn-prev" type="button" aria-label="Previous slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4l-8 8 8 8"/></svg></button>
+        <button class="bn-arrow bn-next" type="button" aria-label="Next slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8"/></svg></button>
+      </div>
+      <div class="bn-dots" id="ev-dots"></div>
     </div>
 
   </div>
@@ -2358,6 +2359,14 @@ document.addEventListener('click', () => {
       onEmpty() { box.hidden = true; vid.hidden = false; } });
   }
 
+  // Events section: the same carousel, fed by the "events_media" tab. Hidden when the tab is empty.
+  function applyEventsMedia() {
+    const box = $id('ev-media');
+    if (!box) return Promise.resolve();
+    return initCarousel({ tab: 'events_media', sec: box, wrap: $id('ev-wrap'), dots: $id('ev-dots'), lazy: box.closest('section'),
+      onShow() { box.hidden = false; }, onEmpty() { box.hidden = true; } });
+  }
+
   function tickerHTML(s) {
     const esc = x => x.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     const re = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s<>"]+)/g;
@@ -2375,9 +2384,10 @@ document.addEventListener('click', () => {
   }
 
   async function loadAll() {
-    ['banner','annadanam_media','ticker','hero','peetadhipati','about','events','timings','poojas','annadanam','donations','contact','gallery','gallery_settings','social'].forEach(fetchSheet);
+    ['banner','annadanam_media','events_media','ticker','hero','peetadhipati','about','events','timings','poojas','annadanam','donations','contact','gallery','gallery_settings','social'].forEach(fetchSheet);
     applyBanner().catch(function () {});
     applyAnnaMedia().catch(function () {});
+    applyEventsMedia().catch(function () {});
     // ── Ticker ──
     const ticker = await fetchSheet('ticker');
     if (ticker && ticker.length > 1) {
@@ -2529,17 +2539,17 @@ document.addEventListener('click', () => {
   loadAll();
 })();
 
-/* ─── Annadanam schedule (separate Google Sheet) ─── */
+/* ─── Annadanam schedule: read from the "donors" tab of the Annadanam Google Sheet ─── */
 (function () {
   const SCHEDULE_SHEET_ID = '1Q_EkgF5QhDgx7ndO2-1nXOSLC8iuhlLJeEblwh8i-AI';
-  const SCHEDULE_GID = '1208846177';
   const UPCOMING_DAYS = 5;
   // Web-app URL of the Google Apps Script that saves new donors into the sheet (see donor-form-apps-script.gs). Empty = the Add button stays hidden.
   const DONOR_FORM_URL = 'https://script.google.com/macros/s/AKfycbwbZklbOhQ1vbMOQSA8IvJkkpM4M4lq8tDPr7fAeWJLzqSsjbcg3Phe2ZPAAJ3swuJdiA/exec';
   const sec = document.getElementById('annadanam-schedule');
   if (!sec || !SCHEDULE_SHEET_ID || SCHEDULE_SHEET_ID.indexOf('YOUR_') === 0) return;
 
-  const SLOTS = [['Morning', 3], ['Afternoon', 4], ['Evening', 5]];
+  const SLOTS = ['Morning', 'Afternoon', 'Evening'];
+  const TE_DAYS = ['ఆదివారం', 'సోమవారం', 'మంగళవారం', 'బుధవారం', 'గురువారం', 'శుక్రవారం', 'శనివారం'];
   const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
   function parseCSV(text) {
@@ -2580,8 +2590,81 @@ document.addEventListener('click', () => {
   const PAD = n => (n < 10 ? '0' : '') + n;
   const dkey = dt => dt.getUTCFullYear() + '-' + PAD(dt.getUTCMonth() + 1) + '-' + PAD(dt.getUTCDate());
   const SLOT_KEYS = { morning: 1, afternoon: 1, evening: 1 };
+
+  /* Every heading, label and message in this section can be changed from the Annadanam sheet:
+       tab "popup_text": key | value      (texts, on/off switches, seconds per slide; a value of - shows nothing)
+       tab "slides":     extra slides (text, Google Drive photos, YouTube videos / Shorts) with a start and end date, shown in every meal
+     Both tabs are optional; anything left out keeps the built-in text below. */
+  const DEF = {
+    section_title: 'Annadathalu', section_title_te: 'అన్నదాతలు',
+    today_badge: "TODAY'S ANNADANAM", upcoming_title: 'UPCOMING ANNADANAM',
+    no_donor_today: 'No donor listed for today yet.', open_day: 'Open for sponsorship',
+    box_free: 'Open for sponsorship', box_view: 'VIEW DETAILS ›', box_sponsor: 'SPONSOR THIS SLOT ›',
+    footer_text: 'Want to sponsor Annadanam on a day with no donor?', footer_link: 'Contact us to book your slot.',
+    add_button: '+ ADD DONOR DETAILS',
+    left_title: 'Sree Sastha Anugraha Peetam', left_title_te: 'శ్రీ శాస్త్ర అనుగ్రహ పీఠం',
+    meal_format: '{MEAL} ANNADANAM',
+    slot_morning: 'Morning', slot_afternoon: 'Afternoon', slot_evening: 'Evening',
+    slide_seconds: '7',
+    show_english: 'yes', show_telugu: 'yes', show_photo: 'yes', show_guru: 'yes',
+    details_title: 'Annadata', details_title_te: 'అన్నదాత',
+    label_name: 'Swamy Name', label_name_te: 'స్వామి పేరు', label_gothram: 'Gothram', label_gothram_te: 'గోత్రం',
+    photo_title: 'Annadata',
+    show_maha: 'yes', maha_title: 'Maha Annadata', maha_title_te: 'మహాన్నదాత',
+    maha_name_en: '', maha_name_te: '', maha_gothram_en: '', maha_gothram_te: '', maha_family_en: '', maha_family_te: '', maha_photo: '',
+    guru_title: 'Our Guru Swamy', guru_name: '', guru_name_te: '', guru_photo: '', guru_blessing: 'Swamiye Saranam Ayyappa',
+    sponsor_title: 'Sponsor This Annadanam', sponsor_sub: 'ఈ అన్నదాన సేవను చేయడానికి సంప్రదించండి',
+    sponsor_text: 'The {meal} Annadanam on {date} is open for sponsorship. Offering food is the highest seva — contact us to book this slot.',
+    sponsor_contact: 'Contact the Peetam', sponsor_add: '+ Add donor details for this slot'
+  };
+  let CFG = {}, extra = [];
+  const tx = (k, vars) => {
+    let v = CFG[k] != null && String(CFG[k]).trim() !== '' ? String(CFG[k]) : (DEF[k] || '');
+    if (v.trim() === '-') v = '';
+    return v.replace(/\{(\w+)\}/g, (m, n) => (vars && vars[n] != null ? vars[n] : m));
+  };
+  const on = k => !/^(no|n|false|0|off|hide)$/i.test(tx(k).trim());
+  const ytIdOf = v => { const m = v.match(/^https?:\/\/(?:www\.|m\.|music\.)?(?:youtube\.com\/(?:watch\?(?:[^#]*&)?v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([\w-]{11})/i); return m ? m[1] : null; };
+  const driveIdOf = v => { const m = v.match(/drive\.google\.com\/.*?\/d\/([\w-]{20,})/i) || v.match(/(?:drive|docs)\.google\.com\/.*[?&]id=([\w-]{20,})/i); return m ? m[1] : null; };
+
+  function dateKeyOf(raw) {
+    let m, y, mo, d;
+    if ((m = /^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/.exec(raw))) { y = +m[3]; mo = +m[2]; d = +m[1]; }
+    else if ((m = /^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/.exec(raw))) { y = +m[1]; mo = +m[2]; d = +m[3]; }
+    else return '';
+    const t = new Date(Date.UTC(y, mo - 1, d));
+    if (t.getUTCFullYear() !== y || t.getUTCMonth() !== mo - 1 || t.getUTCDate() !== d) return '';   // 31-02-2026 and the like are not real dates
+    return y + '-' + PAD(mo) + '-' + PAD(d);
+  }
+
+  function parsePopupText(text) {
+    const rows = parseCSV(text || '');
+    if (rows.length < 2) return;
+    const h = rows[0].map(x => x.trim().toLowerCase()), ki = h.indexOf('key'), vi = h.indexOf('value');
+    if (ki < 0 || vi < 0) return;                                 // a missing tab returns another tab, so check the headers
+    rows.slice(1).forEach(r => { const k = (r[ki] || '').trim().toLowerCase(); if (k) CFG[k] = r[vi] != null ? r[vi] : ''; });
+  }
+
+  function parseSlides(text) {
+    const rows = parseCSV(text || '');
+    if (rows.length < 2) return [];
+    const h = rows[0].map(x => x.trim().toLowerCase().replace(/\s+/g, '_')), ix = k => h.indexOf(k);
+    if (ix('link') < 0 || ix('heading_en') < 0) return [];
+    const flat = rows[0].map(x => x.trim().toLowerCase().replace(/[\s_-]+/g, '')), li = flat.findIndex(x => /^(disable|hide|remove)left(side)?panel$/.test(x));
+    const out = [];
+    rows.slice(1).forEach(r => {
+      const g = k => (ix(k) >= 0 ? (r[ix(k)] || '') : '').trim();
+      if (/^(no|n|false|0|hide)$/i.test(g('show'))) return;
+      const sd = g('start_date'), ed = g('end_date');
+      const start = sd ? dateKeyOf(sd) : '', end = ed ? dateKeyOf(ed) : '';
+      if ((sd && !start) || (ed && !end)) return;                // a mistyped date must not leave the slide showing forever
+      const o = { start, end, heading_en: g('heading_en'), heading_te: g('heading_te'), text_en: g('text_en'), text_te: g('text_te'), link: g('link'), caption: g('caption'), type: g('type'), noLeft: li >= 0 && /^(yes|y|true|1|on)$/i.test((r[li] || '').trim()) };
+      if (o.heading_en || o.heading_te || o.text_en || o.text_te || o.link) out.push(o);
+    });
+    return out;
+  }
   const reduceMotion = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
-  let donors = {}, lastSched = null;
+  let donors = {}, loaded = false;
 
   function parseDonors(text) {
     const rows = parseCSV(text);
@@ -2600,6 +2683,7 @@ document.addEventListener('click', () => {
       if (!key || !SLOT_KEYS[slot]) return;
       const d = {};
       ['name_en', 'name_te', 'gothram_en', 'gothram_te', 'family_en', 'family_te', 'photo'].forEach(k => { d[k] = g(k); });
+      d.name_en = cleanName(d.name_en); d.name_te = cleanName(d.name_te);      // phone numbers typed into a name are never shown
       if (!d.name_en && !d.name_te) return;
       (out[key + '|' + slot] = out[key + '|' + slot] || []).push(d);
     });
@@ -2704,14 +2788,15 @@ document.addEventListener('click', () => {
     });
   }
 
-  function titleBlock(parent, lang) {
-    parent.appendChild(el('div', 'ad-title', lang === 'te' ? 'మహాన్నదాత' : 'Maha Annadatha'));
+  function titleBlock(parent, text) {
+    if (!text) return;
+    parent.appendChild(el('div', 'ad-title', text));
     parent.appendChild(el('div', 'ad-rule'));
   }
 
-  function detailSlide(lang, d) {
+  function detailSlide(lang, d, title) {
     const s = el('div', 'ad-slide' + (lang === 'te' ? ' te' : ''));
-    titleBlock(s, lang);
+    titleBlock(s, title != null ? title : tx(lang === 'te' ? 'details_title_te' : 'details_title'));
     const rows = el('div', 'ad-rows');
     const pick = k => (lang === 'te' ? (d[k + '_te'] || d[k + '_en']) : (d[k + '_en'] || d[k + '_te'])) || '';
     const add = (k, v) => {
@@ -2719,20 +2804,38 @@ document.addEventListener('click', () => {
       if (k) { rows.appendChild(el('div', 'ad-k', k)); rows.appendChild(el('div', 'ad-v', v)); }
       else rows.appendChild(el('div', 'ad-full', v));
     };
-    add(lang === 'te' ? 'స్వామి పేరు' : 'Swamy Name', pick('name'));
-    add(lang === 'te' ? 'గోత్రం' : 'Gothram', pick('gothram'));
+    add(tx(lang === 'te' ? 'label_name_te' : 'label_name'), pick('name'));
+    add(tx(lang === 'te' ? 'label_gothram_te' : 'label_gothram'), pick('gothram'));
     parseFamily(pick('family')).forEach(p => add(p[0], p[1]));
     s.appendChild(rows);
     return s;
   }
 
+  // The Maha Annadata: a chief donor shown in every meal, set from "popup_text" (maha_name_en, maha_gothram_en, maha_family_en, maha_photo and the Telugu versions).
+  function mahaSlides() {
+    if (!on('show_maha')) return [];
+    const d = { name_en: tx('maha_name_en'), name_te: tx('maha_name_te'), gothram_en: tx('maha_gothram_en'), gothram_te: tx('maha_gothram_te'), family_en: tx('maha_family_en'), family_te: tx('maha_family_te') };
+    if (!d.name_en && !d.name_te) return [];
+    const out = [], hasEn = d.name_en || d.gothram_en || d.family_en, hasTe = d.name_te || d.gothram_te || d.family_te;
+    if (hasEn) out.push(detailSlide('en', d, tx('maha_title')));
+    if (hasTe) out.push(detailSlide('te', d, tx('maha_title_te')));
+    const p = photoURL(tx('maha_photo'));
+    if (p) out.push(photoSlide(tx('maha_title'), p, d.name_en || d.name_te, d.name_en ? d.name_te : ''));
+    return out;
+  }
+
+  function dropSlide(s) {
+    const i = slides.indexOf(s);
+    if (i < 0) return;
+    s.remove(); slides.splice(i, 1); layout(); show(Math.min(cur, slides.length - 1));
+  }
+
   function photoSlide(title, img, name, nameTe, blessing) {
     const s = el('div', 'ad-slide');
-    s.appendChild(el('div', 'ad-title', title));
-    s.appendChild(el('div', 'ad-rule'));
+    if (title) { s.appendChild(el('div', 'ad-title', title)); s.appendChild(el('div', 'ad-rule')); }
     const w = el('div', 'ad-photo-wrap'), im = new Image();
     im.alt = name || ''; im.referrerPolicy = 'no-referrer'; im.decoding = 'async';
-    im.onerror = () => { const i = slides.indexOf(s); if (i >= 0) { s.remove(); slides.splice(i, 1); layout(); show(Math.min(cur, slides.length - 1)); } };
+    im.onerror = () => dropSlide(s);
     im.src = img; w.appendChild(im); s.appendChild(w);
     if (name) { const c = el('div', 'ad-cap', name); if (nameTe) c.appendChild(el('small', '', nameTe)); s.appendChild(c); }
     if (blessing) s.appendChild(el('div', 'ad-blessing', blessing));
@@ -2741,29 +2844,70 @@ document.addEventListener('click', () => {
 
   function guruSlide() {
     const en = document.querySelector('.pth-content h3'), te = document.querySelector('.pth-content .p-sub');
-    return photoSlide('Our Guru Swamy', 'assets/founder.webp', en ? en.textContent.trim() : 'Manya Sri Ayyappa Indra Kumar Dev Guru Swamy', te ? te.textContent.trim() : '', 'Swamiye Saranam Ayyappa');
+    const nameEn = tx('guru_name') || (en ? en.textContent.trim() : 'Manya Sri Ayyappa Indra Kumar Dev Guru Swamy');
+    const nameTe = tx('guru_name_te') || (te ? te.textContent.trim() : '');
+    return photoSlide(tx('guru_title'), photoURL(tx('guru_photo')) || 'assets/founder.webp', nameEn, nameTe, tx('guru_blessing'));
   }
 
   function sponsorSlide(o) {
     const s = el('div', 'ad-slide');
-    s.appendChild(el('div', 'ad-title', 'Sponsor This Annadanam'));
-    s.appendChild(el('div', 'ad-sub', 'ఈ అన్నదాన సేవను చేయడానికి సంప్రదించండి'));
+    if (tx('sponsor_title')) s.appendChild(el('div', 'ad-title', tx('sponsor_title')));
+    if (tx('sponsor_sub')) s.appendChild(el('div', 'ad-sub', tx('sponsor_sub')));
     s.appendChild(el('div', 'ad-rule'));
-    s.appendChild(el('p', 'ad-text', 'The ' + o.label + ' Annadanam on ' + fmtDate(o.date) + ' is open for sponsorship. Offering food is the highest seva — contact us to book this slot.'));
+    if (tx('sponsor_text', { meal: o.disp, MEAL: o.disp.toUpperCase(), date: fmtDate(o.date) })) s.appendChild(el('p', 'ad-text', tx('sponsor_text', { meal: o.disp, MEAL: o.disp.toUpperCase(), date: fmtDate(o.date) })));
     const ph = el('div', 'ad-phones');
     [].forEach.call(document.querySelectorAll('.contact-phones a'), a => {
       const l = el('a', '', a.textContent.trim()); l.href = a.getAttribute('href'); ph.appendChild(l);
     });
     if (ph.children.length) s.appendChild(ph);
-    const act = el('div', 'ad-actions'), c = el('a', 'ad-contact', 'Contact the Peetam'); c.href = '#contact'; c.addEventListener('click', closePop);
-    act.appendChild(c);
-    if (DONOR_FORM_URL) {
-      const a = el('button', 'df-btn', '+ Add donor details for this slot'); a.type = 'button';
+    const act = el('div', 'ad-actions');
+    if (tx('sponsor_contact')) { const c = el('a', 'ad-contact', tx('sponsor_contact')); c.href = '#contact'; c.addEventListener('click', closePop); act.appendChild(c); }
+    if (DONOR_FORM_URL && tx('sponsor_add')) {
+      const a = el('button', 'df-btn', tx('sponsor_add')); a.type = 'button';
       a.addEventListener('click', () => { closePop(); openForm({ date: dkey(o.date), slot: o.label }); });
       act.appendChild(a);
     }
-    s.appendChild(act);
+    if (act.children.length) s.appendChild(act);
     return s;
+  }
+
+  // An extra slide from the "slides" tab: headings, text, and a Google Drive photo or a YouTube video / Short.
+  function customSlide(r) {
+    const s = el('div', 'ad-slide');
+    if (r.noLeft) s._wide = true;                                 // this slide uses the full width: the left panel is hidden while it shows
+    if (r.heading_en) s.appendChild(el('div', 'ad-title', r.heading_en));
+    if (r.heading_te) s.appendChild(el('div', r.heading_en ? 'ad-sub' : 'ad-title ad-te', r.heading_te));
+    if (r.heading_en || r.heading_te) s.appendChild(el('div', 'ad-rule'));
+    const link = (r.link || '').trim();
+    let media = null;
+    if (link) {
+      const y = ytIdOf(link), d = driveIdOf(link);
+      if (y) media = { video: 'https://www.youtube-nocookie.com/embed/' + y + '?rel=0&playsinline=1' };
+      else if (d && /^video$/i.test(r.type)) media = { video: 'https://drive.google.com/file/d/' + d + '/preview' };
+      else { const p = photoURL(link); if (p) media = { image: p }; }
+    }
+    if (media) s.classList.add('has-media');
+    if (media && media.image) {
+      const w = el('div', 'ad-photo-wrap'), im = new Image();
+      im.alt = r.caption || r.heading_en || ''; im.referrerPolicy = 'no-referrer'; im.decoding = 'async';
+      im.onerror = () => dropSlide(s);
+      im.src = media.image; w.appendChild(im); s.appendChild(w);
+    } else if (media && media.video) {
+      const w = el('div', 'ad-video-wrap'); s.appendChild(w); s._hold = true;       // a playing video is never rotated away
+      s._mount = () => {
+        if (s._frame) return;
+        const f = el('iframe'); f.src = media.video; f.title = r.caption || r.heading_en || 'Video';
+        f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen'; f.allowFullscreen = true; f.referrerPolicy = 'strict-origin-when-cross-origin';
+        w.appendChild(f);
+        s._strips = ['l', 'r'].map(k => { const d = el('div', 'bn-swipe ' + k); s.appendChild(d); return d; });   // keep swipe working on touch screens
+        s._frame = f;
+      };
+      s._unmount = () => { if (!s._frame) return; s._frame.remove(); s._strips.forEach(d => d.remove()); s._frame = null; s._strips = null; };
+    }
+    if (r.text_en) s.appendChild(el('p', 'ad-text', r.text_en));
+    if (r.text_te) s.appendChild(el('p', 'ad-text ad-te', r.text_te));
+    if (r.caption) s.appendChild(el('div', 'ad-cap', r.caption));
+    return (r.heading_en || r.heading_te || r.text_en || r.text_te || media) ? s : null;   // a link we could not use and nothing else: skip
   }
 
   function layout() {
@@ -2778,28 +2922,47 @@ document.addEventListener('click', () => {
   function show(i) {
     if (!slides.length) return;
     cur = (i + slides.length) % slides.length;
-    slides.forEach((s, k) => { s.classList.toggle('on', k === cur); s.setAttribute('aria-hidden', k === cur ? 'false' : 'true'); });
+    slides.forEach((s, k) => {
+      s.classList.toggle('on', k === cur); s.setAttribute('aria-hidden', k === cur ? 'false' : 'true');
+      if (k === cur) { if (s._mount) s._mount(); } else if (s._unmount) s._unmount();   // videos load when reached and stop when left
+    });
     [].forEach.call(dotsEl.children, (b, k) => b.classList.toggle('on', k === cur));
+    card.classList.toggle('ad-wide', !!slides[cur]._wide);
     bar.classList.remove('run'); void bar.offsetWidth;
-    if (slides.length > 1 && !reduceMotion) bar.classList.add('run');
+    if (slides.length > 1 && !reduceMotion && !slides[cur]._hold) bar.classList.add('run');
   }
 
   function openPop(o) {
     if (!pop) buildPop();
-    pop.querySelector('.ad-meal').textContent = o.label.toUpperCase() + ' ANNADANAM';
+    pop.querySelector('.ad-peetam-en').textContent = tx('left_title');
+    pop.querySelector('.ad-peetam-te').textContent = tx('left_title_te');
+    pop.querySelector('.ad-meal').textContent = tx('meal_format', { MEAL: o.disp.toUpperCase(), meal: o.disp });
+    pop.querySelector('.ad-meal').hidden = !pop.querySelector('.ad-meal').textContent;
     pop.querySelector('.ad-when').textContent = fmtDate(o.date) + (o.day ? ' · ' + o.day : '');
+    const secs = Math.min(60, Math.max(3, parseFloat(tx('slide_seconds')) || 7));
+    bar.style.setProperty('--ad-sec', secs + 's');
     stage.textContent = ''; slides = [];
-    if (o.free) slides.push(sponsorSlide(o));
-    else {
-      if (o.list.length) o.list.forEach(d => {
-        if (d.name_en || d.gothram_en || d.family_en) slides.push(detailSlide('en', d));
-        if (d.name_te || d.gothram_te || d.family_te) slides.push(detailSlide('te', d));
+
+    // Extra slides from the "slides" tab: shown in every meal while today is between their start and end dates (inclusive).
+    const todayKey = dkey(new Date(istToday()));
+    const C = extra.filter(r => (!r.start || r.start <= todayKey) && (!r.end || r.end >= todayKey));
+    const put = list => list.forEach(r => { const sl = customSlide(r); if (sl) slides.push(sl); });
+
+    if (o.free) {
+      slides.push(sponsorSlide(o));
+      put(C);
+    } else {
+      o.list.forEach(d => {
+        if (on('show_english') && (d.name_en || d.gothram_en || d.family_en)) slides.push(detailSlide('en', d));
+        if (on('show_telugu') && (d.name_te || d.gothram_te || d.family_te)) slides.push(detailSlide('te', d));
         const p = photoURL(d.photo);
-        if (p) slides.push(photoSlide('Maha Annadatha', p, d.name_en || d.name_te, d.name_en ? d.name_te : ''));
+        if (on('show_photo') && p) slides.push(photoSlide(tx('photo_title'), p, d.name_en || d.name_te, d.name_en ? d.name_te : ''));
       });
-      else slides.push(detailSlide('en', { name_en: o.name }));
-      slides.push(guruSlide());
+      put(C);
+      mahaSlides().forEach(sl => slides.push(sl));
+      if (on('show_guru')) slides.push(guruSlide());
     }
+    if (!slides.length) slides.push(detailSlide('en', o.list[0] || {}));
     slides.forEach(sl => stage.appendChild(sl));
     layout(); card.classList.remove('paused');
     lastFocus = document.activeElement;
@@ -2813,6 +2976,8 @@ document.addEventListener('click', () => {
     if (!pop) return;
     if (fsEl()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
     pop.classList.remove('open', 'ad-max'); bar.classList.remove('run'); syncFs();
+    slides.forEach(sl => { if (sl._unmount) sl._unmount(); });
+    card.classList.remove('ad-wide');
     document.documentElement.style.overflow = '';
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
@@ -2829,12 +2994,97 @@ document.addEventListener('click', () => {
   }
   function inp(type, ph, cls) { const i = el('input', cls || ''); i.type = type; if (ph) i.placeholder = ph; i.autocomplete = 'off'; return i; }
 
+
+  /* ── English → Telugu: Google Input Tools first, built-in letter rules if it cannot be reached ── */
+  const TE_WORDS = {
+    kumar:'కుమార్', kumari:'కుమారి', kumara:'కుమార', reddy:'రెడ్డి', rao:'రావు', naidu:'నాయుడు', swamy:'స్వామి', swami:'స్వామి', guru:'గురు',
+    krishna:'కృష్ణ', venkata:'వెంకట', venkat:'వెంకట్', venkatesh:'వెంకటేష్', lakshmi:'లక్ష్మి', laxmi:'లక్ష్మి', ram:'రామ్', rama:'రామ', ramesh:'రమేష్',
+    suresh:'సురేష్', mahesh:'మహేష్', ganesh:'గణేష్', harish:'హరీష్', satish:'సతీష్', sathish:'సతీష్', satya:'సత్య', sai:'సాయి', narayana:'నారాయణ',
+    murthy:'మూర్తి', murthi:'మూర్తి', sharma:'శర్మ', shankar:'శంకర్', srinivas:'శ్రీనివాస్', srinivasa:'శ్రీనివాస', ayyappa:'అయ్యప్ప', raju:'రాజు',
+    anil:'అనిల్', sunil:'సునీల్', prasad:'ప్రసాద్', ravi:'రవి', rajesh:'రాజేష్', gopal:'గోపాల్', kiran:'కిరణ్', vijay:'విజయ్', anitha:'అనిత',
+    sunitha:'సునీత', padma:'పద్మ', radha:'రాధ', sita:'సీత', saraswati:'సరస్వతి', kavitha:'కవిత', priya:'ప్రియ', meena:'మీనా', arjun:'అర్జున్',
+    kaushika:'కౌశిక', bharadwaja:'భరద్వాజ', vasishta:'వశిష్ఠ', kashyapa:'కశ్యప', atreya:'ఆత్రేయ', gautama:'గౌతమ', agastya:'అగస్త్య',
+    sri:'శ్రీ', sekhar:'శేఖర్', chandra:'చంద్ర', babu:'బాబు', chowdary:'చౌదరి', chowdhary:'చౌదరి', nageswara:'నాగేశ్వర', satyanarayana:'సత్యనారాయణ', durga:'దుర్గ',
+    vishwamitra:'విశ్వామిత్ర', jamadagni:'జమదగ్ని', srivatsa:'శ్రీవత్స', kaundinya:'కౌండిన్య', parasara:'పరాశర', kanva:'కణ్వ', shandilya:'శాండిల్య'
+  };
+  const TE_CONS = [['ksh','క్ష'],['chh','ఛ'],['kh','ఖ'],['gh','ఘ'],['ch','చ'],['jh','ఝ'],['th','త'],['dh','ధ'],['ph','ఫ'],['bh','భ'],['sh','ష'],
+    ['k','క'],['g','గ'],['c','క'],['j','జ'],['t','త'],['d','ద'],['n','న'],['p','ప'],['b','బ'],['m','మ'],['y','య'],['r','ర'],['l','ల'],['v','వ'],['w','వ'],
+    ['s','స'],['h','హ'],['f','ఫ'],['z','జ'],['q','క'],['x','క్స']];
+  const TE_VOW = [['aa','ఆ','ా'],['ai','ఐ','ై'],['au','ఔ','ౌ'],['ee','ఈ','ీ'],['ii','ఈ','ీ'],['oo','ఊ','ూ'],['uu','ఊ','ూ'],['ou','ఔ','ౌ'],
+    ['a','అ',''],['e','ఎ','ె'],['i','ఇ','ి'],['o','ఒ','ొ'],['u','ఉ','ు']];
+
+  function teWord(w) {
+    if (TE_WORDS[w]) return TE_WORDS[w];
+    const at = (list, i) => list.find(p => w.startsWith(p[0], i));
+    let out = '', i = 0, afterCons = false;
+    while (i < w.length) {
+      const v = at(TE_VOW, i);
+      if (v) {
+        let m = afterCons ? v[2] : v[1];
+        if (v[0] === 'e' || v[0] === 'o') {                       // long e/o unless a consonant cluster follows (Venkat, Reddy)
+          let j = i + 1, n = 0, c;
+          while (j < w.length && (c = at(TE_CONS, j))) { n++; j += c[0].length; }
+          if (n < 2) m = afterCons ? (v[0] === 'e' ? 'ే' : 'ో') : (v[0] === 'e' ? 'ఏ' : 'ఓ');
+        }
+        out += m; afterCons = false; i += v[0].length; continue;
+      }
+      const c = at(TE_CONS, i);
+      if (c) {
+        const nx = at(TE_CONS, i + c[0].length);
+        if ((c[0] === 'n' || c[0] === 'm') && !afterCons && i > 0 && nx && !/^[nmy]/.test(nx[0])) { out += 'ం'; i += 1; continue; }   // n/m before a consonant is written as anusvara
+        let base = c[1];
+        if (c[0] === 'sh' && i === 0) base = 'శ';
+        if (c[0] === 'c' && /[eiy]/.test(w[i + 1] || '')) base = 'స';
+        out += (afterCons ? '్' : '') + base; afterCons = true; i += c[0].length; continue;
+      }
+      out += w[i]; afterCons = false; i++;
+    }
+    return out + (afterCons ? '్' : '');
+  }
+
+  const teCache = new Map();
+  async function toTelugu(text) {
+    const key = (text || '').trim();
+    if (!key || /[^\x00-\x7F]/.test(key)) return '';              // empty, or already typed in another script: leave it alone
+    if (teCache.has(key)) return teCache.get(key);
+    let out = '';
+    try {
+      const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 3000);
+      const r = await fetch('https://inputtools.google.com/request?text=' + encodeURIComponent(key) + '&itc=te-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=ssap', { signal: ctl.signal });
+      clearTimeout(tm);
+      const j = await r.json();
+      if (j && j[0] === 'SUCCESS' && j[1] && j[1][0] && j[1][0][1] && j[1][0][1][0]) out = j[1][0][1][0];
+    } catch (e) { /* offline or blocked: use the built-in rules below */ }
+    if (!out) out = key.toLowerCase().replace(/[a-z]+/g, teWord);
+    teCache.set(key, out);
+    return out;
+  }
+
+  // Keeps a Telugu box filled from its English box until the person edits the Telugu themselves.
+  function linkTe(en, te) {
+    let last = '', dirty = false, timer = null, seq = 0, inflight = Promise.resolve();
+    te.addEventListener('input', () => { dirty = te.value.trim() !== '' && te.value !== last; if (dirty) te.classList.remove('auto'); });
+    function run() {
+      const v = en.value.trim(), my = ++seq;
+      if (dirty) return Promise.resolve();
+      if (!v) { te.value = ''; last = ''; te.classList.remove('auto'); return Promise.resolve(); }
+      inflight = toTelugu(v).then(t => { if (my !== seq || dirty || !t) return; te.value = t; last = t; te.classList.add('auto'); });
+      return inflight;
+    }
+    en.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(() => { timer = null; run(); }, 450); });
+    return {
+      flush() { if (timer) { clearTimeout(timer); timer = null; return run(); } return inflight; },
+      reset() { clearTimeout(timer); timer = null; seq++; last = ''; dirty = false; te.classList.remove('auto'); inflight = Promise.resolve(); }
+    };
+  }
+
   function buildForm() {
     fpop = el('div'); fpop.id = 'df-pop'; fpop.setAttribute('role', 'dialog'); fpop.setAttribute('aria-modal', 'true'); fpop.setAttribute('aria-label', 'Add donor details');
     const card = el('div', 'df-card'); fpop.appendChild(card);
     const x = el('button', 'df-x'); x.type = 'button'; x.setAttribute('aria-label', 'Close'); x.innerHTML = svg('M6 6l12 12M18 6L6 18'); x.addEventListener('click', closeForm); card.appendChild(x);
     card.appendChild(el('h3', '', 'Add Donor Details'));
     card.appendChild(el('div', 'df-te', 'అన్నదాత వివరాలు నమోదు చేయండి'));
+    card.appendChild(el('div', 'df-hint', 'Type in English and the Telugu is filled in for you. Please check it and correct anything that looks wrong.'));
     const g = el('div', 'df-grid'); card.appendChild(g);
 
     const date = inp('date'); const slot = el('select');
@@ -2844,6 +3094,7 @@ document.addEventListener('click', () => {
     g.appendChild(field('Date', date, '', true)); g.appendChild(field('Meal', slot, '', true));
     g.appendChild(field('Donor name (English)', nameEn, '', true)); g.appendChild(field('Donor name (తెలుగు)', nameTe));
     g.appendChild(field('Gothram (English)', gothEn)); g.appendChild(field('Gothram (తెలుగు)', gothTe));
+    const links = [linkTe(nameEn, nameTe), linkTe(gothEn, gothTe)];
 
     const famWrap = el('div', 'df-f full'); famWrap.appendChild(el('div', 'df-h', 'Family members (optional)'));
     const famList = el('div'); famWrap.appendChild(famList);
@@ -2854,7 +3105,7 @@ document.addEventListener('click', () => {
       REL.forEach(p => { const o = el('option', '', p[0]); o.value = p[0]; sel.appendChild(o); });
       const en = inp('text', 'Name (English)'), te = inp('text', 'పేరు (తెలుగు)', 'te'), rm = el('button', '', '×'); rm.type = 'button'; rm.setAttribute('aria-label', 'Remove');
       rm.addEventListener('click', () => r.remove());
-      r.appendChild(sel); r.appendChild(en); r.appendChild(te); r.appendChild(rm); r._f = { sel, en, te };
+      r.appendChild(sel); r.appendChild(en); r.appendChild(te); r.appendChild(rm); r._f = { sel, en, te, link: linkTe(en, te) };
       famList.appendChild(r); en.focus();
     }
     addFam.addEventListener('click', famRow);
@@ -2892,7 +3143,7 @@ document.addEventListener('click', () => {
       }
     });
 
-    fpop._f = { date, slot, nameEn, nameTe, gothEn, gothTe, famList, famRow, file, prev, pass, passF, hp, msg, save };
+    fpop._f = { date, slot, nameEn, nameTe, gothEn, gothTe, links, famList, famRow, file, prev, pass, passF, hp, msg, save };
     save.addEventListener('click', submitForm);
   }
 
@@ -2923,7 +3174,7 @@ document.addEventListener('click', () => {
     if (!DONOR_FORM_URL) return;
     if (!fpop) buildForm();
     const f = fpop._f; fpre = pre || {};
-    f.nameEn.value = f.nameTe.value = f.gothEn.value = f.gothTe.value = ''; f.famList.textContent = '';
+    f.nameEn.value = f.nameTe.value = f.gothEn.value = f.gothTe.value = ''; f.famList.textContent = ''; f.links.forEach(l => l.reset());
     f.file.value = ''; f.prev.style.display = 'none'; f.msg.textContent = ''; f.msg.className = 'df-msg'; f.hp.value = ''; f.save.disabled = false;
     const t = new Date(istToday());
     f.date.value = fpre.date || dkey(t); f.date.min = dkey(t);
@@ -2945,6 +3196,7 @@ document.addEventListener('click', () => {
     const f = fpop._f, say = (t, c) => { f.msg.textContent = t; f.msg.className = 'df-msg ' + (c || ''); };
     const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(f.date.value);
     if (!m) return say('Please choose a date.', 'err');
+    await Promise.all(f.links.concat([].map.call(f.famList.children, r => r._f.link)).map(l => l.flush()));   // finish any Telugu still being filled in
     const nameEn = f.nameEn.value.trim(), nameTe = f.nameTe.value.trim();
     if (!nameEn && !nameTe) return say('Please enter the donor name.', 'err');
     const fam = [].map.call(f.famList.children, r => ({ rel: r._f.sel.value, en: r._f.en.value, te: r._f.te.value }));
@@ -2962,7 +3214,7 @@ document.addEventListener('click', () => {
       const d = { name_en: nameEn, name_te: nameTe, gothram_en: body.gothram_en, gothram_te: body.gothram_te, family_en: body.family_en, family_te: body.family_te, photo: j.photo || '' };
       const key = f.date.value + '|' + f.slot.value.toLowerCase();
       if (j.hidden !== true) (donors[key] = donors[key] || []).push(d);
-      if (lastSched) renderSched(lastSched);
+      if (loaded) renderSched();
       say(j.hidden === true ? 'Saved. It will appear after review.' : 'Saved. Thank you!', 'ok');
       setTimeout(closeForm, 1400);
     } catch (e) {
@@ -2972,20 +3224,22 @@ document.addEventListener('click', () => {
 
   function slotsFor(d) {
     const key = dkey(d.date);
-    const items = SLOTS.map(([label, idx]) => {
+    const items = SLOTS.map(label => {
       const list = donors[key + '|' + label.toLowerCase()] || [];
-      const name = cleanName(d.cols[idx]) || list.map(x => x.name_en || x.name_te).join(' · ');
-      return { label, list, name, filled: !!name };
+      const disp = tx('slot_' + label.toLowerCase());
+      const names = list.map(x => x.name_en || x.name_te);
+      const name = names.slice(0, 2).join(' · ') + (names.length > 2 ? ' +' + (names.length - 2) + ' more' : '');
+      return { label, disp, list, name, filled: list.length > 0 };
     });
     if (!items.some(it => it.filled)) return null;
     const wrap = el('div', 'as-slots');
     items.forEach(it => {
       const s = el('div', 'as-slot' + (it.filled ? '' : ' as-free'));
-      const hh = el('h4', '', it.label.toUpperCase()); hh.setAttribute('aria-level', '3'); s.appendChild(hh);
-      s.appendChild(el('p', '', it.filled ? it.name : 'Open for sponsorship'));
-      s.appendChild(el('span', 'as-more', it.filled ? 'VIEW DETAILS ›' : 'SPONSOR THIS SLOT ›'));
+      const hh = el('h4', '', it.disp.toUpperCase()); hh.setAttribute('aria-level', '3'); s.appendChild(hh);
+      s.appendChild(el('p', '', it.filled ? it.name : tx('box_free')));
+      s.appendChild(el('span', 'as-more', it.filled ? tx('box_view') : tx('box_sponsor')));
       s.setAttribute('role', 'button'); s.tabIndex = 0;
-      const go = () => openPop({ date: d.date, day: d.day, label: it.label, list: it.list, name: it.name, free: !it.filled });
+      const go = () => openPop({ date: d.date, day: d.day, label: it.label, disp: it.disp, list: it.list, name: it.name, free: !it.filled });
       s.addEventListener('click', go);
       s.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
       wrap.appendChild(s);
@@ -2993,76 +3247,60 @@ document.addEventListener('click', () => {
     return wrap;
   }
 
-  const donorsP = fetch('https://docs.google.com/spreadsheets/d/' + SCHEDULE_SHEET_ID + '/gviz/tq?tqx=out:csv&headers=1&sheet=donors')
-    .then(r => (r.ok ? r.text() : ''))
-    .then(t => { donors = parseDonors(t); })
-    .catch(() => {});
+  function applyStaticText() {
+    const h = sec.querySelector('.sec-en'), ht = sec.querySelector('.sec-te');
+    if (h) h.textContent = tx('section_title');
+    if (ht) ht.textContent = tx('section_title_te');
+    const up = document.getElementById('as-upcoming-title'); if (up) up.textContent = tx('upcoming_title');
+    const ft = document.getElementById('as-footer');
+    if (ft) {
+      ft.textContent = ''; const t = tx('footer_text'), l = tx('footer_link');
+      if (t) ft.appendChild(document.createTextNode(t + (l ? ' ' : '')));
+      if (l) { const a = el('a', '', l); a.href = '#contact'; ft.appendChild(a); }
+      ft.hidden = !(t || l);
+    }
+    const ab = document.getElementById('as-add-btn'); if (ab) ab.textContent = tx('add_button');
+  }
 
-  fetch('https://docs.google.com/spreadsheets/d/' + SCHEDULE_SHEET_ID + '/gviz/tq?tqx=out:csv&headers=0&gid=' + SCHEDULE_GID)
-    .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
-    .then(text => donorsP.then(() => text))
-    .then(text => { lastSched = text; renderSched(text); })
-    .catch(() => { sec.hidden = true; });
+  const SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SCHEDULE_SHEET_ID + '/gviz/tq?tqx=out:csv&headers=1&sheet=';
+  const optionalTab = tab => fetch(SHEET_URL + tab).then(r => (r.ok ? r.text() : '')).catch(() => '');
+  Promise.all([
+    fetch(SHEET_URL + 'donors').then(r => { if (!r.ok) throw new Error(r.status); return r.text(); }),
+    optionalTab('popup_text'), optionalTab('slides')
+  ]).then(([d, pt, sl]) => {
+    donors = parseDonors(d); parsePopupText(pt); extra = parseSlides(sl);
+    loaded = true; applyStaticText(); renderSched();
+  }).catch(() => { sec.hidden = true; });
 
-  function renderSched(text) {
-      const today = istToday();
-      const days = [];
-      parseCSV(text).forEach(cols => {
-        const m = /^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/.exec(cols[0] || '');
-        if (!m) return;
-        days.push({ date: new Date(Date.UTC(+m[3], +m[2] - 1, +m[1])), day: (cols[1] || '').replace(/^[-–—]+$/, ''), cols });
-      });
-      const dayMs = 86400000;
-      const byTime = {}; days.forEach(d => { byTime[d.date.getTime()] = d; });
+  // Today and the next few days, always shown; every name comes from the donors tab.
+  function renderSched() {
+    const today = istToday(), dayMs = 86400000;
+    const dayOf = i => { const dt = new Date(today + i * dayMs); return { date: dt, day: TE_DAYS[dt.getUTCDay()] }; };
+    const todayBox = document.getElementById('as-today');
+    const upBox = document.getElementById('as-upcoming');
+    todayBox.textContent = ''; upBox.textContent = '';
 
-      const todayBox = document.getElementById('as-today');
-      const upBox = document.getElementById('as-upcoming');
-      todayBox.textContent = ''; upBox.textContent = '';
+    const t = dayOf(0);
+    const card = el('div', 'as-today reveal');
+    card.appendChild(el('div', 'as-badge', tx('today_badge')));
+    card.appendChild(dateHead(t));
+    card.appendChild(slotsFor(t) || el('p', 'as-open', tx('no_donor_today')));
+    todayBox.appendChild(card);
 
-      const t = byTime[today] || { date: new Date(today), day: '', cols: [] };
-      const card = el('div', 'as-today reveal');
-      card.appendChild(el('div', 'as-badge', "TODAY'S ANNADANAM"));
-      card.appendChild(dateHead(t));
-      const ts = slotsFor(t);
-      card.appendChild(ts || el('p', 'as-open', 'No donor listed for today yet.'));
-      todayBox.appendChild(card);
-
-      for (let i = 1; i <= UPCOMING_DAYS; i++) {
-        const d = byTime[today + i * dayMs] || { date: new Date(today + i * dayMs), day: '', cols: [] };
-        const c = el('div', 'as-day reveal');
-        c.appendChild(dateHead(d));
-        const s = slotsFor(d);
-        c.appendChild(s || el('p', 'as-open', 'Open for sponsorship'));
-        upBox.appendChild(c);
-      }
-      sec.hidden = false;
-      document.querySelectorAll('#annadanam-schedule .reveal').forEach(e => e.classList.add('in'));
+    for (let i = 1; i <= UPCOMING_DAYS; i++) {
+      const d = dayOf(i);
+      const c = el('div', 'as-day reveal');
+      c.appendChild(dateHead(d));
+      c.appendChild(slotsFor(d) || el('p', 'as-open', tx('open_day')));
+      upBox.appendChild(c);
+    }
+    sec.hidden = false;
+    document.querySelectorAll('#annadanam-schedule .reveal').forEach(e => e.classList.add('in'));
   }
 
   if (DONOR_FORM_URL) {
     document.getElementById('as-add').hidden = false;
     document.getElementById('as-add-btn').addEventListener('click', () => openForm());
   }
-})();
-
-/* ─── Testimonials: paste real Google Maps reviews here; section stays hidden while empty ─── */
-(function () {
-  const REVIEWS = [
-    // { name: 'Reviewer Name', rating: 5, text: 'Review text…', date: 'Oct 2026' },
-  ];
-  const sec = document.getElementById('testimonials'), grid = document.getElementById('t-grid');
-  if (!sec || !grid || !REVIEWS.length) return;
-  REVIEWS.forEach(r => {
-    const c = document.createElement('article'); c.className = 't-card';
-    const st = document.createElement('div'); st.className = 't-stars'; st.setAttribute('role', 'img');
-    const n = Math.max(0, Math.min(5, +r.rating || 5)); st.setAttribute('aria-label', n + ' out of 5 stars');
-    st.textContent = '★'.repeat(n) + '☆'.repeat(5 - n);
-    const t = document.createElement('p'); t.className = 't-text'; t.textContent = '“' + r.text + '”';
-    const m = document.createElement('div'); m.className = 't-meta'; m.textContent = r.name;
-    if (r.date) { const d = document.createElement('small'); d.textContent = 'Google review · ' + r.date; m.appendChild(d); }
-    c.append(st, t, m); grid.appendChild(c);
-  });
-  sec.hidden = false;
-  sec.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
 })();
 </script>
